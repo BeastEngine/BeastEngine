@@ -1,6 +1,6 @@
 # Set the variable and the global property to contain the name of the executable for the BeastEngine project
 set(SANDBOX_TARGET_NAME sandbox)
-set_property(GLOBAL PROPERTY BEAST_EXE_TARGET_NAME "${SANBOX_TARGET_NAME}")
+set_property(GLOBAL PROPERTY BEAST_EXE_TARGET_NAME "${SANDBOX_TARGET_NAME}")
 
 # Get the name of the target of the BeastEngine library - this property should be set before. If not, throw error
 get_property(IS_BEAST_LIB_TARGET_NAME_SET GLOBAL PROPERTY BEAST_LIB_TARGET_NAME SET)

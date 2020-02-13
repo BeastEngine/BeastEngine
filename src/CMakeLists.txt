@@ -22,6 +22,10 @@ add_library("${BEAST_TARGET_NAME}" SHARED "${BEAST_SRC_LIST}" "${BEAST_HEADERS_L
 target_include_directories("${BEAST_TARGET_NAME}" PUBLIC "${BEAST_INCLUDE_DIR}")
 target_compile_features("${BEAST_TARGET_NAME}" PUBLIC cxx_std_17)
 
+# Add linking to libraries from Conan
+conan_target_link_libraries("${BEAST_TARGET_NAME}")
+
+# Group files into proper folders - for IDE
 GROUP_FILES("${BEAST_HEADERS_LIST}" "${BEAST_HEADERS_DIR}")
 GROUP_FILES("${BEAST_SRC_LIST}" "${BEAST_SRC_DIR}")
 

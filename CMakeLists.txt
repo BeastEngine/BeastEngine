@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.13...3.16)
 
 project(BeastEngine
-		VERSION 1.0.0.0
+		VERSION 0.0.1
 		DESCRIPTION "2D focused game engine"
 		HOMEPAGE_URL https://github.com/BeastEngine/BeastEngine
 		LANGUAGES CXX)
 
 include(cmake/functions.cmake)
+include("${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake")
+conan_basic_setup(TARGETS) # Configure Conan, but do not let it override output directories
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	set(CMAKE_INSTALL_PREFIX "${BeastEngine_SOURCE_DIR}") # Directory to put all the targets from `install()` commands
@@ -16,7 +18,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-	include(CTest)
+	#include(CTest)
 endif()
 
 # Add library
