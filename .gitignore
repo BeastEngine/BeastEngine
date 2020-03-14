@@ -363,3 +363,6 @@ CTestTestfile.cmake
 _deps
 build/
 .idea/
+
+## Other
+scripts/src/config/temp.json
