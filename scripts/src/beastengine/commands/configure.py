@@ -10,4 +10,4 @@ class Configure:
         parser = argparse.ArgumentParser()
         parser.parse_args(sys.argv[2:])
 
-        CMake.init(BeastCommandHelper.DIRECTORY_BUILD, cwd)
+        CMake.configure(BeastCommandHelper.DIRECTORY_BUILD, cwd)

@@ -364,5 +364,6 @@ _deps
 build/
 .idea/
 
-## Other
+## Others
 scripts/src/config/temp.json
+cmake/config/*/config.cmake

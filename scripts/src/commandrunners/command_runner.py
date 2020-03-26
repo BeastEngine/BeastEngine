@@ -4,39 +4,18 @@ import shlex
 
 
 class CommandRunner:
-    @staticmethod
-    def run_command(command, working_dir=None):
+    def run_command(self, command, working_dir=None):
         print('\n')
         print(colorama.Fore.YELLOW + 'Running: ' + command)
 
-        process = CommandRunner.spawn_process(shlex.split(command), working_dir)
-        returned_code = CommandRunner.wait_for_process_and_print_outputs(process)
+        process_result = subprocess.run(args=command, capture_output=True, text=True, cwd=working_dir)
 
-        return returned_code
+        print(colorama.Fore.LIGHTWHITE_EX + process_result.stdout)
+        print(colorama.Fore.LIGHTRED_EX + process_result.stderr)
 
-    @staticmethod
-    def spawn_process(args, cwd):
-        return subprocess.Popen(args=args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, cwd=cwd)
+        return process_result.returncode
 
-    @staticmethod
-    def wait_for_process_and_print_outputs(process):
-        while True:
-            stdout = process.stdout.readline()
-            stderr = process.stderr.readline()
-            if (stdout == '' and stderr == '') and process.poll() is not None:
-                break
-            if stdout:
-                print(stdout.strip())
-            elif stderr:
-                print(colorama.Fore.RED + stderr.strip())
+    def get_command_output(self, command, working_dir=None):
+        process_result = subprocess.run(args=command, capture_output=True, text=True, cwd=working_dir)
 
-        return process.poll()
-
-    # @staticmethod
-    # def execute_command(command):
-    #     process_result = subprocess.run(args=command, capture_output=True, text=True)
-    #     output = process_result.stdout
-    #     if not output:
-    #         output = process_result.stderr
-    #
-    #     return output
+        return process_result.stdout

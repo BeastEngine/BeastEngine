@@ -1,0 +1,11 @@
+SET(BEAST_INCLUDE_DIR {beast_include_dir})
+SET(BEAST_SRC_DIR {beast_src_dir})
+
+SET(
+	BEAST_HEADERS_LIST
+	{beast_headers}
+)
+SET(
+	BEAST_SRC_LIST
+	{beast_sources}
+)

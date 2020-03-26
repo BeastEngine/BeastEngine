@@ -5,12 +5,12 @@ import colorama
 
 from ..beast_command_helper import BeastCommandHelper
 from ...commandrunners.cmake import CMake
-from ...config.Config import Config
+from ...config.ConfigManager import ConfigManager
 from ...config.ConfigNames import ConfigNames
 
 
 class Build:
-    DESCRIPTION = '''{yellow}beast build [<args>]
+    DESCRIPTION = '''{green}beast build [-c|--config CONFIG <args>]
 
 {purple}Available arguments{white}
 {green}-c --config{white}   Defines the configuration in which the project will be built.
@@ -18,13 +18,13 @@ class Build:
               When no config is specified, the default "{default_config}" value is set.
 '''
 
-    def __init__(self, config: Config, cwd):
-        self.config = config
+    def __init__(self, config_manager: ConfigManager, cwd):
+        self.config_manager = config_manager
         self.cwd = cwd
 
         substitution_map = {
             'configs': ConfigNames.available_names(),
-            'default_config': config.get_default_configuration()
+            'default_config': config_manager.config.default_build_type
         }
 
         parser = argparse.ArgumentParser(usage=BeastCommandHelper.format_text(self.DESCRIPTION, substitution_map))
@@ -34,7 +34,7 @@ class Build:
 
     def execute(self, command_line_args):
         if not command_line_args.config:
-            config_name = self.config.get_default_configuration()
+            config_name = self.config_manager.config.default_build_type
 
             info_message = "{yellow}No configuration specified, building for default \"{default_config}\" configuration {reset}"
             info_message = BeastCommandHelper.format_text(info_message, {'default_config': config_name})

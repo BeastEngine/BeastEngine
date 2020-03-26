@@ -1,39 +1,20 @@
-set(BEAST_INCLUDE_DIR "${BeastEngine_SOURCE_DIR}/include")
-set(BEAST_HEADERS_DIR "${BEAST_INCLUDE_DIR}/BeastEngine")
-set(BEAST_SRC_DIR "${BeastEngine_SOURCE_DIR}/src")
+include("${BEAST_CONFIG_PATH}/beastengine/config.cmake")
 
-# Set the variable and the global property to contain the name of the library for the BeastEngine project
-set(BEAST_TARGET_NAME beastengine)
-set_property(GLOBAL PROPERTY BEAST_LIB_TARGET_NAME "${BEAST_TARGET_NAME}")
-
-# Set variable containing all of the library's header files
-set(
-	BEAST_HEADERS_LIST
-	"${BEAST_HEADERS_DIR}/beastengine.h"
-)
-
-# Set variable containing all of the library's source files
-set(
-	BEAST_SRC_LIST
-	"${BEAST_SRC_DIR}/beastengine.cpp"
-)
-
-add_library("${BEAST_TARGET_NAME}" SHARED "${BEAST_SRC_LIST}" "${BEAST_HEADERS_LIST}")
-target_include_directories("${BEAST_TARGET_NAME}" PUBLIC "${BEAST_INCLUDE_DIR}")
-target_compile_features("${BEAST_TARGET_NAME}" PUBLIC cxx_std_17)
+add_library("${BEAST_LIB_TARGET_NAME}" SHARED "${BEAST_SRC_LIST}" "${BEAST_HEADERS_LIST}")
+target_include_directories("${BEAST_LIB_TARGET_NAME}" PUBLIC "${BEAST_INCLUDE_DIR}")
+target_compile_features("${BEAST_LIB_TARGET_NAME}" PUBLIC cxx_std_17)
 
 # Add linking to libraries from Conan
-conan_target_link_libraries("${BEAST_TARGET_NAME}")
+conan_target_link_libraries("${BEAST_LIB_TARGET_NAME}")
 
 # Group files into proper folders - for IDE
-GROUP_FILES("${BEAST_HEADERS_LIST}" "${BEAST_HEADERS_DIR}")
+GROUP_FILES("${BEAST_HEADERS_LIST}" "${BEAST_INCLUDE_DIR}")
 GROUP_FILES("${BEAST_SRC_LIST}" "${BEAST_SRC_DIR}")
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
-    # MSVC
-    target_compile_options("${BEAST_TARGET_NAME}" PRIVATE /EHsc /MTd /W2 /c)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # target_compile_options("${BEAST_LIB_TARGET_NAME}" PRIVATE /EHsc /MTd /W2 /c)
     # Set the DLLEXPORT variable to export symbols
-    # target_compile_definitions("${BEAST_TARGET_NAME}" PRIVATE WIN_EXPORT)
+    # target_compile_definitions("${BEAST_LIB_TARGET_NAME}" PRIVATE WIN_EXPORT)
 endif()
 
-install(TARGETS "${BEAST_TARGET_NAME}" DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+install(TARGETS "${BEAST_LIB_TARGET_NAME}" DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
