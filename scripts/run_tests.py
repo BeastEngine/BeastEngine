@@ -1,3 +1,4 @@
+import sys
 import pytest
 
-pytest.main()
+pytest.main(sys.argv[1:])
