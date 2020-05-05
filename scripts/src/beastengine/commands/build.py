@@ -3,7 +3,7 @@ import sys
 
 import colorama
 
-from ..beast_command_helper import BeastCommandHelper
+from src.beastengine.beast_command_helper import BeastCommandHelper
 from ...commandrunners.cmake import CMake
 from ...config.ConfigManager import ConfigManager
 from ...config.ConfigNames import ConfigNames
