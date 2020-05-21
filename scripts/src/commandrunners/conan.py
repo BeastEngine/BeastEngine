@@ -1,5 +1,5 @@
 from src.commandrunners.command_runner import CommandRunner
-from src.config.ConfigNames import ConfigNames
+from src.config.config_names import ConfigNames
 
 
 class Conan:

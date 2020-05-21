@@ -4,7 +4,7 @@ import sys
 from ..beast_command_helper import BeastCommandHelper
 from ...commandrunners.cmake import CMake
 from ...commandrunners.command_runner import CommandRunner
-from ...config.ConfigManager import ConfigManager
+from ...config.config_manager import ConfigManager
 
 
 class ClassCommand:

@@ -5,8 +5,8 @@ import colorama
 
 from src.beastengine.beast_command_helper import BeastCommandHelper
 from ...commandrunners.cmake import CMake
-from ...config.ConfigManager import ConfigManager
-from ...config.ConfigNames import ConfigNames
+from ...config.config_manager import ConfigManager
+from ...config.config_names import ConfigNames
 
 
 class Build:

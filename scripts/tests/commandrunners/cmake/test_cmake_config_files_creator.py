@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from src.config.ConfigManager import Config, ConfigFiles
+from src.config.config_manager import Config, ConfigFiles
 from src.files.file_opener import FileOpener
 from src.commandrunners.command_runner import CommandRunner
 from src.commandrunners.cmake.cmake_config_files_creator import CMakeConfigFilesCreator
@@ -65,7 +65,7 @@ set(BEAST_EXE_TARGET_NAME {expected_exe_target_name})
     cmake_config.project.version_minor = expected_project_version_minor
     cmake_config.project.version_patch = expected_project_version_patch
 
-    cmake_config.project.project_name_placeholder = expected_project_name_placeholder
+    cmake_config.project.name_placeholder = expected_project_name_placeholder
     cmake_config.project.version_major_placeholder = expected_project_version_major_placeholder
     cmake_config.project.version_minor_placeholder = expected_project_version_minor_placeholder
     cmake_config.project.version_patch_placeholder = expected_project_version_patch_placeholder

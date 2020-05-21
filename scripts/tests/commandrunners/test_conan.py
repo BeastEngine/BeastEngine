@@ -2,7 +2,7 @@ from unittest.mock import call, MagicMock
 
 from src.commandrunners.command_runner import CommandRunner
 from src.commandrunners.conan import Conan
-from src.config.ConfigNames import ConfigNames
+from src.config.config_names import ConfigNames
 
 
 def test_install_will_execute_proper_command_with_each_config_name():

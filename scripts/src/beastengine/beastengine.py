@@ -8,7 +8,7 @@ from .commands.build import Build
 from .beast_command_helper import BeastCommandHelper
 from ..commandrunners.cmake import CMake
 from ..commandrunners.conan import Conan
-from ..config.ConfigManager import ConfigManager
+from ..config.config_manager import ConfigManager
 
 
 class BeastEngine:

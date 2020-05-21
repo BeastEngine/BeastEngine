@@ -4,10 +4,10 @@ import pytest
 
 from src.commandrunners.cmake.cmake_config_files_creator import CMakeConfigFilesCreator
 from src.files.file_opener import FileOpener
-from src.config.ConfigNames import ConfigNames
+from src.config.config_names import ConfigNames
 from src.commandrunners.cmake.cmake import CMake
 from src.commandrunners.command_runner import CommandRunner
-from src.config.ConfigManager import ConfigManager, Config
+from src.config.config_manager import ConfigManager, Config
 
 
 class CommonTestData:

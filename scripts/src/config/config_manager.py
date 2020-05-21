@@ -1,6 +1,6 @@
-import json
-from os import path
 from typing import Optional
+
+from src.beastengine.json.json_manager import JSONManager
 
 
 class ConfigFiles:
@@ -15,7 +15,7 @@ class Config:
             version_major: str
             version_minor: str
             version_patch: str
-            project_name_placeholder: str
+            name_placeholder: str
             version_major_placeholder: str
             version_minor_placeholder: str
             version_patch_placeholder: str
@@ -48,30 +48,22 @@ class Config:
     default_build_type = str
     cmake: CMake
 
-    def to_json(self):
-        return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-
 
 class ConfigManager:
     JSON_STR_INDENT = 2
 
     json_config: dict
-    config_path = path.join(path.dirname(__file__), 'config.json')
-    temp_path = path.join(path.dirname(__file__), 'temp.json')
-
     config: Config
 
-    def __init__(self):
-        config_file = open(self.config_path, 'r')
-        self.json_config = json.load(config_file)
-        config_file.close()
+    def __init__(self, config_path, json_manager: JSONManager):
+        self.config_path = config_path
+        self.json_manager = json_manager
+        self.json_config = json_manager.load_from_file(config_path)
 
         self.__generate_config_objects()
 
     def update_config(self):
-        config_file = open(self.config_path, 'w')
-        json.dump(self.json_config, config_file, indent=self.JSON_STR_INDENT)
-        config_file.close()
+        self.json_manager.save_to_file(self.config, self.config_path, self.JSON_STR_INDENT)
 
     def __generate_config_objects(self):
         self.config = Config()
@@ -100,7 +92,7 @@ class ConfigManager:
         project.version_minor = project_config['version_minor']
         project.version_patch = project_config['version_patch']
 
-        project.project_name_placeholder = project_config['project_name_placeholder']
+        project.name_placeholder = project_config['name_placeholder']
         project.version_major_placeholder = project_config['version_major_placeholder']
         project.version_minor_placeholder = project_config['version_minor_placeholder']
         project.version_patch_placeholder = project_config['version_patch_placeholder']

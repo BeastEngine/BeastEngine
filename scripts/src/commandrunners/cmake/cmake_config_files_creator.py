@@ -1,4 +1,4 @@
-from src.config.ConfigManager import Config, ConfigFiles
+from src.config.config_manager import Config, ConfigFiles
 from src.files.file_opener import FileOpener
 from src.commandrunners.command_runner import CommandRunner
 
@@ -50,7 +50,7 @@ class CMakeConfigFilesCreator:
     def __prepare_main_config_content(self, cmake_config: Config.CMake, config_file: FileOpener.File):
         project_config = cmake_config.project
         target_names_map = {
-            project_config.project_name_placeholder: project_config.name,
+            project_config.name_placeholder: project_config.name,
             project_config.version_major_placeholder: project_config.version_major,
             project_config.version_minor_placeholder: project_config.version_minor,
             project_config.version_patch_placeholder: project_config.version_patch,

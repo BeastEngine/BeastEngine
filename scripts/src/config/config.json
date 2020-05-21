@@ -11,7 +11,7 @@
       "version_major": "0",
       "version_minor": "0",
       "version_patch": "1",
-      "project_name_placeholder": "project_name",
+      "name_placeholder": "project_name",
       "version_major_placeholder": "project_version_major",
       "version_minor_placeholder": "project_version_minor",
       "version_patch_placeholder": "project_version_patch"
