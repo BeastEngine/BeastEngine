@@ -1,10 +1,9 @@
 import argparse
 import sys
 
-from ..beast_command_helper import BeastCommandHelper
-from ...commandrunners.cmake import CMake
-from ...commandrunners.command_runner import CommandRunner
-from ...config.config_manager import ConfigManager
+from src.beastengine.beast_command_helper import BeastCommandHelper
+from src.commandrunners.cmake.cmake import CMake
+from src.config.config_manager import ConfigManager
 
 
 class ClassCommand:

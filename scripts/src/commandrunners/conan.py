@@ -9,6 +9,6 @@ class Conan:
         self.command_runner = command_runner
         self.build_dir = build_dir
 
-    def install(self):
+    def install(self, verbose):
         for name, member in ConfigNames.__members__.items():
-            self.command_runner.run_command(Conan.COMMAND_INSTALL + member.value, self.build_dir)
+            self.command_runner.run_command(Conan.COMMAND_INSTALL + member.value, self.build_dir, verbose)

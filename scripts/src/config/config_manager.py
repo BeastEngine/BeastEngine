@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.beastengine.json.json_manager import JSONManager
+from src.json_utils.json_manager import JSONManager
 
 
 class ConfigFiles:

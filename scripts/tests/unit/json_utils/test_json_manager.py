@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 import json
 
 from src.files.file_opener import FileOpener
-from src.beastengine.json.json_manager import JSONManager
+from src.json_utils.json_manager import JSONManager
 
 
 class CommonTestData:
@@ -22,12 +22,12 @@ def test_load_from_file_will_load_json_data_from_given_file_path():
     file_mock.get_content = MagicMock(return_value=expected_json_string)
     test_data.file_opener_mock.open.return_value = file_mock
 
-    json.load = MagicMock(return_value=expected_json_object)
+    json.loads = MagicMock(return_value=expected_json_object)
 
     sut = JSONManager(test_data.file_opener_mock)
     actual_json_object = sut.load_from_file(expected_file_path)
 
-    json.load.assert_called_with(expected_json_string)
+    json.loads.assert_called_with(expected_json_string)
     assert expected_json_object == actual_json_object
 
 

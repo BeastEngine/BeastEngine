@@ -1,14 +1,15 @@
 import sys
 import argparse
 
-from .commands.classcommand import ClassCommand
-from .commands.init import Init
-from .commands.configure import Configure
-from .commands.build import Build
-from .beast_command_helper import BeastCommandHelper
-from ..commandrunners.cmake import CMake
-from ..commandrunners.conan import Conan
-from ..config.config_manager import ConfigManager
+from src.commandrunners.command_runner import CommandRunner
+from src.beastengine.commands.class_command import ClassCommand
+from src.beastengine.commands.init import Init
+from src.beastengine.commands.configure import Configure
+from src.beastengine.commands.build import Build
+from src.beastengine.beast_command_helper import BeastCommandHelper
+from src.commandrunners.cmake.cmake import CMake
+from src.commandrunners.conan import Conan
+from src.config.config_manager import ConfigManager
 
 
 class BeastEngine:
@@ -30,14 +31,23 @@ class BeastEngine:
 Use it to install all the required dependencies and configure CMake project.
 You can also use it for building the project with desired configuration.{reset}'''
 
-    def __init__(self, project_working_dir):
-        self.config_manager = ConfigManager()
+    def __init__(
+            self,
+            project_working_dir,
+            build_dir,
+            command_runner: CommandRunner,
+            config_manager: ConfigManager,
+            conan: Conan,
+            cmake: CMake
+    ):
+        self.config_manager = config_manager
+        self.command_runner = command_runner
 
         self.project_dir = project_working_dir
-        self.build_dir = self.project_dir + '/' + BeastCommandHelper.DIRECTORY_BUILD
+        self.build_dir = build_dir
 
-        self.conan = Conan(self.build_dir)
-        self.cmake = CMake(self.config_manager, self.project_dir, self.build_dir)
+        self.conan = conan
+        self.cmake = cmake
 
         self.create_program()
 
@@ -54,11 +64,11 @@ You can also use it for building the project with desired configuration.{reset}'
         command_line_args = parser.parse_args(sys.argv[1:2])
 
         if command_line_args.command == BeastCommandHelper.COMMAND_NAME_INIT:
-            Init(self.project_dir, self.conan, self.cmake)
+            Init(self.project_dir, self.command_runner, self.conan, self.cmake)
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_CONFIGURE:
-            Configure(self.project_dir)
+            Configure(self.cmake)
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_BUILD:
-            Build(self.config_manager, self.build_dir)
+            Build(self.config_manager, self.cmake).execute()
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_CLASS:
             # file = open(self.project_dir + '/src/CMakeLists.txt')
             # print(file.read().find("BEAST_HEADERS_LIST"))

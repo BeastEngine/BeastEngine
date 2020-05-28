@@ -9,7 +9,7 @@ class JSONManager:
 
     def load_from_file(self, file_path: str):
         json_file = self.file_opener.open(file_path)
-        return json.load(json_file.get_content())
+        return json.loads(json_file.get_content())
 
     def save_to_file(self, json_object: dict, file_path: str, indent: int):
         json_string = json.dumps(json_object, indent=indent)

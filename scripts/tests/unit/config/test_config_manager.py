@@ -3,7 +3,7 @@ import json
 from unittest.mock import MagicMock
 
 from src.config.config_manager import ConfigManager, Config
-from src.beastengine.json.json_manager import JSONManager
+from src.json_utils.json_manager import JSONManager
 
 
 class CommonTestData:

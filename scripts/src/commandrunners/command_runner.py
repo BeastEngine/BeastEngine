@@ -6,11 +6,11 @@ class CommandRunner:
     RUNNING_COMMAND_PRINT_TEMPLATE = "{color}Running: {command}\n"
     RUNNING_COMMAND_PRINT_COLOR = colorama.Fore.YELLOW
 
-    def run_command(self, command, verbose=False):
+    def run_command(self, command, cwd, verbose=False):
         if verbose is True:
             print(self.RUNNING_COMMAND_PRINT_TEMPLATE.format(color=self.RUNNING_COMMAND_PRINT_COLOR, command=command))
 
-        process_result = subprocess.run(args=command, capture_output=True, text=True)
+        process_result = subprocess.run(args=command, capture_output=True, text=True, cwd=cwd)
         if verbose is False:
             return process_result.returncode
 

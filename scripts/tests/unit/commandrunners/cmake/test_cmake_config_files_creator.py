@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.config.config_manager import Config, ConfigFiles
 from src.files.file_opener import FileOpener
 from src.commandrunners.command_runner import CommandRunner
@@ -15,6 +17,7 @@ class CommonTestData:
 
         self.file_opener_mock = MagicMock(FileOpener)
         self.file_opener_mock.open = MagicMock()
+        self.verbose = False
 
 
 class MainCMakeConfigData:
@@ -93,9 +96,9 @@ def test_generate_main_config_will_copy_dist_config_and_replace_its_content_with
     expected_copy_command = f"cp {expected_full_dist_file_path} {expected_full_file_path}"
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_main_config(config_data.cmake_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_main_config(config_data.cmake_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
-    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command)
+    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
     test_data.file_opener_mock.open.assert_called_with(expected_full_file_path)
     file_mock.replace_content.assert_called_with(config_data.expected_cmake_file_content_after_change)
 
@@ -106,7 +109,7 @@ def test_generate_target_config_will_return_immediately_if_target_config_does_no
     target_config.config_files = None
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_target_config(target_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_target_config(target_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
     test_data.command_runner_mock.run_command.assert_not_called()
     test_data.file_opener_mock.open.assert_not_called()
@@ -121,10 +124,24 @@ def test_generate_target_config_will_return_immediately_if_target_config_does_no
     target_config.directories = None
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_target_config(target_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_target_config(target_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
     test_data.command_runner_mock.run_command.assert_not_called()
     test_data.file_opener_mock.open.assert_not_called()
+
+
+@pytest.mark.parametrize('expected_verbose', [True, False])
+def test_generate_main_config_will_copy_dist_config_with_passed_verbose_option(expected_verbose):
+    test_data = CommonTestData()
+    config_data = MainCMakeConfigData()
+    verbose_argument_in_method_call_index = 2
+
+    sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
+    sut.generate_main_config(config_data.cmake_config, test_data.CMAKE_CONFIG_DIR, expected_verbose)
+
+    command_runner_call = test_data.command_runner_mock.run_command.call_args
+    call_args = command_runner_call[0]
+    assert call_args[verbose_argument_in_method_call_index] == expected_verbose
 
 
 class TargetCMakeConfigData:
@@ -205,9 +222,9 @@ def test_generate_target_config_will_copy_dist_config_and_replace_its_content_wi
     expected_copy_command = f"cp {expected_full_dist_file_path} {expected_full_file_path}"
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
-    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command)
+    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
     test_data.file_opener_mock.open.assert_called_with(expected_full_file_path)
     file_mock.replace_content.assert_called_with(config_data.expected_cmake_file_content_after_change)
 
@@ -245,9 +262,9 @@ SET(
     expected_copy_command = f"cp {expected_full_dist_file_path} {expected_full_file_path}"
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
-    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command)
+    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
     test_data.file_opener_mock.open.assert_called_with(expected_full_file_path)
     file_mock.replace_content.assert_called_with(config_data.expected_cmake_file_content_after_change)
 
@@ -285,9 +302,9 @@ SET(
     expected_copy_command = f"cp {expected_full_dist_file_path} {expected_full_file_path}"
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
-    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command)
+    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
     test_data.file_opener_mock.open.assert_called_with(expected_full_file_path)
     file_mock.replace_content.assert_called_with(config_data.expected_cmake_file_content_after_change)
 
@@ -326,9 +343,9 @@ SET(
     expected_copy_command = f"cp {expected_full_dist_file_path} {expected_full_file_path}"
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
-    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command)
+    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
     test_data.file_opener_mock.open.assert_called_with(expected_full_file_path)
     file_mock.replace_content.assert_called_with(config_data.expected_cmake_file_content_after_change)
 
@@ -367,8 +384,22 @@ SET(
     expected_copy_command = f"cp {expected_full_dist_file_path} {expected_full_file_path}"
 
     sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
-    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR)
+    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
 
-    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command)
+    test_data.command_runner_mock.run_command.assert_called_with(expected_copy_command, test_data.CMAKE_CONFIG_DIR, test_data.verbose)
     test_data.file_opener_mock.open.assert_called_with(expected_full_file_path)
     file_mock.replace_content.assert_called_with(config_data.expected_cmake_file_content_after_change)
+
+
+@pytest.mark.parametrize('expected_verbose', [True, False])
+def test_generate_target_config_will_copy_dist_config_with_passed_verbose_option(expected_verbose):
+    test_data = CommonTestData()
+    config_data = TargetCMakeConfigData()
+    verbose_argument_in_method_call_index = 2
+
+    sut = CMakeConfigFilesCreator(test_data.command_runner_mock, test_data.file_opener_mock)
+    sut.generate_target_config(config_data.target_config, test_data.CMAKE_CONFIG_DIR, expected_verbose)
+
+    command_runner_call = test_data.command_runner_mock.run_command.call_args
+    call_args = command_runner_call[0]
+    assert call_args[verbose_argument_in_method_call_index] == expected_verbose
