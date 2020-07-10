@@ -3,6 +3,7 @@ import src.functions as functions
 
 from mock import MagicMock
 
+from src.config.config_manager import Config
 from tests.tests_utilities.micro_mock import MicroMock
 
 
@@ -145,3 +146,17 @@ def test_create_arguments_parser_will_create_parser_with_verbose_as_optional_arg
         help=expected_argument_help,
         action=expected_argument_action
     )
+
+
+def test_get_target_cmake_variables_file_path_will_return_path_created_from_project_dir_cmake_dir_name_and_target_vars_file_path():
+    cmake_dir_name = 'dir_name'
+
+    variables_file_path = 'vars_file_path'
+    target_variables = Config.CMake.Target.Variables()
+    target_variables.target_cmake_variables_file_path = variables_file_path
+
+    project_path = 'project/path'
+    functions.get_project_path = MagicMock(return_value=project_path)
+
+    expected_path = f"{project_path}/{cmake_dir_name}/{variables_file_path}"
+    assert functions.get_target_cmake_variables_full_file_path(cmake_dir_name, target_variables) == expected_path

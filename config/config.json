@@ -24,6 +24,10 @@
           "dist_filename": "beastengine/config.cmake.dist",
           "filename": "beastengine/config.cmake"
         },
+        "variables": {
+          "target_cmake_variables_file_path_placeholder": "beast_cmake_vars_file_path",
+          "target_cmake_variables_file_path": "beastengine/beast_vars.txt"
+        },
         "directories": {
           "include_directory_placeholder": "beast_include_dir",
           "include_directory": "\"${BeastEngine_SOURCE_DIR}/include\"",
@@ -49,6 +53,7 @@
         "target_name": "sandbox",
         "target_name_placeholder": "exe_target_name",
         "config_files": null,
+        "variables": null,
         "directories": null,
         "headers": {
           "base_dir": "",

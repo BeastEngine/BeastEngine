@@ -23,10 +23,11 @@ class SubprocessMock:
         subprocess.run = self.run_func_mock
 
 
-def get_command_to_print(command):
+def get_command_to_print(command, cwd):
     return CommandRunner.RUNNING_COMMAND_PRINT_TEMPLATE.format(
         color=CommandRunner.RUNNING_COMMAND_PRINT_COLOR,
-        command=command
+        command=command,
+        cwd=cwd
     )
 
 
@@ -70,7 +71,7 @@ def test_run_command_will_print_name_of_the_executed_command_in_right_color_if_v
 
     cwd = 'cwd'
     command_to_execute = 'ls -l'
-    expected_command_print = get_command_to_print(command_to_execute)
+    expected_command_print = get_command_to_print(command_to_execute, cwd)
 
     print_mock = MagicMock()
     builtins.print = print_mock
@@ -85,7 +86,7 @@ def test_run_command_will_print_stdout_in_right_color_if_verbose_flag_passed_and
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
-    command_to_print = get_command_to_print(command_to_execute)
+    command_to_print = get_command_to_print(command_to_execute, cwd)
     print_command_call = call(command_to_print)
 
     subprocess_stdout = "subprocess stdout"
@@ -107,7 +108,7 @@ def test_run_command_will_not_print_stdout_in_right_color_if_verbose_flag_passed
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
-    command_to_print = get_command_to_print(command_to_execute)
+    command_to_print = get_command_to_print(command_to_execute, cwd)
 
     subprocess_stdout = None
     SubprocessMock(expected_stdout=subprocess_stdout)
@@ -125,7 +126,7 @@ def test_run_command_will_not_print_stdout_in_right_color_if_verbose_flag_passed
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
-    command_to_print = get_command_to_print(command_to_execute)
+    command_to_print = get_command_to_print(command_to_execute, cwd)
 
     subprocess_stdout = ""
     SubprocessMock(expected_stdout=subprocess_stdout)
@@ -143,7 +144,7 @@ def test_run_command_will_print_stderr_of_run_subprocess_in_right_color_if_verbo
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
-    command_to_print = get_command_to_print(command_to_execute)
+    command_to_print = get_command_to_print(command_to_execute, cwd)
     print_command_call = call(command_to_print)
 
     subprocess_stderr = "subprocess stderr"
@@ -165,7 +166,7 @@ def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
-    command_to_print = get_command_to_print(command_to_execute)
+    command_to_print = get_command_to_print(command_to_execute, cwd)
 
     subprocess_stderr = None
     SubprocessMock(expected_stderr=subprocess_stderr)
@@ -183,7 +184,7 @@ def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
-    command_to_print = get_command_to_print(command_to_execute)
+    command_to_print = get_command_to_print(command_to_execute, cwd)
 
     subprocess_stderr = ""
     SubprocessMock(expected_stderr=subprocess_stderr)

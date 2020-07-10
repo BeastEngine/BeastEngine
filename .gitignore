@@ -368,3 +368,4 @@ build/
 scripts/src/config/temp.json
 cmake/config/*/config.cmake
 cmake/config/config.cmake
+cmake/config/beastengine/beast_vars.txt

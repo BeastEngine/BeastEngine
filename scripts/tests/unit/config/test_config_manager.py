@@ -37,6 +37,10 @@ class CommonTestData:
                                 "dist_filename": "beastengine/config.cmake.dist",
                                 "filename": "beastengine/config.cmake"
                             },
+                            "variables": {
+                                "target_cmake_variables_file_path_placeholder": "beast_cmake_vars_file_path",
+                                "target_cmake_variables_file_path": "beastengine/beast_vars.txt",
+                            },
                             "directories": {
                                 "include_directory_placeholder": "beast_include_dir",
                                 "include_directory": "\"${BeastEngine_SOURCE_DIR}/include\"",
@@ -62,6 +66,7 @@ class CommonTestData:
                             "target_name": "sandbox",
                             "target_name_placeholder": "exe_target_name",
                             "config_files": None,
+                            "variables": None,
                             "directories": None,
                             "headers": {
                                 "base_dir": "",
@@ -165,6 +170,20 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_config_fil
     assert actual_config.filename == expected_config['filename']
 
 
+def test_init_will_generate_config_class_with_proper_cmake_lib_target_variables_config():
+    test_data = CommonTestData()
+    file_path = "path/to/json/file/json"
+
+    test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
+    expected_config = test_data.config_json['cmake_config']['targets']['lib']['variables']
+
+    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    actual_config = sut.config.cmake.lib.variables
+
+    assert actual_config.target_cmake_variables_file_path_placeholder == expected_config['target_cmake_variables_file_path_placeholder']
+    assert actual_config.target_cmake_variables_file_path == expected_config['target_cmake_variables_file_path']
+
+
 def test_init_will_generate_config_class_with_proper_cmake_lib_target_directories_config():
     test_data = CommonTestData()
     file_path = "path/to/json/file/json"
@@ -238,6 +257,19 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_config_fil
     assert actual_config == expected_config
 
 
+def test_init_will_generate_config_class_with_proper_cmake_exe_target_variables_config():
+    test_data = CommonTestData()
+    file_path = "path/to/json/file/json"
+
+    test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
+    expected_config = test_data.config_json['cmake_config']['targets']['exe']['variables']
+
+    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    actual_config = sut.config.cmake.exe.variables
+
+    assert actual_config == expected_config
+
+
 def test_init_will_generate_config_class_with_proper_cmake_exe_target_directories_config():
     test_data = CommonTestData()
     file_path = "path/to/json/file/json"
@@ -298,6 +330,21 @@ def test_update_config_will_save_updated_config_object_into_selected_config_file
     sut.config = expected_config_after
     sut.update_config()
 
-    test_data.json_manager_mock.save_to_file.assert_called_with(sut.config, file_path, sut.JSON_STR_INDENT)
+    test_data.json_manager_mock.save_to_file.assert_called_with(sut.json_config, file_path, sut.JSON_STR_INDENT)
     assert config_before != sut.config
     assert sut.config == expected_config_after
+
+#
+# def test_get_target_headers_base_directory_will_return_full_headers_base_directory_path():
+#     expected_variable_name = '${BEAST_INCLUDE_DIR}'
+#     expected_variable_value = 'variable_value'
+#     expected_variables_map = {expected_variable_name: expected_variable_value}
+#
+#     file_path = "path/to/json/file/json"
+#     test_data = CommonTestData()
+#     test_data.target_cmake_variables_file_opener_mock.open = MagicMock(return_value=expected_variables_map)
+#
+#     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
+#     sut = ConfigManager(file_path, test_data.json_manager_mock, test_data.target_cmake_variables_file_opener_mock)
+#
+#     sut.get_target_headers_base_directory(sut.config.cmake.lib)

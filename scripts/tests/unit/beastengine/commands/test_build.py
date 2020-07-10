@@ -93,7 +93,7 @@ def test_constructor_will_save_verbose_argument_into_variable(expected_verbose):
     build.is_verbose_set = MagicMock(return_value=expected_verbose)
 
     sut = build.Build(test_data.config_manager_mock, MagicMock(CMake))
-    assert sut.verbose == expected_verbose
+    assert sut.is_verbose == expected_verbose
 
 
 @pytest.mark.parametrize('config', ['', False, None])

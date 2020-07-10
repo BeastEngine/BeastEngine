@@ -11,41 +11,46 @@ class ConfigFiles:
 class Config:
     class CMake:
         class Project:
-            name: str
-            version_major: str
-            version_minor: str
-            version_patch: str
-            name_placeholder: str
-            version_major_placeholder: str
-            version_minor_placeholder: str
-            version_patch_placeholder: str
+            name: str = ''
+            version_major: str = ''
+            version_minor: str = ''
+            version_patch: str = ''
+            name_placeholder: str = ''
+            version_major_placeholder: str = ''
+            version_minor_placeholder: str = ''
+            version_patch_placeholder: str = ''
 
         class Target:
             class Directories:
-                include_directory_placeholder: str
-                include_directory: str
-                source_directory_placeholder: str
-                source_directory: str
+                include_directory_placeholder: str = ''
+                include_directory: str = ''
+                source_directory_placeholder: str = ''
+                source_directory: str = ''
 
             class Files:
-                base_dir: str
-                files_list_placeholder: str
-                files: list
+                base_dir: str = ''
+                files_list_placeholder: str = ''
+                files: list = []
 
-            target_name: str
-            target_name_placeholder: str
+            class Variables:
+                target_cmake_variables_file_path_placeholder: str = ''
+                target_cmake_variables_file_path: str = ''
+
+            target_name: str = ''
+            target_name_placeholder: str = ''
             config_files: Optional[ConfigFiles]
+            variables: Optional[Variables]
             directories: Optional[Directories]
             headers: Files
             sources: Files
 
-        directory_name: str
+        directory_name: str = ''
         config_files: ConfigFiles
         project: Project
         lib: Target
         exe: Target
 
-    default_build_type = str
+    default_build_type = str = ''
     cmake: CMake
 
 
@@ -63,7 +68,7 @@ class ConfigManager:
         self.__generate_config_objects()
 
     def update_config(self):
-        self.json_manager.save_to_file(self.config, self.config_path, self.JSON_STR_INDENT)
+        self.json_manager.save_to_file(self.json_config, self.config_path, self.JSON_STR_INDENT)
 
     def __generate_config_objects(self):
         self.config = Config()
@@ -109,6 +114,7 @@ class ConfigManager:
         target.headers = ConfigManager.__create_target_files(target_config['headers'])
         target.sources = ConfigManager.__create_target_files(target_config['sources'])
 
+        target.variables = ConfigManager.__create_target_variables(target_config['variables'])
         target.directories = ConfigManager.__create_target_directories(target_config['directories'])
 
         return target
@@ -146,3 +152,14 @@ class ConfigManager:
         directories.source_directory = target_directories['source_directory']
 
         return directories
+
+    @staticmethod
+    def __create_target_variables(target_variables):
+        if target_variables is None:
+            return None
+
+        variables = Config.CMake.Target.Variables()
+        variables.target_cmake_variables_file_path_placeholder = target_variables['target_cmake_variables_file_path_placeholder']
+        variables.target_cmake_variables_file_path = target_variables['target_cmake_variables_file_path']
+
+        return variables

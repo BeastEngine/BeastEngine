@@ -34,7 +34,7 @@ class Build:
         parser.add_argument('-c', '--config', help='what configuration should the project be built for')
 
         self.command_line_arguments = parser.parse_args(sys.argv[2:])
-        self.verbose = is_verbose_set(self.command_line_arguments)
+        self.is_verbose = is_verbose_set(self.command_line_arguments)
 
     def execute(self):
         if not self.command_line_arguments.config:
@@ -55,4 +55,4 @@ class Build:
 
             return
 
-        self.cmake.build(config_name, self.verbose)
+        self.cmake.build(config_name, self.is_verbose)

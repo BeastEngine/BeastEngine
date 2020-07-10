@@ -1,8 +1,10 @@
 import sys
 import argparse
 
+from src.beastengine.commands.class_commands.class_files_helper import ClassFilesHelper
+from src.config.target_config_manager import TargetConfigManager
 from src.commandrunners.command_runner import CommandRunner
-from src.beastengine.commands.class_command import ClassCommand
+from src.beastengine.commands.class_commands.class_command import ClassCommand
 from src.beastengine.commands.init import Init
 from src.beastengine.commands.configure import Configure
 from src.beastengine.commands.build import Build
@@ -38,7 +40,9 @@ You can also use it for building the project with desired configuration.{reset}'
             command_runner: CommandRunner,
             config_manager: ConfigManager,
             conan: Conan,
-            cmake: CMake
+            cmake: CMake,
+            target_config_manager: TargetConfigManager,
+            class_files_helper: ClassFilesHelper
     ):
         self.config_manager = config_manager
         self.command_runner = command_runner
@@ -48,6 +52,9 @@ You can also use it for building the project with desired configuration.{reset}'
 
         self.conan = conan
         self.cmake = cmake
+
+        self.target_config_manager = target_config_manager
+        self.class_files_helper = class_files_helper
 
         self.create_program()
 
@@ -75,6 +82,5 @@ You can also use it for building the project with desired configuration.{reset}'
             # file.close()
             # self.cmake.__generate_target_headers_and_sources()
             print('eldo mondo')
-            class_command = ClassCommand(self.config_manager, self.cmake)
-            self.config_manager.update_config()
-            class_command.add_class("cyp")
+            class_command = ClassCommand(self.config_manager, self.cmake, self.target_config_manager, self.class_files_helper)
+            # self.config_manager.update_config()
