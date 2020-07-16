@@ -28,6 +28,7 @@ class MainCMakeConfigData:
 
     expected_lib_target_name_placeholder = "lib_target_name"
     expected_exe_target_name_placeholder = "exe_target_name"
+    expected_tests_target_name_placeholder = "tests_target_name"
 
     expected_cmake_config_file_content_before_change = f'''
 set(BEAST_PROJECT_NAME {{{expected_project_name_placeholder}}})
@@ -37,6 +38,7 @@ set(BEAST_VERSION_PATCH {{{expected_project_version_patch_placeholder}}})
 
 set(BEAST_LIB_TARGET_NAME {{{expected_lib_target_name_placeholder}}})
 set(BEAST_EXE_TARGET_NAME {{{expected_exe_target_name_placeholder}}})
+set(BEAST_TESTS_TARGET_NAME {{{expected_tests_target_name_placeholder}}})
 '''
 
     expected_project_name = "test_project"
@@ -46,6 +48,7 @@ set(BEAST_EXE_TARGET_NAME {{{expected_exe_target_name_placeholder}}})
 
     expected_lib_target_name = 'lib'
     expected_exe_target_name = 'exe'
+    expected_tests_target_name = 'tests'
 
     expected_cmake_file_content_after_change = f'''
 set(BEAST_PROJECT_NAME {expected_project_name})
@@ -55,6 +58,7 @@ set(BEAST_VERSION_PATCH {expected_project_version_patch})
 
 set(BEAST_LIB_TARGET_NAME {expected_lib_target_name})
 set(BEAST_EXE_TARGET_NAME {expected_exe_target_name})
+set(BEAST_TESTS_TARGET_NAME {expected_tests_target_name})
 '''
 
     cmake_config = Config.CMake()
@@ -80,6 +84,10 @@ set(BEAST_EXE_TARGET_NAME {expected_exe_target_name})
     cmake_config.exe = Config.CMake.Target()
     cmake_config.exe.target_name = expected_exe_target_name
     cmake_config.exe.target_name_placeholder = expected_exe_target_name_placeholder
+
+    cmake_config.tests = Config.CMake.Target()
+    cmake_config.tests.target_name = expected_tests_target_name
+    cmake_config.tests.target_name_placeholder = expected_tests_target_name_placeholder
 
 
 def test_generate_main_config_will_copy_dist_config_and_replace_its_content_with_proper_values_based_on_given_config_object():

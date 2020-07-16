@@ -7,7 +7,7 @@ include(cmake/functions.cmake)
 
 CHECK_CONFIG() # Check if all required variables are set in config
 
-project("${BEAST_PROJECT_NAME}"
+project(${BEAST_PROJECT_NAME}
 		VERSION "${BEAST_VERSION_MAJOR}.${BEAST_VERSION_MINOR}.${BEAST_VERSION_PATCH}"
 		DESCRIPTION "2D focused game engine"
 		HOMEPAGE_URL https://github.com/BeastEngine/BeastEngine
@@ -27,7 +27,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-	#include(CTest)
+	option(BUILD_TESTS "Build the tests" OFF)
 endif()
 
 # Add library
@@ -35,5 +35,11 @@ add_subdirectory(src)
 # Add executables
 add_subdirectory(apps)
 
+# Add tests
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTS)
+	message(STATUS "Dupa")
+	add_subdirectory(tests)
+endif()
+
 # Set the VS startup project to the executable
-SET_STARTUP_PROJECT("${BEAST_EXE_TARGET_NAME}")
+SET_STARTUP_PROJECT(${BEAST_EXE_TARGET_NAME})

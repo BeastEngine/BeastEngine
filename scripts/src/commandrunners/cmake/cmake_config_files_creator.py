@@ -63,6 +63,7 @@ class CMakeConfigFilesCreator:
             project_config.version_patch_placeholder: project_config.version_patch,
             cmake_config.lib.target_name_placeholder: cmake_config.lib.target_name,
             cmake_config.exe.target_name_placeholder: cmake_config.exe.target_name,
+            cmake_config.tests.target_name_placeholder: cmake_config.tests.target_name,
         }
 
         return config_file.get_content().format_map(target_names_map)

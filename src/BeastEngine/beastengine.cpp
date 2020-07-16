@@ -1,5 +1,5 @@
 #include "BeastEngine/beastengine.h"
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 const char* Greet()
 {

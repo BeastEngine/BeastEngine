@@ -49,6 +49,7 @@ class Config:
         project: Project
         lib: Target
         exe: Target
+        tests: Target
 
     default_build_type = str = ''
     cmake: CMake
@@ -87,6 +88,7 @@ class ConfigManager:
         targets_config = cmake_config['targets']
         self.config.cmake.lib = self.__create_target_config(targets_config['lib'])
         self.config.cmake.exe = self.__create_target_config(targets_config['exe'])
+        self.config.cmake.tests = self.__create_target_config(targets_config['tests'])
 
     @staticmethod
     def __create_cmake_project_config(project_config):
