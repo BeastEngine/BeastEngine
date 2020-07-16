@@ -12,9 +12,7 @@ GROUP_FILES("${BEAST_HEADERS_LIST}" "${BEAST_INCLUDE_DIR}")
 GROUP_FILES("${BEAST_SRC_LIST}" "${BEAST_SRC_DIR}")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    # target_compile_options("${BEAST_LIB_TARGET_NAME}" PRIVATE /EHsc /MTd /W2 /c)
-    # Set the DLLEXPORT variable to export symbols
-    # target_compile_definitions("${BEAST_LIB_TARGET_NAME}" PRIVATE WIN_EXPORT)
+    target_compile_options("${BEAST_LIB_TARGET_NAME}" PRIVATE /EHsc /W4 /c)
 endif()
 
 install(TARGETS "${BEAST_LIB_TARGET_NAME}" DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
