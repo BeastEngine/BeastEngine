@@ -48,6 +48,20 @@ def test_constructor_will_check_if_verbose_option_is_set():
 
 
 @pytest.mark.parametrize('expected_verbose', [True, False])
+def test_constructor_will_generate_cmake_configs(expected_verbose):
+    test_data = CommonTestData()
+    test_data.mock_create_arguments_parser_function()
+
+    test_data.mock_is_verbose_set_function_to_return(expected_verbose)
+
+    cmake_mock = MagicMock(CMake)
+    cmake_mock.generate_configs = MagicMock()
+
+    configure.Configure(cmake_mock)
+    cmake_mock.generate_configs.assert_called_once_with(expected_verbose)
+
+
+@pytest.mark.parametrize('expected_verbose', [True, False])
 def test_constructor_will_run_cmake_configure_command_with_valid_verbose_argument(expected_verbose):
     test_data = CommonTestData()
     test_data.mock_create_arguments_parser_function()

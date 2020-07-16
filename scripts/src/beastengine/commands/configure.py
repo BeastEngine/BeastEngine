@@ -9,4 +9,7 @@ class Configure:
         parser = create_arguments_parser()
         arguments = parser.parse_args(sys.argv[2:])
 
-        cmake.configure(is_verbose_set(arguments))
+        is_verbose = is_verbose_set(arguments)
+
+        cmake.generate_configs(is_verbose)
+        cmake.configure(is_verbose)

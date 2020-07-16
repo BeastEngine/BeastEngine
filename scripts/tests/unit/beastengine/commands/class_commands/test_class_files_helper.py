@@ -1,3 +1,6 @@
+import os
+
+import pytest
 from mock import MagicMock, call
 
 from src.files.file_opener import FileOpener
@@ -72,7 +75,7 @@ def test_create_class_files_will_create_class_files():
     command_runner_mock.run_command.assert_has_calls([expected_create_header_file_call, expected_create_source_file_call])
 
 
-def test_create_class_files_will_create_proper_directories_if_class_name_contains_directories():
+def test_create_class_files_will_create_headers_sub_directories_if_class_name_contains_directories_and_they_do_not_exist():
     file_mock = MagicMock(FileOpener.File)
     file_opener_mock = MagicMock(FileOpener)
     file_opener_mock.open = MagicMock(return_value=file_mock)
@@ -88,23 +91,48 @@ def test_create_class_files_will_create_proper_directories_if_class_name_contain
     project_directory = '/project/dir'
     is_verbose = True
 
-    expected_header_file_directory_creation_call = call(f'mkdir {class_sub_directory}', headers_base_dir, is_verbose)
-    expected_source_file_directory_creation_call = call(f'mkdir {class_sub_directory}', sources_base_dir, is_verbose)
-
     class_files_helper.get_project_path = MagicMock(return_value=project_directory)
+
+    path_mock = MagicMock()
+    path_mock.exists = MagicMock(return_value=False)
+    class_files_helper.Path = MagicMock(return_value=path_mock)
 
     sut = class_files_helper.ClassFilesHelper(command_runner_mock, file_opener_mock)
     sut.create_class_files(class_name, headers_base_dir, sources_base_dir, is_verbose)
 
     command_runner_mock\
         .run_command\
-        .assert_has_calls(
-            [
-                expected_header_file_directory_creation_call,
-                expected_source_file_directory_creation_call
-            ],
-            any_order=True
-        )
+        .assert_has_calls([call(f'mkdir {class_sub_directory}', headers_base_dir, is_verbose)])
+
+
+def test_create_class_files_will_create_sources_sub_directories_if_class_name_contains_directories_and_they_do_not_exist():
+    file_mock = MagicMock(FileOpener.File)
+    file_opener_mock = MagicMock(FileOpener)
+    file_opener_mock.open = MagicMock(return_value=file_mock)
+
+    command_runner_mock = MagicMock(CommandRunner)
+    command_runner_mock.run_command = MagicMock()
+
+    class_sub_directory = 'class/sub/directory'
+    class_name = f'{class_sub_directory}/test_class'
+
+    headers_base_dir = '/headers/base/directory/path'
+    sources_base_dir = '/sources/base/directory/path'
+    project_directory = '/project/dir'
+    is_verbose = True
+
+    class_files_helper.get_project_path = MagicMock(return_value=project_directory)
+
+    path_mock = MagicMock()
+    path_mock.exists = MagicMock(return_value=False)
+    class_files_helper.Path = MagicMock(return_value=path_mock)
+
+    sut = class_files_helper.ClassFilesHelper(command_runner_mock, file_opener_mock)
+    sut.create_class_files(class_name, headers_base_dir, sources_base_dir, is_verbose)
+
+    command_runner_mock\
+        .run_command\
+        .assert_has_calls([call(f'mkdir {class_sub_directory}', sources_base_dir, is_verbose)])
 
 
 def test_create_class_files_will_not_create_sub_directories_if_class_name_contains_directories_and_directories_already_exist():
@@ -145,7 +173,7 @@ def test_create_class_files_will_not_create_sub_directories_if_class_name_contai
     )
     command_runner_mock.run_command.assert_has_calls([expected_create_header_file_call, expected_create_source_file_call])
 
-    path_mock.exists.assert_called_once()
+    assert path_mock.exists.call_count == 2
     assert command_runner_mock.run_command.call_count == 2
 
 
@@ -216,3 +244,34 @@ namespace {expected_namespace}
     file_mock.replace_content.assert_has_calls(
         [call(expected_header_file_content), call(expected_source_file_content)]
     )
+
+
+@pytest.mark.parametrize('expected_verbose', [True, False])
+def test_delete_class_files_will_run_commands_with_passed_is_verbose_parameter(expected_verbose):
+    file_mock = MagicMock(FileOpener.File)
+    file_opener_mock = MagicMock(FileOpener)
+    file_opener_mock.open = MagicMock(return_value=file_mock)
+
+    command_runner_mock = MagicMock(CommandRunner)
+    command_runner_mock.run_command = MagicMock()
+
+    os.path.exists = MagicMock(return_value=True)
+    os.path.isdir = MagicMock(return_value=True)
+    os.listdir = MagicMock(return_value=[])
+
+    class_subdirectory = 'sub_dir'
+    class_name = f'{class_subdirectory}/class_name'
+    headers_base_dir = '/headers/base/dir'
+    sources_base_dir = '/sources/base/dir'
+
+    expected_calls = [
+        call(f'rm {class_name}.h', headers_base_dir, expected_verbose),
+        call(f'rm {class_name}.cpp', sources_base_dir, expected_verbose),
+        call(f'rm -r {class_subdirectory}', headers_base_dir, expected_verbose),
+        call(f'rm -r {class_subdirectory}', sources_base_dir, expected_verbose),
+    ]
+
+    sut = class_files_helper.ClassFilesHelper(command_runner_mock, file_opener_mock)
+    sut.delete_class_files(class_name, headers_base_dir, sources_base_dir, expected_verbose)
+
+    command_runner_mock.run_command.assert_has_calls(expected_calls)

@@ -1,11 +1,20 @@
 import sys
 
+from src.beastengine.beast_command_helper import BeastCommandHelper
 from src.beastengine.commands.class_commands.class_files_helper import ClassFilesHelper
 from src.functions import create_arguments_parser, is_verbose_set
 from src.config.config_manager import Config, ConfigManager
 
 
 class ClassAdd:
+    PROGRAM_USAGE = '''{green}beast {class} {class_add} <class_name> [<args>]
+
+{white}This command creates single header and single source files under the headers and sources base directories.
+If class name contains slashes, it will create subdirectories inside base directory.
+Eg. {yellow}beast {class} {class_add} subDir/myClass{white} will result in creation of the 'myClass.h' and 'myClass.cpp'
+files under the 'baseDirectory/subDir' path.{white}
+'''
+
     CLASS_EXISTS_ERROR_MESSAGE_TEMPLATE = "'{}' class already exists!"
 
     def __init__(
@@ -16,7 +25,7 @@ class ClassAdd:
             target_config: Config.CMake.Target,
             config_manager: ConfigManager
     ):
-        parser = create_arguments_parser()
+        parser = create_arguments_parser(usage=BeastCommandHelper.format_text(self.PROGRAM_USAGE))
         parser.add_argument('class_name', help='class to add', metavar='<class_name>')
         parser.add_argument('-n', '--namespace', help='namespace in which the class should reside', type=str)
 

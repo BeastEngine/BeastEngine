@@ -10,6 +10,7 @@ class BeastCommandHelper:
     COMMAND_NAME_CLASS = 'class'
     COMMAND_NAME_CLASS_ADD = 'add'
     COMMAND_NAME_CLASS_REMOVE = 'remove'
+    COMMAND_NAME_CLASS_PATH_SHOW = 'path'
 
     @staticmethod
     def format_text(text: str, substitution_map=None):
@@ -26,6 +27,7 @@ class BeastCommandHelper:
             'class': BeastCommandHelper.COMMAND_NAME_CLASS,
             'class_add': BeastCommandHelper.COMMAND_NAME_CLASS_ADD,
             'class_remove': BeastCommandHelper.COMMAND_NAME_CLASS_REMOVE,
+            'class_path_show': BeastCommandHelper.COMMAND_NAME_CLASS_PATH_SHOW,
         }
 
         if substitution_map is not None:

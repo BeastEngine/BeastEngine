@@ -5,6 +5,7 @@ import pytest
 
 from mock import MagicMock
 
+from src.beastengine.beast_command_helper import BeastCommandHelper
 from src.beastengine.commands.class_commands.class_files_helper import ClassFilesHelper
 from src.config.config_manager import ConfigManager, Config
 from src.beastengine.commands.class_commands import class_command
@@ -125,20 +126,24 @@ def test_constructor_will_retrieve_sources_base_directory():
         .assert_called_with(test_data.config.cmake.lib, test_data.config.cmake)
 
 
-def test_constructor_will_call_add_class_command_when_valid_command_line_argument_is_passed():
-    expected_headers_base_directory = 'headers/base/directory'
-    expected_sources_base_directory = 'sources/base/directory'
-    expected_command = 'add'
+@pytest.mark.parametrize('expected_verbose', [True, False])
+def test_constructor_will_call_add_class_command_when_valid_command_line_argument_is_passed(expected_verbose):
+    headers_base_directory = 'headers/base/directory'
+    sources_base_directory = 'sources/base/directory'
+    expected_command = BeastCommandHelper.COMMAND_NAME_CLASS_ADD
 
     test_data = CommonTestData()
     test_data.mock_create_arguments_parser_function()
 
     cli_arguments_mock = MicroMock(command=expected_command)
     test_data.parser_mock.parse_args = MagicMock(return_value=cli_arguments_mock)
-    test_data.target_config_manager_mock.get_headers_base_directory = MagicMock(return_value=expected_headers_base_directory)
-    test_data.target_config_manager_mock.get_sources_base_directory = MagicMock(return_value=expected_sources_base_directory)
+    test_data.target_config_manager_mock.get_headers_base_directory = MagicMock(return_value=headers_base_directory)
+    test_data.target_config_manager_mock.get_sources_base_directory = MagicMock(return_value=sources_base_directory)
 
     class_command.ClassAdd = MagicMock()
+    class_command.ClassRemove = MagicMock()
+    class_command.is_verbose_set = MagicMock(return_value=expected_verbose)
+
     class_command.ClassCommand(
         test_data.config_manager_mock,
         test_data.cmake_mock,
@@ -147,9 +152,84 @@ def test_constructor_will_call_add_class_command_when_valid_command_line_argumen
     )
 
     class_command.ClassAdd.assert_called_with(
-        expected_headers_base_directory,
-        expected_sources_base_directory,
+        headers_base_directory,
+        sources_base_directory,
         test_data.class_files_helper_mock,
         test_data.config.cmake.lib,
         test_data.config_manager_mock
     )
+    class_command.ClassRemove.assert_not_called()
+
+    test_data.cmake_mock.generate_configs.assert_called_with(expected_verbose)
+
+
+@pytest.mark.parametrize('expected_verbose', [True, False])
+def test_constructor_will_call_remove_class_command_when_valid_command_line_argument_is_passed(expected_verbose):
+    headers_base_directory = 'headers/base/directory'
+    sources_base_directory = 'sources/base/directory'
+    expected_command = BeastCommandHelper.COMMAND_NAME_CLASS_REMOVE
+
+    test_data = CommonTestData()
+    test_data.mock_create_arguments_parser_function()
+
+    cli_arguments_mock = MicroMock(command=expected_command)
+    test_data.parser_mock.parse_args = MagicMock(return_value=cli_arguments_mock)
+    test_data.target_config_manager_mock.get_headers_base_directory = MagicMock(return_value=headers_base_directory)
+    test_data.target_config_manager_mock.get_sources_base_directory = MagicMock(return_value=sources_base_directory)
+
+    class_command.ClassAdd = MagicMock()
+    class_command.ClassRemove = MagicMock()
+    class_command.is_verbose_set = MagicMock(return_value=expected_verbose)
+
+    class_command.ClassCommand(
+        test_data.config_manager_mock,
+        test_data.cmake_mock,
+        test_data.target_config_manager_mock,
+        test_data.class_files_helper_mock
+    )
+
+    class_command.ClassAdd.assert_not_called()
+    class_command.ClassRemove.assert_called_with(
+        headers_base_directory,
+        sources_base_directory,
+        test_data.class_files_helper_mock,
+        test_data.config.cmake.lib,
+        test_data.config_manager_mock
+    )
+    test_data.cmake_mock.generate_configs.assert_called_with(expected_verbose)
+
+
+@pytest.mark.parametrize('expected_verbose', [True, False])
+def test_constructor_will_show_headers_and_sources_base_directories_when_valid_command_line_argument_is_passed(expected_verbose):
+    headers_base_directory = 'headers/base/directory'
+    sources_base_directory = 'sources/base/directory'
+    expected_command = BeastCommandHelper.COMMAND_NAME_CLASS_PATH_SHOW
+
+    test_data = CommonTestData()
+    test_data.mock_create_arguments_parser_function()
+    test_data.mock_print_function()
+
+    cli_arguments_mock = MicroMock(command=expected_command)
+    test_data.parser_mock.parse_args = MagicMock(return_value=cli_arguments_mock)
+    test_data.target_config_manager_mock.get_headers_base_directory = MagicMock(return_value=headers_base_directory)
+    test_data.target_config_manager_mock.get_sources_base_directory = MagicMock(return_value=sources_base_directory)
+
+    class_command.ClassAdd = MagicMock()
+    class_command.ClassRemove = MagicMock()
+    class_command.is_verbose_set = MagicMock(return_value=expected_verbose)
+
+    class_command.ClassCommand(
+        test_data.config_manager_mock,
+        test_data.cmake_mock,
+        test_data.target_config_manager_mock,
+        test_data.class_files_helper_mock
+    )
+
+    class_command.ClassAdd.assert_not_called()
+    class_command.ClassRemove.assert_not_called()
+    test_data.cmake_mock.generate_configs.assert_not_called()
+
+    test_data.print_mock.assert_called_with(
+        f'Headers base directory: {headers_base_directory}\nSources base directory: {sources_base_directory}'
+    )
+
