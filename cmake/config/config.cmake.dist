@@ -1,0 +1,8 @@
+SET(BEAST_PROJECT_NAME {project_name})
+SET(BEAST_VERSION_MAJOR {project_version_major})
+SET(BEAST_VERSION_MINOR {project_version_minor})
+SET(BEAST_VERSION_PATCH {project_version_patch})
+
+SET(BEAST_LIB_TARGET_NAME {lib_target_name})
+SET(BEAST_EXE_TARGET_NAME {exe_target_name})
+SET(BEAST_TESTS_TARGET_NAME {tests_target_name})

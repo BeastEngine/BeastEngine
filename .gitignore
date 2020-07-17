@@ -348,3 +348,24 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+## Ignore CMake files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+build/
+.idea/
+
+## Others
+scripts/src/config/temp.json
+cmake/config/*/config.cmake
+cmake/config/config.cmake
+cmake/config/beastengine/beast_vars.txt

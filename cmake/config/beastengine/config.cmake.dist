@@ -1,0 +1,18 @@
+set(BEAST_INCLUDE_DIR {beast_include_dir})
+set(BEAST_SRC_DIR {beast_src_dir})
+
+set(
+	BEAST_HEADERS_LIST
+	{beast_headers}
+)
+set(
+	BEAST_SRC_LIST
+	{beast_sources}
+)
+
+file(
+	WRITE
+	{beast_cmake_vars_file_path}
+	"\$\{{BEAST_INCLUDE_DIR\}}=${{BEAST_INCLUDE_DIR}}\n"
+	"\$\{{BEAST_SRC_DIR\}}=${{BEAST_SRC_DIR}}"
+)
