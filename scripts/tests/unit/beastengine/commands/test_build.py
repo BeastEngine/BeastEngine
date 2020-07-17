@@ -25,7 +25,7 @@ class CommonTestData:
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
         self.parser_mock.parse_args = MagicMock()
-        self.project_dir = "project/dir"
+        self.project_dir = 'project/dir'
 
         self.config = Config()
         self.config_manager_mock = MagicMock(ConfigManager)
@@ -101,9 +101,9 @@ def test_execute_will_print_warning_message_when_passed_arguments_config_paramet
     expected_arguments = MicroMock(config=config)
     expected_default_config = build.ConfigNames.CONFIG_DEBUG
     expected_info_message =\
-        f"{colorama.Fore.YELLOW}" \
-        f"No configuration specified, " \
-        f"building for default \"{expected_default_config}\" configuration {colorama.Fore.RESET}"
+        f'{colorama.Fore.YELLOW}' \
+        f'No configuration specified, ' \
+        f'building for default \'{expected_default_config}\' configuration {colorama.Fore.RESET}'
 
     test_data = CommonTestData()
     test_data.mock_print_function()
@@ -158,7 +158,7 @@ def test_execute_will_convert_config_string_to_enum(expected_config):
 
 
 def test_execute_will_print_error_message_when_passed_configuration_is_not_valid():
-    invalid_config = "invalid_config"
+    invalid_config = 'invalid_config'
     expected_arguments = MicroMock(config=invalid_config)
 
     expected_default_config = build.ConfigNames.CONFIG_DEBUG
@@ -228,7 +228,7 @@ def test_execute_will_run_cmake_build_command_with_valid_verbose_argument(expect
 
 
 def test_execute_will_not_run_cmake_build_command_when_invalid_config_name_passed():
-    invalid_config = "invalid_config"
+    invalid_config = 'invalid_config'
     expected_arguments = MicroMock(config=invalid_config)
 
     test_data = CommonTestData()

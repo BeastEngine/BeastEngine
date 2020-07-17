@@ -14,7 +14,7 @@ class CommonTestData:
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
         self.parser_mock.parse_args = MagicMock()
-        self.project_dir = "project/dir"
+        self.project_dir = 'project/dir'
 
     def mock_create_arguments_parser_function(self):
         configure.create_arguments_parser = MagicMock(return_value=self.parser_mock)
@@ -66,7 +66,7 @@ def test_constructor_will_run_cmake_configure_command_with_valid_verbose_argumen
     test_data = CommonTestData()
     test_data.mock_create_arguments_parser_function()
 
-    build_dir_name = "build_dir_name"
+    build_dir_name = 'build_dir_name'
 
     test_data.mock_get_build_dir_name_function_to_return(build_dir_name)
     test_data.mock_is_verbose_set_function_to_return(expected_verbose)

@@ -105,7 +105,7 @@ class CommonTestData:
 def test_init_will_load_config_json_from_given_file():
     test_data = CommonTestData()
 
-    expected_file_path = "path/to/json/file/json"
+    expected_file_path = 'path/to/json/file/json'
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
 
     ConfigManager(expected_file_path, test_data.json_manager_mock)
@@ -114,7 +114,7 @@ def test_init_will_load_config_json_from_given_file():
 
 def test_init_will_generate_config_class_with_proper_default_build_type():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
 
@@ -126,7 +126,7 @@ def test_init_will_generate_config_class_with_proper_default_build_type():
 
 def test_init_will_generate_config_class_with_proper_cmake_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']
@@ -141,7 +141,7 @@ def test_init_will_generate_config_class_with_proper_cmake_config():
 
 def test_init_will_generate_config_class_with_proper_cmake_project_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['project']
@@ -161,7 +161,7 @@ def test_init_will_generate_config_class_with_proper_cmake_project_config():
 
 def test_init_will_generate_config_class_with_proper_cmake_lib_target_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']
@@ -175,7 +175,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_config():
 
 def test_init_will_generate_config_class_with_proper_cmake_lib_target_config_files_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['config_files']
@@ -189,7 +189,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_config_fil
 
 def test_init_will_generate_config_class_with_proper_cmake_lib_target_variables_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['variables']
@@ -203,7 +203,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_variables_
 
 def test_init_will_generate_config_class_with_proper_cmake_lib_target_directories_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['directories']
@@ -219,7 +219,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_directorie
 
 def test_init_will_generate_config_class_with_proper_cmake_lib_target_headers_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['headers']
@@ -234,7 +234,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_headers_co
 
 def test_init_will_generate_config_class_with_proper_cmake_lib_target_sources_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['sources']
@@ -249,7 +249,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_sources_co
 
 def test_init_will_generate_config_class_with_proper_cmake_exe_target_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']
@@ -263,7 +263,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_config():
 
 def test_init_will_generate_config_class_with_proper_cmake_exe_target_config_files_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['config_files']
@@ -276,7 +276,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_config_fil
 
 def test_init_will_generate_config_class_with_proper_cmake_exe_target_variables_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['variables']
@@ -289,7 +289,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_variables_
 
 def test_init_will_generate_config_class_with_proper_cmake_exe_target_directories_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['directories']
@@ -302,7 +302,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_directorie
 
 def test_init_will_generate_config_class_with_proper_cmake_exe_target_headers_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['headers']
@@ -317,7 +317,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_headers_co
 
 def test_init_will_generate_config_class_with_proper_cmake_exe_target_sources_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['sources']
@@ -332,7 +332,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_sources_co
 
 def test_init_will_generate_config_class_with_proper_cmake_tests_target_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']
@@ -346,7 +346,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_config()
 
 def test_init_will_generate_config_class_with_proper_cmake_tests_target_config_files_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['config_files']
@@ -359,7 +359,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_config_f
 
 def test_init_will_generate_config_class_with_proper_cmake_tests_target_variables_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['variables']
@@ -372,7 +372,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_variable
 
 def test_init_will_generate_config_class_with_proper_cmake_tests_target_directories_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['directories']
@@ -385,7 +385,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_director
 
 def test_init_will_generate_config_class_with_proper_cmake_tests_target_headers_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['headers']
@@ -400,7 +400,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_headers_
 
 def test_init_will_generate_config_class_with_proper_cmake_tests_target_sources_config():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['sources']
@@ -415,7 +415,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_sources_
 
 def test_update_config_will_save_updated_config_object_into_selected_config_file():
     test_data = CommonTestData()
-    file_path = "path/to/json/file/json"
+    file_path = 'path/to/json/file/json'
 
     expected_config_after = Config()
     expected_config_after.default_build_type = 'BuildType'
@@ -433,18 +433,3 @@ def test_update_config_will_save_updated_config_object_into_selected_config_file
     test_data.json_manager_mock.save_to_file.assert_called_with(sut.json_config, file_path, sut.JSON_STR_INDENT)
     assert config_before != sut.config
     assert sut.config == expected_config_after
-
-#
-# def test_get_target_headers_base_directory_will_return_full_headers_base_directory_path():
-#     expected_variable_name = '${BEAST_INCLUDE_DIR}'
-#     expected_variable_value = 'variable_value'
-#     expected_variables_map = {expected_variable_name: expected_variable_value}
-#
-#     file_path = "path/to/json/file/json"
-#     test_data = CommonTestData()
-#     test_data.target_cmake_variables_file_opener_mock.open = MagicMock(return_value=expected_variables_map)
-#
-#     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
-#     sut = ConfigManager(file_path, test_data.json_manager_mock, test_data.target_cmake_variables_file_opener_mock)
-#
-#     sut.get_target_headers_base_directory(sut.config.cmake.lib)

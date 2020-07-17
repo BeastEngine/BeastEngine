@@ -18,7 +18,7 @@ class CommonTestData:
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
         self.parser_mock.parse_args = MagicMock()
-        self.project_dir = "project/dir"
+        self.project_dir = 'project/dir'
 
         self.headers_base_dir = 'headers/base/dir'
         self.sources_base_dir = 'sources/base/dir'
@@ -229,7 +229,7 @@ def test_constructor_will_remove_class_files_from_config():
     assert config.sources.files == expected_source_files_after
 
 
-def test_constructor_will_udpate_config():
+def test_constructor_will_update_config():
     class_name = 'class_name'
     header_file_name = f'{class_name}.h'
     source_file_name = f'{class_name}.cpp'

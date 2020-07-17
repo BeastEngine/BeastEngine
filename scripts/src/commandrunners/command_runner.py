@@ -3,7 +3,7 @@ import colorama
 
 
 class CommandRunner:
-    RUNNING_COMMAND_PRINT_TEMPLATE = "{color}Running: {command}\nFrom: {cwd}\n"
+    RUNNING_COMMAND_PRINT_TEMPLATE = '{color}Running: {command}\nFrom: {cwd}\n'
     RUNNING_COMMAND_PRINT_COLOR = colorama.Fore.YELLOW
 
     def run_command(self, command, cwd, verbose=False):

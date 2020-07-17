@@ -17,8 +17,8 @@ class Build:
 '''
 
     NO_CONFIG_INFO_MESSAGE_TEMPLATE =\
-        "{yellow}No configuration specified, building for default \"{default_config}\" configuration {reset}"
-    INVALID_CONFIG_ERROR_MESSAGE_TEMPLATE = \
+        "{yellow}No configuration specified, building for default '{default_config}' configuration {reset}"
+    INVALID_CONFIG_ERROR_MESSAGE_TEMPLATE =\
         "{red}'{config}' is not a valid configuration!\n{yellow}The available configurations are: {configs}"
 
     def __init__(self, config_manager: ConfigManager, cmake: CMake):

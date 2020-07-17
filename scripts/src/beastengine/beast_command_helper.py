@@ -2,7 +2,7 @@ import colorama
 
 
 class BeastCommandHelper:
-    DIRECTORY_BUILD = "build"
+    DIRECTORY_BUILD = 'build'
 
     COMMAND_NAME_INIT = 'init'
     COMMAND_NAME_CONFIGURE = 'configure'

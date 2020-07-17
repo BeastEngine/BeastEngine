@@ -11,10 +11,10 @@ from src.config.config_manager import ConfigManager, Config
 
 
 class CommonTestData:
-    PROJECT_DIR = "project/dir"
-    BUILD_DIR = "build/dir"
-    CMAKE_CONFIG_DIR = "cmake/config"
-    CMAKE_CONFIG_DIR_FULL_PATH = f"{PROJECT_DIR}/cmake/config"
+    PROJECT_DIR = 'project/dir'
+    BUILD_DIR = 'build/dir'
+    CMAKE_CONFIG_DIR = 'cmake/config'
+    CMAKE_CONFIG_DIR_FULL_PATH = f'{PROJECT_DIR}/cmake/config'
 
     CONFIG_NAMES = [
         ConfigNames.CONFIG_DEBUG,
@@ -60,7 +60,7 @@ class CommonTestData:
     def get_empty_config():
         config = Config()
         config.cmake = Config.CMake()
-        config.cmake.directory_name = ""
+        config.cmake.directory_name = ''
 
         return config
 
@@ -69,7 +69,7 @@ class CommonTestData:
 def test_configure_will_run_proper_configuration_command_with_valid_verbose_argument(expected_verbose):
     test_data = CommonTestData()
 
-    expected_command = f"cmake -S . -B {test_data.BUILD_DIR}"
+    expected_command = f'cmake -S . -B {test_data.BUILD_DIR}'
     expected_cwd = test_data.PROJECT_DIR
 
     test_data.sut.configure(expected_verbose)
@@ -77,13 +77,13 @@ def test_configure_will_run_proper_configuration_command_with_valid_verbose_argu
 
 
 @pytest.mark.parametrize(
-    ["expected_config_name", "expected_verbose"],
+    ['expected_config_name', 'expected_verbose'],
     CommonTestData.CONFIG_NAMES_WITH_VERBOSE
 )
 def test_build_will_run_proper_build_command_with_given_config_name_and_verbose_argument(expected_config_name, expected_verbose):
     test_data = CommonTestData()
 
-    expected_command = f"cmake --build . --config {expected_config_name.value}"
+    expected_command = f'cmake --build . --config {expected_config_name.value}'
     expected_cwd = test_data.BUILD_DIR
 
     test_data.sut.build(expected_config_name, expected_verbose)

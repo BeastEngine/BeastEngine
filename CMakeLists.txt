@@ -17,13 +17,12 @@ include("${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake")
 conan_basic_setup(TARGETS) # Configure Conan, but do not let it override output directories
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-	set(CMAKE_INSTALL_PREFIX "${BeastEngine_SOURCE_DIR}") # Directory to put all the targets from `install()` commands
+	set(CMAKE_INSTALL_PREFIX "${BeastEngine_SOURCE_DIR}")
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 
-	# Export all DLL symbols by default
-	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON) # Export all DLL symbols by default
 	set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 	set(CMAKE_CXX_CLANG_TIDY ON)
 
@@ -32,14 +31,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	option(BUILD_TESTS "Build the tests" OFF)
 endif()
 
-# Add library
-add_subdirectory(src)
-# Add executables
-add_subdirectory(apps)
+add_subdirectory(src) # Library
+add_subdirectory(apps) # Executable
 
 # Add tests
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND BUILD_TESTS)
-	message(STATUS "Dupa")
 	add_subdirectory(tests)
 endif()
 

@@ -18,7 +18,7 @@ class CommonTestData:
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
         self.parser_mock.parse_args = MagicMock()
-        self.project_dir = "project/dir"
+        self.project_dir = 'project/dir'
 
         self.headers_base_dir = 'headers/base/dir'
         self.sources_base_dir = 'sources/base/dir'

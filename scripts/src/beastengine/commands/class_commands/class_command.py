@@ -37,13 +37,13 @@ relative to the 'config.cmake.target.headers|sources.base_dir' parameter.
 
         command_line_arguments = parser.parse_args(sys.argv[2:3])
 
-        headers_base_directory = \
+        headers_base_directory =\
             target_config_manager.get_headers_base_directory(
                 target_config,
                 config_manager.config.cmake
             )
 
-        sources_base_directory = \
+        sources_base_directory =\
             target_config_manager.get_sources_base_directory(
                 target_config,
                 config_manager.config.cmake

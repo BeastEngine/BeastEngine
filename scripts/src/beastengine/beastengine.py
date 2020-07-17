@@ -15,7 +15,7 @@ from src.config.config_manager import ConfigManager
 
 
 class BeastEngine:
-    PROGRAM_NAME = "beast"
+    PROGRAM_NAME = 'beast'
     PROGRAM_USAGE = '''{green}beast <command> [<args>]
 
 {white}This program let's you configure and manage the BeastEngine project.
@@ -59,14 +59,14 @@ You can also use it for building the project with desired configuration.{reset}
         self.create_program()
 
     def create_program(self):
-        parser = \
+        parser =\
             argparse.ArgumentParser(
                 prog=self.PROGRAM_NAME,
                 usage=BeastCommandHelper.format_text(self.PROGRAM_USAGE),
                 formatter_class=argparse.RawDescriptionHelpFormatter
             )
 
-        parser.add_argument('command', help="command to execute", metavar='<command>')
+        parser.add_argument('command', help='command to execute', metavar='<command>')
         command_line_args = parser.parse_args(sys.argv[1:2])
 
         if command_line_args.command == BeastCommandHelper.COMMAND_NAME_INIT:

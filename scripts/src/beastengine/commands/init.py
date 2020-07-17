@@ -7,17 +7,17 @@ from src.functions import get_build_dir_name, create_arguments_parser, is_verbos
 
 
 class Init:
-    def __init__(self, project_dir, command_runner: CommandRunner, conan: Conan, cmake: CMake):
+    def __init__(self, project_dir: str, command_runner: CommandRunner, conan: Conan, cmake: CMake):
         build = get_build_dir_name()
-        command_remove_build_dir = "rm -rf " + build
-        command_create_build_dir = "mkdir " + build
+        command_remove_build_dir = f'rm -rf {build}'
+        command_create_build_dir = f'mkdir {build}'
 
         parser = create_arguments_parser()
         args = parser.parse_args(sys.argv[2:])
-        should_be_verbose = is_verbose_set(args)
+        is_verbose = is_verbose_set(args)
 
-        command_runner.run_command(command_remove_build_dir, project_dir, should_be_verbose)
-        command_runner.run_command(command_create_build_dir, project_dir, should_be_verbose)
+        command_runner.run_command(command_remove_build_dir, project_dir, is_verbose)
+        command_runner.run_command(command_create_build_dir, project_dir, is_verbose)
 
-        conan.install(should_be_verbose)
-        cmake.generate_configs(should_be_verbose)
+        conan.install(is_verbose)
+        cmake.generate_configs(is_verbose)

@@ -186,7 +186,7 @@ def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed
     command_to_execute = 'ls -l'
     command_to_print = get_command_to_print(command_to_execute, cwd)
 
-    subprocess_stderr = ""
+    subprocess_stderr = ''
     SubprocessMock(expected_stderr=subprocess_stderr)
 
     print_mock = MagicMock()
@@ -201,8 +201,8 @@ def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed
 def test_run_command_will_not_print_anything_if_verbose_is_false():
     cwd = 'cwd'
 
-    subprocess_stdout = "subprocess stdout"
-    subprocess_stderr = "subprocess stderr"
+    subprocess_stdout = 'subprocess stdout'
+    subprocess_stderr = 'subprocess stderr'
     SubprocessMock(expected_stdout=subprocess_stdout, expected_stderr=subprocess_stderr)
 
     print_mock = MagicMock()
@@ -217,8 +217,8 @@ def test_run_command_will_not_print_anything_if_verbose_is_false():
 def test_run_command_will_not_print_anything_if_verbose_parameter_is_omitted():
     cwd = 'cwd'
 
-    subprocess_stdout = "subprocess stdout"
-    subprocess_stderr = "subprocess stderr"
+    subprocess_stdout = 'subprocess stdout'
+    subprocess_stderr = 'subprocess stderr'
     SubprocessMock(expected_stdout=subprocess_stdout, expected_stderr=subprocess_stderr)
 
     print_mock = MagicMock()

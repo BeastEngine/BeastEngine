@@ -3,7 +3,7 @@ from src.config.config_names import ConfigNames
 
 
 class Conan:
-    COMMAND_INSTALL = "conan install .. -g cmake_multi --build=missing -s build_type="
+    COMMAND_INSTALL = 'conan install .. -g cmake_multi --build=missing -s build_type='
 
     def __init__(self, command_runner: CommandRunner, build_dir: str):
         self.command_runner = command_runner

@@ -18,7 +18,7 @@ class CommonTestData:
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
         self.parser_mock.parse_args = MagicMock()
-        self.project_dir = "project/dir"
+        self.project_dir = 'project/dir'
 
         init.create_arguments_parser = MagicMock(return_value=self.parser_mock)
 
@@ -46,10 +46,10 @@ def test_constructor_will_recreate_build_directory():
     test_data = CommonTestData()
     test_data.set_sys_argv()
 
-    expected_project_dir = "project/dir"
-    expected_build_dir_name = "expected_build_dir_name"
-    expected_command_remove = f"rm -rf {expected_build_dir_name}"
-    expected_command_create = f"mkdir {expected_build_dir_name}"
+    expected_project_dir = 'project/dir'
+    expected_build_dir_name = 'expected_build_dir_name'
+    expected_command_remove = f'rm -rf {expected_build_dir_name}'
+    expected_command_create = f'mkdir {expected_build_dir_name}'
     is_verbose_set = False
 
     test_data.mock_get_build_dir_name_function_to_return(expected_build_dir_name)
@@ -92,10 +92,10 @@ def test_constructor_will_generate_cmake_configs():
 def test_constructor_will_execute_command_with_verbose_option_with_valid_verbose_option(expected_is_verbose_set):
     test_data = CommonTestData()
 
-    project_dir = "project/dir"
-    build_dir_name = "build_dir_name"
-    command_remove = f"rm -rf {build_dir_name}"
-    command_create = f"mkdir {build_dir_name}"
+    project_dir = 'project/dir'
+    build_dir_name = 'build_dir_name'
+    command_remove = f'rm -rf {build_dir_name}'
+    command_create = f'mkdir {build_dir_name}'
 
     test_data.mock_get_build_dir_name_function_to_return(build_dir_name)
     init.is_verbose_set = MagicMock(return_value=expected_is_verbose_set)
@@ -118,8 +118,8 @@ def test_constructor_will_execute_conan_install_command_with_valid_verbose_optio
     test_data = CommonTestData()
     sys.argv = ['arg1', 'arg2', '-v']
 
-    project_dir = "project/dir"
-    build_dir_name = "build_dir_name"
+    project_dir = 'project/dir'
+    build_dir_name = 'build_dir_name'
 
     test_data.mock_get_build_dir_name_function_to_return(build_dir_name)
     init.is_verbose_set = MagicMock(return_value=expected_is_verbose_set)
@@ -135,8 +135,8 @@ def test_constructor_will_execute_conan_install_command_with_valid_verbose_optio
 def test_constructor_will_execute_cmake_install_command_with_valid_verbose_option(expected_is_verbose_set):
     test_data = CommonTestData()
 
-    project_dir = "project/dir"
-    build_dir_name = "build_dir_name"
+    project_dir = 'project/dir'
+    build_dir_name = 'build_dir_name'
 
     test_data.mock_get_build_dir_name_function_to_return(build_dir_name)
     init.is_verbose_set = MagicMock(return_value=expected_is_verbose_set)

@@ -28,13 +28,13 @@ class CMakeConfigFilesCreator:
 
         directories = target_config.directories
         headers = target_config.headers
-        source = target_config.sources
+        sources = target_config.sources
         vars_names_map = {
             directories.include_directory_placeholder: directories.include_directory,
             directories.source_directory_placeholder: directories.source_directory,
             headers.files_list_placeholder: self.__get_target_files(headers),
-            source.files_list_placeholder: self.__get_target_files(source),
-            variables.target_cmake_variables_file_path_placeholder: target_variables_full_file_path
+            sources.files_list_placeholder: self.__get_target_files(sources),
+            variables.target_cmake_variables_file_path_placeholder: target_variables_full_file_path,
         }
 
         config_file = self.file_opener.open(config_files.filename)
@@ -52,7 +52,7 @@ class CMakeConfigFilesCreator:
         self.command_runner.run_command(copy_command, cmake_config_dir, verbose)
 
     def __get_target_variables_full_file_path(self, config_dir: str, variables: Config.CMake.Target.Variables):
-        return f'''"{config_dir}/{variables.target_cmake_variables_file_path}"'''
+        return f'"{config_dir}/{variables.target_cmake_variables_file_path}"'
 
     def __prepare_main_config_content(self, cmake_config: Config.CMake, config_file: FileOpener.File):
         project_config = cmake_config.project
@@ -70,7 +70,7 @@ class CMakeConfigFilesCreator:
 
     @staticmethod
     def __get_copy_command(source, destination):
-        return f"cp {source} {destination}"
+        return f'cp {source} {destination}'
 
     @staticmethod
     def __get_target_files(target_files: Config.CMake.Target.Files):
@@ -78,7 +78,7 @@ class CMakeConfigFilesCreator:
         number_of_characters_to_remove = 5
         four_space_indent = '    '
 
-        files_var = ""
+        files_var = ''
         for file in target_files.files:
             if target_files.base_dir.__len__() == 0:
                 files_var += '"' + file

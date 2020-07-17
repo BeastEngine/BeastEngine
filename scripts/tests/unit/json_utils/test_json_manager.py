@@ -14,7 +14,7 @@ class CommonTestData:
 def test_load_from_file_will_load_json_data_from_given_file_path():
     test_data = CommonTestData()
 
-    expected_file_path = "json_file/path.json"
+    expected_file_path = 'json_file/path.json'
     expected_json_string = '{"this":{"is":"json"}}'
     expected_json_object = {'this': {'is': 'json'}}
 
@@ -37,7 +37,7 @@ def test_save_to_file_will_save_given_dictionary_as_json_string_to_given_file():
     expected_json_indent = 2
     expected_json_string = '{"this":{"is":"json"}}'
     expected_json_object = {'this': {'is': 'json'}}
-    expected_file_path = "json_file/path.json"
+    expected_file_path = 'json_file/path.json'
 
     file_mock = MagicMock(FileOpener.File)
     file_mock.replace_content = MagicMock()

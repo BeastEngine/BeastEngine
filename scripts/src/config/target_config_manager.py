@@ -9,7 +9,7 @@ class TargetConfigManager:
 
     def __init__(self, file_opener: TargetCMakeVarsFileOpener):
         self.file_opener = file_opener
-        self.cmake_var_pattern = re.compile(r"\${[a-zA-Z0-9._-]+\}")
+        self.cmake_var_pattern = re.compile(r'\${[a-zA-Z0-9._-]+\}')
 
     def get_headers_base_directory(self, target_config: Config.CMake.Target, cmake_config: Config.CMake):
         return self.__get_files_base_directory(target_config, cmake_config, target_config.headers)

@@ -8,7 +8,7 @@ from tests.tests_utilities.micro_mock import MicroMock
 
 
 def test_get_project_path():
-    expected_path = "path/to/project"
+    expected_path = 'path/to/project'
 
     traceback_mock = MicroMock(filename='filename')
     functions.getframeinfo = MagicMock(return_value=traceback_mock)
@@ -20,25 +20,25 @@ def test_get_project_path():
 
 
 def test_get_build_dir_name_will_return_valid_build_dir_name():
-    expected_dir_name = "build"
+    expected_dir_name = 'build'
     assert functions.get_build_dir_name() == expected_dir_name
 
 
 def test_get_build_dir_path_will_return_valid_path():
-    build_dir_name = "build"
-    project_path = "project/path"
+    build_dir_name = 'build'
+    project_path = 'project/path'
     functions.get_project_path = MagicMock(return_value=project_path)
 
-    expected_build_dir_path = f"{project_path}/{build_dir_name}"
+    expected_build_dir_path = f'{project_path}/{build_dir_name}'
     assert functions.get_build_dir_path() == expected_build_dir_path
 
 
 def test_get_config_path_will_return_valid_path():
-    config_path = "config/config.json"
-    project_path = "project/path"
+    config_path = 'config/config.json'
+    project_path = 'project/path'
     functions.get_project_path = MagicMock(return_value=project_path)
 
-    expected_config_path = f"{project_path}/{config_path}"
+    expected_config_path = f'{project_path}/{config_path}'
     assert functions.get_config_path() == expected_config_path
 
 
@@ -132,8 +132,8 @@ def test_create_arguments_parser_will_create_parser_with_given_formatter_class()
 def test_create_arguments_parser_will_create_parser_with_verbose_as_optional_argument():
     expected_argument_short_name = '-v'
     expected_argument_full_name = '--verbose'
-    expected_argument_help = "show command output"
-    expected_argument_action = "store_true"
+    expected_argument_help = 'show command output'
+    expected_argument_action = 'store_true'
 
     add_argument_mock = MagicMock()
     functions.ArgumentParser = argparse.ArgumentParser
@@ -158,5 +158,5 @@ def test_get_target_cmake_variables_file_path_will_return_path_created_from_proj
     project_path = 'project/path'
     functions.get_project_path = MagicMock(return_value=project_path)
 
-    expected_path = f"{project_path}/{cmake_dir_name}/{variables_file_path}"
+    expected_path = f'{project_path}/{cmake_dir_name}/{variables_file_path}'
     assert functions.get_target_cmake_variables_full_file_path(cmake_dir_name, target_variables) == expected_path

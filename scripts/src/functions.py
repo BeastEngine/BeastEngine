@@ -11,15 +11,15 @@ def get_project_path():
 
 
 def get_build_dir_name():
-    return "build"
+    return 'build'
 
 
 def get_build_dir_path():
-    return f"{get_project_path()}/{get_build_dir_name()}"
+    return f'{get_project_path()}/{get_build_dir_name()}'
 
 
 def get_config_path():
-    return f"{get_project_path()}/config/config.json"
+    return f'{get_project_path()}/config/config.json'
 
 
 def is_verbose_set(args):
@@ -27,7 +27,7 @@ def is_verbose_set(args):
 
 
 def get_target_cmake_variables_full_file_path(cmake_dir_name: str, variables_config: Config.CMake.Target.Variables):
-    return f"{get_project_path()}/{cmake_dir_name}/{variables_config.target_cmake_variables_file_path}"
+    return f'{get_project_path()}/{cmake_dir_name}/{variables_config.target_cmake_variables_file_path}'
 
 
 def create_arguments_parser(program=None, usage=None, description=None, formatter_class=None):
@@ -36,5 +36,5 @@ def create_arguments_parser(program=None, usage=None, description=None, formatte
     else:
         parser = ArgumentParser(prog=program, usage=usage, description=description, formatter_class=formatter_class)
 
-    parser.add_argument('-v', '--verbose', help="show command output", action="store_true")
+    parser.add_argument('-v', '--verbose', help='show command output', action='store_true')
     return parser

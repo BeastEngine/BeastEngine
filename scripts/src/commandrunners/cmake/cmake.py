@@ -5,8 +5,8 @@ from src.config.config_names import ConfigNames
 
 
 class CMake:
-    COMMAND_INIT = "cmake -S . -B {}"
-    COMMAND_BUILD = "cmake --build . --config {}"
+    COMMAND_INIT = 'cmake -S . -B {}'
+    COMMAND_BUILD = 'cmake --build . --config {}'
 
     FILE_MODE_READ = 'r'
     FILE_MODE_READ_APPEND_WRITE = 'r+'
@@ -27,7 +27,7 @@ class CMake:
         self.build_dir = build_dir
 
         self.config = general_config_manager.config.cmake
-        self.config_dir = f"{self.project_dir}/{self.config.directory_name}"
+        self.config_dir = f'{self.project_dir}/{self.config.directory_name}'
 
     def configure(self, verbose: bool):
         self.command_runner.run_command(CMake.COMMAND_INIT.format(self.build_dir), self.project_dir, verbose)
