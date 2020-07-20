@@ -29,6 +29,10 @@ files under the 'baseDirectory/subDir' path.{white}
         parser.add_argument('class_name', help='class to add', metavar='<class_name>')
         parser.add_argument('-n', '--namespace', help='namespace in which the class should reside', type=str)
 
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument('-ho', '--header_only', help='create only header file and omit the source file', action='store_true')
+        group.add_argument('-so', '--source_only', help='create only source file and omit the header file', action='store_true')
+
         command_line_arguments = parser.parse_args(sys.argv[3:])
         is_verbose = is_verbose_set(command_line_arguments)
 
@@ -41,8 +45,15 @@ files under the 'baseDirectory/subDir' path.{white}
         if command_line_arguments:
             namespace = command_line_arguments.namespace
 
-        class_files_helper.create_class_files(class_name, headers_base_dir, sources_base_dir, is_verbose, namespace)
-        target_config.headers.files.append(class_files_helper.get_header_file_name(class_name))
-        target_config.sources.files.append(class_files_helper.get_source_file_name(class_name))
+        if command_line_arguments.header_only:
+            class_files_helper.create_class_header(class_name, headers_base_dir, is_verbose, namespace)
+            target_config.headers.files.append(class_files_helper.get_header_file_name(class_name))
+        elif command_line_arguments.source_only:
+            class_files_helper.create_class_source(class_name, sources_base_dir, is_verbose, namespace)
+            target_config.sources.files.append(class_files_helper.get_source_file_name(class_name))
+        else:
+            class_files_helper.create_class_files(class_name, headers_base_dir, sources_base_dir, is_verbose, namespace)
+            target_config.headers.files.append(class_files_helper.get_header_file_name(class_name))
+            target_config.sources.files.append(class_files_helper.get_source_file_name(class_name))
 
         config_manager.update_config()
