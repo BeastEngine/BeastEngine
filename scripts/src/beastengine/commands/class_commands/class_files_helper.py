@@ -28,7 +28,35 @@ class ClassFilesHelper:
         header_file = self.get_header_file_name(class_name)
         source_file = self.get_source_file_name(class_name)
 
-        return headers_files.__contains__(header_file) and sources_files.__contains__(source_file)
+        return headers_files.__contains__(header_file) or sources_files.__contains__(source_file)
+
+    def create_class_header(self, class_name, headers_base_dir, is_verbose, namespace=None):
+        cwd = get_project_path()
+
+        if class_name.find(self.CLASS_NAME_DIRECTORY_SEPARATOR) != -1:
+            class_sub_directories_path = self.__get_class_subdirectories_path(class_name)
+            headers_path = Path(f'{headers_base_dir}/{class_sub_directories_path}')
+
+            self.__create_header_sub_directories(class_sub_directories_path, headers_path, headers_base_dir, is_verbose)
+
+        header_file_name = self.get_header_file_name(class_name)
+        header_file_path = f'{headers_base_dir}/{header_file_name}'
+
+        self.__create_header_file(header_file_path, cwd, is_verbose, namespace)
+
+    def create_class_source(self, class_name, sources_base_dir, is_verbose, namespace=None):
+        cwd = get_project_path()
+
+        if class_name.find(self.CLASS_NAME_DIRECTORY_SEPARATOR) != -1:
+            class_sub_directories_path = self.__get_class_subdirectories_path(class_name)
+            sources_path = Path(f'{sources_base_dir}/{class_sub_directories_path}')
+
+            self.__create_header_sub_directories(class_sub_directories_path, sources_path, sources_base_dir, is_verbose)
+
+        source_file_name = self.get_source_file_name(class_name)
+        source_file_path = f'{sources_base_dir}/{source_file_name}'
+
+        self.__create_source_file(source_file_path, "", cwd, is_verbose, namespace)
 
     def create_class_files(
             self,
@@ -79,10 +107,27 @@ class ClassFilesHelper:
         headers_path = Path(f'{headers_base_dir}/{class_sub_directories_path}')
         sources_path = Path(f'{sources_base_dir}/{class_sub_directories_path}')
 
+        self.__create_header_sub_directories(class_sub_directories_path, headers_path, headers_base_dir, is_verbose)
+        self.__create_source_sub_directories(class_sub_directories_path, sources_path, sources_base_dir, is_verbose)
+
+    def __create_header_sub_directories(
+            self,
+            class_sub_directories_path: str,
+            headers_path: Path,
+            headers_base_dir: str,
+            is_verbose: bool
+    ):
         if not headers_path.exists():
             self.command_runner \
                 .run_command(f'{self.COMMAND_CREATE_DIRECTORY} {class_sub_directories_path}', headers_base_dir, is_verbose)
 
+    def __create_source_sub_directories(
+            self,
+            class_sub_directories_path: str,
+            sources_path: Path,
+            sources_base_dir: str,
+            is_verbose: bool
+    ):
         if not sources_path.exists():
             self.command_runner \
                 .run_command(f'{self.COMMAND_CREATE_DIRECTORY} {class_sub_directories_path}', sources_base_dir, is_verbose)
@@ -106,7 +151,10 @@ class ClassFilesHelper:
         header_file.replace_content(file_content)
 
     def __create_source_file(self, source_file_path: str, header_file_name: str, cwd: str, is_verbose: bool, namespace):
-        file_content = f'#include "BeastEngine/{header_file_name}"'
+        file_content = ''
+        if header_file_name:
+            file_content = f'#include "BeastEngine/{header_file_name}"'
+
         if namespace is not None:
             file_content += f'\n\nnamespace {namespace}\n{{\n\n}}\n'
 

@@ -33,7 +33,12 @@ If class name contains slashes, it will also delete empty subdirectories inside 
 
         class_files_helper.delete_class_files(class_name, headers_base_dir, sources_base_dir, is_verbose)
 
-        target_config.headers.files.remove(class_files_helper.get_header_file_name(class_name))
-        target_config.sources.files.remove(class_files_helper.get_source_file_name(class_name))
+        header_file_name = class_files_helper.get_header_file_name(class_name)
+        if target_config.headers.files.__contains__(header_file_name):
+            target_config.headers.files.remove(header_file_name)
+
+        source_file_name = class_files_helper.get_source_file_name(class_name)
+        if target_config.sources.files.__contains__(source_file_name):
+            target_config.sources.files.remove(source_file_name)
 
         config_manager.update_config()
