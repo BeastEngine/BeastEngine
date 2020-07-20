@@ -18,6 +18,10 @@ class CommonTestData:
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
         self.parser_mock.parse_args = MagicMock()
+        self.exclusive_group_mock = MagicMock()
+        self.exclusive_group_mock.add_argument = MagicMock()
+        self.mutually_exclusive_group_mock = MagicMock(return_value=self.exclusive_group_mock)
+
         self.project_dir = 'project/dir'
 
         self.headers_base_dir = 'headers/base/dir'
@@ -42,6 +46,9 @@ class CommonTestData:
     def mock_print_function(self):
         builtins.print = self.print_mock
         pass
+
+    def get_cli_arguments_mock(self, class_name, namespace=None, header_only=None, source_only=None):
+        return MicroMock(class_name=class_name, namespace=namespace, header_only=header_only, source_only=source_only)
 
 
 def test_constructor_will_retrieve_all_arguments_starting_from_fourth():
@@ -141,8 +148,9 @@ def test_constructor_will_check_if_files_corresponding_to_passed_class_name_alre
     test_data = CommonTestData()
     test_data.class_files_helper_mock.class_files_exist = MagicMock(return_value=False)
 
-    cli_arguments_mock = MicroMock(class_name=expected_class_name, namespace=None)
+    cli_arguments_mock = test_data.get_cli_arguments_mock(expected_class_name)
     parser_mock = MicroMock(add_argument=MagicMock(), parse_args=MagicMock(return_value=cli_arguments_mock))
+    parser_mock.add_mutually_exclusive_group = test_data.mutually_exclusive_group_mock
     class_add.create_arguments_parser = MagicMock(return_value=parser_mock)
 
     class_add.ClassAdd(
@@ -163,8 +171,9 @@ def test_constructor_will_print_error_message_if_class_already_exists():
 
     expected_error_message = f"'{class_name}' class already exists!"
 
-    cli_arguments_mock = MicroMock(class_name=class_name, namespace=None)
+    cli_arguments_mock = test_data.get_cli_arguments_mock(class_name)
     parser_mock = MicroMock(add_argument=MagicMock(), parse_args=MagicMock(return_value=cli_arguments_mock))
+    parser_mock.add_mutually_exclusive_group = test_data.mutually_exclusive_group_mock
     class_add.create_arguments_parser = MagicMock(return_value=parser_mock)
 
     test_data.class_files_helper_mock.class_files_exist = MagicMock(return_value=True)
@@ -188,8 +197,9 @@ def test_constructor_will_create_class_if_passed_class_does_not_exist():
     test_data.class_files_helper_mock.create_class_files = MagicMock()
     is_verbose = False
 
-    cli_arguments_mock = MicroMock(class_name=expected_class_name, namespace=expected_namespace)
+    cli_arguments_mock = test_data.get_cli_arguments_mock(expected_class_name, expected_namespace)
     parser_mock = MicroMock(add_argument=MagicMock(), parse_args=MagicMock(return_value=cli_arguments_mock))
+    parser_mock.add_mutually_exclusive_group = test_data.mutually_exclusive_group_mock
     class_add.create_arguments_parser = MagicMock(return_value=parser_mock)
 
     test_data.class_files_helper_mock.class_files_exist = MagicMock(return_value=False)
@@ -223,8 +233,9 @@ def test_constructor_will_create_class_with_namespace_parameter_if_one_specified
     test_data = CommonTestData()
     test_data.class_files_helper_mock.create_class_files = MagicMock()
 
-    cli_arguments_mock = MicroMock(class_name=class_name, namespace=expected_namespace)
+    cli_arguments_mock = test_data.get_cli_arguments_mock(class_name, expected_namespace)
     parser_mock = MicroMock(add_argument=MagicMock(), parse_args=MagicMock(return_value=cli_arguments_mock))
+    parser_mock.add_mutually_exclusive_group = test_data.mutually_exclusive_group_mock
     class_add.create_arguments_parser = MagicMock(return_value=parser_mock)
 
     test_data.class_files_helper_mock.class_files_exist = MagicMock(return_value=False)
@@ -269,8 +280,9 @@ def test_constructor_will_add_files_names_to_given_target_files_config():
     test_data.class_files_helper_mock.get_header_file_name = MagicMock(return_value=expected_header_file_name)
     test_data.class_files_helper_mock.get_source_file_name = MagicMock(return_value=expected_source_file_name)
 
-    cli_arguments_mock = MicroMock(class_name=expected_class_name, namespace=None)
+    cli_arguments_mock = test_data.get_cli_arguments_mock(expected_class_name)
     parser_mock = MicroMock(add_argument=MagicMock(), parse_args=MagicMock(return_value=cli_arguments_mock))
+    parser_mock.add_mutually_exclusive_group = test_data.mutually_exclusive_group_mock
     class_add.create_arguments_parser = MagicMock(return_value=parser_mock)
 
     class_add.ClassAdd(
@@ -304,8 +316,9 @@ def test_constructor_will_add_files_names_to_given_target_files_config_without_a
     test_data.class_files_helper_mock.get_header_file_name = MagicMock(return_value=expected_header_file_name)
     test_data.class_files_helper_mock.get_source_file_name = MagicMock(return_value=expected_source_file_name)
 
-    cli_arguments_mock = MicroMock(class_name=expected_class_name, namespace=None)
+    cli_arguments_mock = test_data.get_cli_arguments_mock(expected_class_name)
     parser_mock = MicroMock(add_argument=MagicMock(), parse_args=MagicMock(return_value=cli_arguments_mock))
+    parser_mock.add_mutually_exclusive_group = test_data.mutually_exclusive_group_mock
     class_add.create_arguments_parser = MagicMock(return_value=parser_mock)
 
     class_add.ClassAdd(
@@ -331,8 +344,9 @@ def test_constructor_will_update_config_after_class_is_added():
     test_data.class_files_helper_mock.get_header_file_name = MagicMock(return_value=header_file_name)
     test_data.class_files_helper_mock.get_source_file_name = MagicMock(return_value=source_file_name)
 
-    cli_arguments_mock = MicroMock(class_name=class_name, namespace=None)
+    cli_arguments_mock = test_data.get_cli_arguments_mock(class_name)
     parser_mock = MicroMock(add_argument=MagicMock(), parse_args=MagicMock(return_value=cli_arguments_mock))
+    parser_mock.add_mutually_exclusive_group = test_data.mutually_exclusive_group_mock
     class_add.create_arguments_parser = MagicMock(return_value=parser_mock)
 
     class_add.ClassAdd(
