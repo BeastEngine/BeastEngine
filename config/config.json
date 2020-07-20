@@ -38,14 +38,14 @@
           "base_dir": "${BEAST_INCLUDE_DIR}/BeastEngine",
           "files_list_placeholder": "beast_headers",
           "files": [
-            "beastengine.h"
+            "BeastEngine.h"
           ]
         },
         "sources": {
           "base_dir": "${BEAST_SRC_DIR}/BeastEngine",
           "files_list_placeholder": "beast_sources",
           "files": [
-            "beastengine.cpp"
+            "BeastEngine.cpp"
           ]
         }
       },

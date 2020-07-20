@@ -1,9 +1,9 @@
-#include "BeastEngine/beastengine.h"
-#include <spdlog/spdlog.h>
+#include "BeastEngine/BeastEngine.h"
 
-const char* Greet()
+namespace be
 {
-	spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
-	
-	return "Hello World!";
-}
+    std::string BeastEngine::SayHello() const
+    {
+        return "Hello from the BeastEngine class!\n";
+    }
+} // namespace be

@@ -1,9 +1,10 @@
 #include <iostream>
-#include <BeastEngine/beastengine.h>
+#include <BeastEngine/BeastEngine.h>
 
 int main()
 {	
-	std::cout << Greet();
+	const auto engine = be::BeastEngine(be::EngineConfig());
+	std::cout << engine.SayHello();
 	std::getchar();
 
 	return 0;
