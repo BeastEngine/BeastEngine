@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(BEAST_CONFIG_PATH "${CMAKE_SOURCE_DIR}/cmake/config")
+set(PROJECT_CONFIG_PATH "${CMAKE_SOURCE_DIR}/cmake/config")
 
-include("${BEAST_CONFIG_PATH}/config.cmake")
+include("${PROJECT_CONFIG_PATH}/config.cmake")
 include(cmake/functions.cmake)
 
 CHECK_CONFIG() # Check if all required variables are set in config

@@ -98,11 +98,13 @@ def test_generate_configs_will_generate_all_config_files_through_config_generato
     expected_config.cmake.directory_name = test_data.CMAKE_CONFIG_DIR
     expected_config.cmake.lib = Config.CMake.Target()
     expected_config.cmake.exe = Config.CMake.Target()
+    expected_config.cmake.tests = Config.CMake.Target()
     type(test_data.config_manager_mock).config = expected_config
 
     expected_main_config_call = call(expected_config.cmake, test_data.CMAKE_CONFIG_DIR_FULL_PATH, expected_verbose)
     expected_lib_target_call = call(expected_config.cmake.lib, test_data.CMAKE_CONFIG_DIR_FULL_PATH, expected_verbose)
     expected_exe_target_call = call(expected_config.cmake.exe, test_data.CMAKE_CONFIG_DIR_FULL_PATH, expected_verbose)
+    expected_tests_target_call = call(expected_config.cmake.tests, test_data.CMAKE_CONFIG_DIR_FULL_PATH, expected_verbose)
 
     sut = CMake(
         test_data.command_runner_mock,
@@ -121,7 +123,7 @@ def test_generate_configs_will_generate_all_config_files_through_config_generato
     test_data\
         .cmake_config_creator_mock\
         .generate_target_config\
-        .assert_has_calls([expected_lib_target_call, expected_exe_target_call])
+        .assert_has_calls([expected_lib_target_call, expected_exe_target_call, expected_tests_target_call])
 
 
 @pytest.mark.parametrize('expected_verbose', [True, False])
@@ -156,11 +158,13 @@ def test_generate_targets_configs_will_generate_config_files_through_config_gene
     config.cmake.directory_name = test_data.CMAKE_CONFIG_DIR
     config.cmake.lib = Config.CMake.Target()
     config.cmake.exe = Config.CMake.Target()
+    config.cmake.tests = Config.CMake.Target()
 
     type(test_data.config_manager_mock).config = config
 
     expected_lib_target_call = call(config.cmake.lib, test_data.CMAKE_CONFIG_DIR_FULL_PATH, expected_verbose)
     expected_exe_target_call = call(config.cmake.exe, test_data.CMAKE_CONFIG_DIR_FULL_PATH, expected_verbose)
+    expected_tests_target_call = call(config.cmake.tests, test_data.CMAKE_CONFIG_DIR_FULL_PATH, expected_verbose)
 
     sut = CMake(
         test_data.command_runner_mock,
@@ -174,7 +178,7 @@ def test_generate_targets_configs_will_generate_config_files_through_config_gene
     test_data \
         .cmake_config_creator_mock \
         .generate_target_config \
-        .assert_has_calls([expected_lib_target_call, expected_exe_target_call])
+        .assert_has_calls([expected_lib_target_call, expected_exe_target_call, expected_tests_target_call])
 
 
 @pytest.mark.parametrize('expected_verbose', [True, False])

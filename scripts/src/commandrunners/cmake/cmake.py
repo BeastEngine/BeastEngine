@@ -45,6 +45,7 @@ class CMake:
     def generate_targets_configs(self, verbose: bool):
         self.generate_target_config(self.config.lib, verbose)
         self.generate_target_config(self.config.exe, verbose)
+        self.generate_target_config(self.config.tests, verbose)
 
     def generate_target_config(self, target: Config.CMake.Target, verbose: bool):
         self.config_files_creator.generate_target_config(target, self.config_dir, verbose)

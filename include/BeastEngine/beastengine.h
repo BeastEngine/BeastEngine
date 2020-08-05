@@ -1,23 +1,30 @@
 #pragma once
+#include "BeastEngine/Definitions/Types.h"
+#include "BeastEngine/Definitions/Helpers.h"
+#include "BeastEngine/Loggers/LoggersFactory.h"
+#include "BeastEngine/Loggers/LoggersTypes.h"
+
 #include <string>
 
 namespace be
 {
     struct EngineConfig
     {
+        LoggerType staticLoggerType = LoggerType::LOGGER_CONSOLE;
     };
 
-    class BeastEngine
+    class BeastEngine final
     {
     public:
-        BeastEngine(EngineConfig config){};
+        IMPLEMENT_CONSTRUCTORS_DELETED(BeastEngine)
+
+        BeastEngine(EngineConfig config);
         ~BeastEngine() = default;
 
-        BeastEngine(const BeastEngine&) = delete;
-        BeastEngine(BeastEngine&&) = delete;
-        const BeastEngine& operator=(const BeastEngine&) = delete;
-        BeastEngine&& operator=(BeastEngine&&) = delete;
+    private:
+        void SetLogger(const EngineConfig& config) const;
 
-        std::string SayHello() const;
+    private:
+        const EngineConfig m_config;
     };
 } // namespace be

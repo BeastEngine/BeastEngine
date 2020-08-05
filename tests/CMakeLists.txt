@@ -1,4 +1,12 @@
-add_executable(${BEAST_TESTS_TARGET_NAME} lab.cpp)
+include("${PROJECT_CONFIG_PATH}/lab/config.cmake")
+
+add_executable(${BEAST_TESTS_TARGET_NAME} "${LAB_SRC_LIST}" "${LAB_HEADERS_LIST}")
 
 target_link_libraries(${BEAST_TESTS_TARGET_NAME} PRIVATE ${BEAST_LIB_TARGET_NAME})
-target_link_libraries(${BEAST_TESTS_TARGET_NAME} PRIVATE CONAN_PKG::gtest)
+target_link_libraries(${BEAST_TESTS_TARGET_NAME} PRIVATE CONAN_PKG::gtest CONAN_PKG::spdlog)
+
+# Group files into proper folders - for IDE
+GROUP_FILES("${LAB_HEADERS_LIST}" "${LAB_INCLUDE_DIR}")
+GROUP_FILES("${LAB_SRC_LIST}" "${LAB_SRC_DIR}")
+
+install(TARGETS ${BEAST_TESTS_TARGET_NAME} DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")

@@ -38,14 +38,20 @@
           "base_dir": "${BEAST_INCLUDE_DIR}/BeastEngine",
           "files_list_placeholder": "beast_headers",
           "files": [
-            "BeastEngine.h"
+            "BeastEngine.h",
+            "Loggers/StaticLogger.h",
+            "Definitions/Types.h",
+            "Loggers/LoggersTypes.h",
+            "Loggers/LoggersFactory.h",
+            "Definitions/Helpers.h"
           ]
         },
         "sources": {
           "base_dir": "${BEAST_SRC_DIR}/BeastEngine",
           "files_list_placeholder": "beast_sources",
           "files": [
-            "BeastEngine.cpp"
+            "BeastEngine.cpp",
+            "Loggers/LoggersFactory.cpp"
           ]
         }
       },
@@ -69,18 +75,34 @@
       "tests": {
         "target_name": "lab",
         "target_name_placeholder": "tests_target_name",
-        "config_files": null,
-        "variables": null,
-        "directories": null,
+        "config_files": {
+          "dist_filename": "lab/config.cmake.dist",
+          "filename": "lab/config.cmake"
+        },
+        "variables": {
+          "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
+          "target_cmake_variables_file_path": "lab/lab_vars.txt"
+        },
+        "directories": {
+          "include_directory_placeholder": "lab_include_dir",
+          "include_directory": "\"${BeastEngine_SOURCE_DIR}/tests\"",
+          "source_directory_placeholder": "lab_src_dir",
+          "source_directory": "\"${BeastEngine_SOURCE_DIR}/tests\""
+        },
         "headers": {
-          "base_dir": "",
-          "files_list_placeholder": "",
-          "files": []
+          "base_dir": "${LAB_INCLUDE_DIR}",
+          "files_list_placeholder": "lab_headers",
+          "files": [
+            "Loggers/LoggersFactoryTest.h"
+          ]
         },
         "sources": {
-          "base_dir": "",
-          "files_list_placeholder": "",
-          "files": []
+          "base_dir": "${LAB_SRC_DIR}",
+          "files_list_placeholder": "lab_sources",
+          "files": [
+            "lab.cpp",
+            "Loggers/LoggersFactoryTest.cpp"
+          ]
         }
       }
     }
