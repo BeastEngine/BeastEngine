@@ -5,6 +5,7 @@
 int main()
 {
     const auto engine = be::BeastEngine(be::EngineConfig());
+
     std::getchar();
 
     return 0;
