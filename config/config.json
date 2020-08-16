@@ -44,7 +44,9 @@
             "Loggers/LoggersTypes.h",
             "Loggers/LoggersFactory.h",
             "Definitions/Helpers.h",
-            "Logging.h"
+            "Logging.h",
+            "Assertions.h",
+			"Definitions/Versions.h"
           ]
         },
         "sources": {
