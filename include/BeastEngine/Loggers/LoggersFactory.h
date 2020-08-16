@@ -6,7 +6,16 @@ namespace be::internals
 {
     class LoggersFactory final
     {
-    public:
+    public:        
+        /**
+         * Returns logger implementation based on given type.
+         * It should be used to create desired loggers.
+         * 
+         * Example: const auto logger = LoggersFactory::Create(LoggerType::LOGGER_CONSOLE);
+         * 
+         * @param loggerType - Logger to create
+         * @return ILogger implementation
+         */
         static ILogger Create(LoggerType loggerType);
 
     private:

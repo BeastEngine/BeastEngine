@@ -1,9 +1,10 @@
 #include "BeastEngine/BeastEngine.h"
 #include "BeastEngine/Loggers/StaticLogger.h"
 #include "BeastEngine/Logging.h"
+#include "BeastEngine/Assertions.h"
+#include "BeastEngine/Definitions/Versions.h"
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
+#include <fmt/color.h>
 
 namespace be
 {
@@ -11,16 +12,13 @@ namespace be
         : m_config(std::move(config))
     {
         SetLogger(config);
+    }
 
-        internals::StaticLogger::LogInfo("[TEST] Engine Initialized with {}", "No errors");
-        internals::StaticLogger::LogWarning("[TEST] Engine Initialized with {}", "Warning");
-        internals::StaticLogger::LogError("[TEST] Engine Initialized with {}", "Error");
-        internals::StaticLogger::LogFatalError("[TEST] Engine Initialized with {}", "Fatal Error");
-
-        BE_DEBUG_LOG_INFO("[TEST] Engine Initialized with {}{}", "Macro", " with No errors");
-        BE_DEBUG_LOG_WARNING("[TEST] Engine Initialized with {}{}", "Macro", " with Warning");
-        BE_DEBUG_LOG_ERROR("[TEST] Engine Initialized with {}{}", "Macro", " with Error");
-        BE_DEBUG_LOG_FATAL_ERROR("[TEST] Engine Initialized with {}{}", "Macro", " with Fatal Error");
+    void BeastEngine::PrintInfo() const
+    {
+        const auto engineNameString = fmt::format(fmt::emphasis::bold, "BeastEngine - ");
+        const auto versionString = fmt::format(fmt::fg(fmt::color::orange) | fmt::emphasis::bold, BEAST_ENGINE_VERSION);
+        fmt::print("{}Version [{}]", engineNameString, versionString);
     }
 
     void BeastEngine::SetLogger(const EngineConfig& config) const

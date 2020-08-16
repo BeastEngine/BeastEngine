@@ -1,0 +1,3 @@
+#pragma once
+
+#define BEAST_ENGINE_VERSION "@PROJECT_VERSION@"
