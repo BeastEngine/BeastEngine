@@ -43,7 +43,8 @@
             "Definitions/Types.h",
             "Loggers/LoggersTypes.h",
             "Loggers/LoggersFactory.h",
-            "Definitions/Helpers.h"
+            "Definitions/Helpers.h",
+            "Logging.h"
           ]
         },
         "sources": {
