@@ -6,7 +6,7 @@ namespace be::internals
 {
     class StaticLogger final
     {
-        friend class BeastEngine;
+        friend class be::BeastEngine;
 
     public:
         IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger)

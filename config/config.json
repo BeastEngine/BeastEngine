@@ -46,7 +46,7 @@
             "Definitions/Helpers.h",
             "Logging.h",
             "Assertions.h",
-			"Definitions/Versions.h"
+            "Definitions/Versions.h"
           ]
         },
         "sources": {

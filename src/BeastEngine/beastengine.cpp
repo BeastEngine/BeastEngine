@@ -1,5 +1,4 @@
 #include "BeastEngine/BeastEngine.h"
-#include "BeastEngine/Loggers/StaticLogger.h"
 #include "BeastEngine/Logging.h"
 #include "BeastEngine/Assertions.h"
 #include "BeastEngine/Definitions/Versions.h"
