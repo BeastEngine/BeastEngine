@@ -8,22 +8,20 @@ namespace be::internals
         ClassName(ClassName&&) = definition;                        \
         const ClassName& operator=(const ClassName&) = definition;  \
         ClassName&& operator=(ClassName&&) = definition;
-#endif // !CLASS_CONSTRUCTORS_IMPLEMENTATION
+#endif
 
 #ifndef IMPLEMENT_CONSTRUCTORS_DELETED
-#    define IMPLEMENT_CONSTRUCTORS_DELETED(ClassName) \
-        CLASS_CONSTRUCTORS_IMPLEMENTATION(ClassName, delete)
-#endif // !IMPLEMENT_CONSTRUCTORS_DELETED
+#    define IMPLEMENT_CONSTRUCTORS_DELETED(ClassName) CLASS_CONSTRUCTORS_IMPLEMENTATION(ClassName, delete)
+#endif
 
 #ifndef IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE
 #    define IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(ClassName) \
         ClassName() = delete;                             \
         ~ClassName() = delete;                            \
         IMPLEMENT_CONSTRUCTORS_DELETED(ClassName)
-#endif // !IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE
+#endif
 
 #ifndef IMPLEMENT_CONSTRUCTORS_DEFAULT
-#    define IMPLEMENT_CONSTRUCTORS_DEFAULT(ClassName) \
-        CLASS_CONSTRUCTORS_IMPLEMENTATION(ClassName, default)
-#endif // !IMPLEMENT_CONSTRUCTORS_DEFAULT
+#    define IMPLEMENT_CONSTRUCTORS_DEFAULT(ClassName) CLASS_CONSTRUCTORS_IMPLEMENTATION(ClassName, default)
+#endif
 } // namespace be::internals
