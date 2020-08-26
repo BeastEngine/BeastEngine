@@ -27,3 +27,11 @@ configure_file(
 	"${BEAST_INCLUDE_DIR}/BeastEngine/Definitions/Versions.h.in"
 	"${BEAST_INCLUDE_DIR}/BeastEngine/Definitions/Versions.h"
 )
+
+target_precompile_headers(
+	${BEAST_LIB_TARGET_NAME}
+	PRIVATE
+		<string>
+		<vector>
+		<memory>
+)
