@@ -4,8 +4,6 @@
 #include "BeastEngine/Loggers/LoggersFactory.h"
 #include "BeastEngine/Loggers/LoggersTypes.h"
 
-#include <string>
-
 namespace be
 {
     struct EngineConfig
