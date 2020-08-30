@@ -1,6 +1,6 @@
 #pragma once
 #include "LoggersTypes.h"
-#include "BeastEngine/Definitions/Types.h"
+#include "BeastEngine/Core/Types.h"
 
 namespace be::internals
 {

@@ -1,7 +1,7 @@
 #include "LoggersFactoryTest.h"
 
-#include <BeastEngine/Loggers/LoggersTypes.h>
-#include <BeastEngine/Loggers/LoggersFactory.h>
+#include <BeastEngine/Core/Loggers/LoggersTypes.h>
+#include <BeastEngine/Core/Loggers/LoggersFactory.h>
 
 namespace be::tests::unit
 {

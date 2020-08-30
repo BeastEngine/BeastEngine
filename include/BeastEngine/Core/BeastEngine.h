@@ -1,8 +1,8 @@
 #pragma once
-#include "BeastEngine/Definitions/Types.h"
-#include "BeastEngine/Definitions/Helpers.h"
-#include "BeastEngine/Loggers/LoggersFactory.h"
-#include "BeastEngine/Loggers/LoggersTypes.h"
+#include "BeastEngine/Core/Types.h"
+#include "BeastEngine/Core/Helpers.h"
+#include "BeastEngine/Core/Loggers/LoggersFactory.h"
+#include "BeastEngine/Core/Loggers/LoggersTypes.h"
 
 namespace be
 {

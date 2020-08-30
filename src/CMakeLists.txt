@@ -5,7 +5,7 @@ target_include_directories(${BEAST_LIB_TARGET_NAME} PUBLIC "${BEAST_INCLUDE_DIR}
 target_compile_features(${BEAST_LIB_TARGET_NAME} PUBLIC cxx_std_17)
 
 # Add linking to libraries from Conan
-target_link_libraries(${BEAST_LIB_TARGET_NAME} PUBLIC CONAN_PKG::spdlog)
+target_link_libraries(${BEAST_LIB_TARGET_NAME} PUBLIC CONAN_PKG::spdlog CONAN_PKG::glm)
 
 # Group files into proper folders - for IDE
 GROUP_FILES("${BEAST_HEADERS_LIST}" "${BEAST_INCLUDE_DIR}")
@@ -24,8 +24,8 @@ endif()
 install(TARGETS ${BEAST_LIB_TARGET_NAME} DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 configure_file(
-	"${BEAST_INCLUDE_DIR}/BeastEngine/Definitions/Versions.h.in"
-	"${BEAST_INCLUDE_DIR}/BeastEngine/Definitions/Versions.h"
+	"${BEAST_INCLUDE_DIR}/BeastEngine/Core/Versions.h.in"
+	"${BEAST_INCLUDE_DIR}/BeastEngine/Core/Versions.h"
 )
 
 target_precompile_headers(
@@ -34,4 +34,5 @@ target_precompile_headers(
 		<string>
 		<vector>
 		<memory>
+		<cstdint>
 )
