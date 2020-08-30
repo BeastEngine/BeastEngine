@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include <BeastEngine/BeastEngine.h>
-#include <BeastEngine/Loggers/StaticLogger.h>
 
 int main()
 {

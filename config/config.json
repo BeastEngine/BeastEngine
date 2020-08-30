@@ -46,7 +46,8 @@
             "Core/Helpers.h",
             "Core/Logging.h",
             "Core/Assertions.h",
-            "Core/Versions.h"
+            "Core/Versions.h",
+            "BeastEngine.h"
           ]
         },
         "sources": {
