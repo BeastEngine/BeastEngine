@@ -47,7 +47,11 @@
             "Core/Logging.h",
             "Core/Assertions.h",
             "Core/Versions.h",
-            "BeastEngine.h"
+            "BeastEngine.h",
+            "Core/Windows/IWindow.h",
+            "Core/Events/KeyboardEvents.h",
+            "Core/Input/InputCodes.h",
+            "Core/Events/Events.h"
           ]
         },
         "sources": {

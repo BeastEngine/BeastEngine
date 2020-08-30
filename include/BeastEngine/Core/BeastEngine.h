@@ -3,6 +3,9 @@
 #include "BeastEngine/Core/Helpers.h"
 #include "BeastEngine/Core/Loggers/LoggersFactory.h"
 #include "BeastEngine/Core/Loggers/LoggersTypes.h"
+#include "BeastEngine/Core/Events/Events.h"
+#include "BeastEngine/Core/Windows/IWindow.h"
+
 
 namespace be
 {
