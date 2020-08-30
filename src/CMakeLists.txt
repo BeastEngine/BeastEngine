@@ -5,7 +5,7 @@ target_include_directories(${BEAST_LIB_TARGET_NAME} PUBLIC "${BEAST_INCLUDE_DIR}
 target_compile_features(${BEAST_LIB_TARGET_NAME} PUBLIC cxx_std_17)
 
 # Add linking to libraries from Conan
-target_link_libraries(${BEAST_LIB_TARGET_NAME} PUBLIC CONAN_PKG::spdlog)
+target_link_libraries(${BEAST_LIB_TARGET_NAME} PUBLIC CONAN_PKG::spdlog CONAN_PKG::glm)
 
 # Group files into proper folders - for IDE
 GROUP_FILES("${BEAST_HEADERS_LIST}" "${BEAST_INCLUDE_DIR}")
