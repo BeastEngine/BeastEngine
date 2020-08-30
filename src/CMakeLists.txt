@@ -34,4 +34,5 @@ target_precompile_headers(
 		<string>
 		<vector>
 		<memory>
+		<cstdint>
 )
