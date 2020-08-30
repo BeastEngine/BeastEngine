@@ -24,8 +24,8 @@ endif()
 install(TARGETS ${BEAST_LIB_TARGET_NAME} DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 configure_file(
-	"${BEAST_INCLUDE_DIR}/BeastEngine/Definitions/Versions.h.in"
-	"${BEAST_INCLUDE_DIR}/BeastEngine/Definitions/Versions.h"
+	"${BEAST_INCLUDE_DIR}/BeastEngine/Core/Versions.h.in"
+	"${BEAST_INCLUDE_DIR}/BeastEngine/Core/Versions.h"
 )
 
 target_precompile_headers(
