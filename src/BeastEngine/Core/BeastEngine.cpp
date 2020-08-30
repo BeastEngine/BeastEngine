@@ -1,7 +1,7 @@
-#include "BeastEngine/BeastEngine.h"
-#include "BeastEngine/Logging.h"
-#include "BeastEngine/Assertions.h"
-#include "BeastEngine/Definitions/Versions.h"
+#include "BeastEngine/Core/BeastEngine.h"
+#include "BeastEngine/Core/Logging.h"
+#include "BeastEngine/Core/Assertions.h"
+#include "BeastEngine/Core/Versions.h"
 
 #include <fmt/color.h>
 

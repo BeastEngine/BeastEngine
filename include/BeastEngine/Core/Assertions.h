@@ -1,5 +1,5 @@
 #pragma once
-#include "BeastEngine/Logging.h"
+#include "BeastEngine/Core/Logging.h"
 
 namespace be::internals
 {

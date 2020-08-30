@@ -38,23 +38,23 @@
           "base_dir": "${BEAST_INCLUDE_DIR}/BeastEngine",
           "files_list_placeholder": "beast_headers",
           "files": [
-            "BeastEngine.h",
-            "Loggers/StaticLogger.h",
-            "Definitions/Types.h",
-            "Loggers/LoggersTypes.h",
-            "Loggers/LoggersFactory.h",
-            "Definitions/Helpers.h",
-            "Logging.h",
-            "Assertions.h",
-            "Definitions/Versions.h"
+            "Core/BeastEngine.h",
+            "Core/Loggers/StaticLogger.h",
+            "Core/Types.h",
+            "Core/Loggers/LoggersTypes.h",
+            "Core/Loggers/LoggersFactory.h",
+            "Core/Helpers.h",
+            "Core/Logging.h",
+            "Core/Assertions.h",
+            "Core/Versions.h"
           ]
         },
         "sources": {
           "base_dir": "${BEAST_SRC_DIR}/BeastEngine",
           "files_list_placeholder": "beast_sources",
           "files": [
-            "BeastEngine.cpp",
-            "Loggers/LoggersFactory.cpp"
+            "Core/BeastEngine.cpp",
+            "Core/Loggers/LoggersFactory.cpp"
           ]
         }
       },
@@ -96,7 +96,7 @@
           "base_dir": "${LAB_INCLUDE_DIR}",
           "files_list_placeholder": "lab_headers",
           "files": [
-            "Loggers/LoggersFactoryTest.h"
+            "Core/Loggers/LoggersFactoryTest.h"
           ]
         },
         "sources": {
@@ -104,7 +104,7 @@
           "files_list_placeholder": "lab_sources",
           "files": [
             "lab.cpp",
-            "Loggers/LoggersFactoryTest.cpp"
+            "Core/Loggers/LoggersFactoryTest.cpp"
           ]
         }
       }

@@ -1,7 +1,7 @@
 #pragma once
-#include "BeastEngine/Loggers/StaticLogger.h"
-#include "BeastEngine/Loggers/LoggersTypes.h"
-#include "BeastEngine/Loggers/LoggersFactory.h"
+#include "BeastEngine/Core/Loggers/StaticLogger.h"
+#include "BeastEngine/Core/Loggers/LoggersTypes.h"
+#include "BeastEngine/Core/Loggers/LoggersFactory.h"
 
 #include <fmt/color.h>
 
