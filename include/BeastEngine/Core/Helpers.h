@@ -3,11 +3,11 @@
 namespace be::internals
 {
 #ifndef CLASS_CONSTRUCTORS_IMPLEMENTATION
-    #define CLASS_CONSTRUCTORS_IMPLEMENTATION(ClassName, definition) \
-        ClassName(const ClassName&) = definition;                    \
-        ClassName(ClassName&&) = definition;                         \
-        const ClassName& operator=(const ClassName&) = definition;   \
-        ClassName&& operator=(ClassName&&) = definition;
+    #define CLASS_CONSTRUCTORS_IMPLEMENTATION(ClassName, definition)  \
+        ClassName(const ClassName&) = definition;                     \
+        ClassName(ClassName&&) = definition;                          \
+        ClassName& operator=(const ClassName&) noexcept = definition; \
+        ClassName& operator=(ClassName&&) noexcept = definition;
 #endif
 
 #ifndef IMPLEMENT_CONSTRUCTORS_DELETED
