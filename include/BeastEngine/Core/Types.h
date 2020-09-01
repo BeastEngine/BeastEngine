@@ -6,6 +6,10 @@ namespace be
 {
     /*********************BASIC TYPES DEFINITIONS*************************/
     using byte = unsigned char;
+    constexpr byte bit(byte x)
+    {
+        return (1 << x);
+    };
 
     // Note: in case of some weird type errors or speed issues, try replacing those with *_fast_* versions
     // See: https://en.cppreference.com/w/cpp/header/cstdint for reference

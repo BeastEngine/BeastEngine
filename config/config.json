@@ -51,7 +51,9 @@
             "Core/Windows/IWindow.h",
             "Core/Events/KeyboardEvents.h",
             "Core/Input/InputCodes.h",
-            "Core/Events/Events.h"
+            "Core/Events/Events.h",
+            "Core/Events/MouseEvents.h",
+            "Core/Windows/AWindow.h"
           ]
         },
         "sources": {
@@ -101,7 +103,9 @@
           "base_dir": "${LAB_INCLUDE_DIR}",
           "files_list_placeholder": "lab_headers",
           "files": [
-            "Core/Loggers/LoggersFactoryTest.h"
+            "Unit/Core/Loggers/LoggersFactoryTest.h",
+            "Unit/Core/Events/KeyboardEventsTest.h",
+            "Unit/Core/Events/MouseEventsTest.h"
           ]
         },
         "sources": {
@@ -109,7 +113,9 @@
           "files_list_placeholder": "lab_sources",
           "files": [
             "lab.cpp",
-            "Core/Loggers/LoggersFactoryTest.cpp"
+            "Unit/Core/Loggers/LoggersFactoryTest.cpp",
+            "Unit/Core/Events/KeyboardEventsTest.cpp",
+            "Unit/Core/Events/MouseEventsTest.cpp"
           ]
         }
       }
