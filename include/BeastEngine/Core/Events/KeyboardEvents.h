@@ -22,7 +22,7 @@ namespace be
          * @param keyCode
          */
         KeyboardEvent(KeyCode keyCode, KeyboardEventType eventType)
-            : m_keyCode(keyCode), m_eventType(eventType)
+            : m_keyCode(keyCode), m_type(eventType)
         {
         }
         virtual ~KeyboardEvent() = default;
@@ -43,14 +43,14 @@ namespace be
          * 
          * @return KeyboardEventType
          */
-        KeyboardEventType GetEventType() const noexcept
+        KeyboardEventType GetType() const noexcept
         {
-            return m_eventType;
+            return m_type;
         }
 
     private:
         KeyCode m_keyCode;
-        KeyboardEventType m_eventType;
+        KeyboardEventType m_type;
     };
 
     class KeyPressedEvent final : public KeyboardEvent
