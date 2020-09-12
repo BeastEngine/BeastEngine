@@ -4,7 +4,7 @@
 
 namespace be
 {
-	class IWindow
+    class IWindow
     {
     public:
         virtual ~IWindow() = default;
@@ -35,4 +35,4 @@ namespace be
          */
         virtual void ProcessInput() = 0;
     };
-}
+} // namespace be
