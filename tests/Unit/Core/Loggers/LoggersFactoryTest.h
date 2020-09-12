@@ -1,7 +1,6 @@
 #pragma once
+#include "Unit/TestSetup.h"
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include <spdlog/logger.h>
 
 namespace be::tests::unit

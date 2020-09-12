@@ -1,6 +1,5 @@
 #pragma once
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include "Unit/TestSetup.h"
 
 namespace be::tests::unit
 {
