@@ -5,13 +5,23 @@
 #include "BeastEngine/Core/Loggers/LoggersTypes.h"
 #include "BeastEngine/Core/Events/Events.h"
 #include "BeastEngine/Core/Windows/IWindow.h"
-
+#include "BeastEngine/Core/Windows/IWindowFactory.h"
 
 namespace be
 {
+    /**
+     * Contains configuration for the BeastEngine class.
+     */
     struct EngineConfig
     {
+        /** Type of logger that will be used by engine subsystems */
         LoggerType staticLoggerType = LoggerType::LOGGER_CONSOLE;
+        
+        /**
+         * IWindowFactory implementation that will be used to create windows by the engine.
+         * If set to nullptr, the default engine's implementation will be used
+         */
+        UniquePtr<IWindowFactory> windowFactory = nullptr;
     };
 
     class BeastEngine final
@@ -32,10 +42,19 @@ namespace be
          */
         void PrintInfo() const;
 
-    private:
-        void SetLogger(const EngineConfig& config) const;
+        /**
+         * Creates and returns window using IWindowFactory implementation passed inside EngineConfig.
+         * 
+         * @param descriptor
+         * @return UniquePointer to the created window
+         */
+        UniquePtr<IWindow> CreateMainWindow(const WindowDescriptor& descriptor) const;
 
     private:
-        const EngineConfig m_config;
+        void SetLogger() const;
+        void SetWindowFactory();
+
+    private:
+        EngineConfig m_config;
     };
 } // namespace be

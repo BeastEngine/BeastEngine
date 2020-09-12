@@ -53,7 +53,9 @@
             "Core/Input/InputCodes.h",
             "Core/Events/Events.h",
             "Core/Events/MouseEvents.h",
-            "Core/Windows/AWindow.h"
+            "Core/Windows/AWindow.h",
+            "Core/Windows/IWindowFactory.h",
+            "Core/Windows/WindowFactory.h"
           ]
         },
         "sources": {
@@ -61,7 +63,8 @@
           "files_list_placeholder": "beast_sources",
           "files": [
             "Core/BeastEngine.cpp",
-            "Core/Loggers/LoggersFactory.cpp"
+            "Core/Loggers/LoggersFactory.cpp",
+            "Core/Windows/WindowFactory.cpp"
           ]
         }
       },
@@ -105,7 +108,9 @@
           "files": [
             "Unit/Core/Loggers/LoggersFactoryTest.h",
             "Unit/Core/Events/KeyboardEventsTest.h",
-            "Unit/Core/Events/MouseEventsTest.h"
+            "Unit/Core/Events/MouseEventsTest.h",
+            "Unit/Core/BeastEngineTest.h",
+            "Unit/TestSetup.h"
           ]
         },
         "sources": {
@@ -115,7 +120,8 @@
             "lab.cpp",
             "Unit/Core/Loggers/LoggersFactoryTest.cpp",
             "Unit/Core/Events/KeyboardEventsTest.cpp",
-            "Unit/Core/Events/MouseEventsTest.cpp"
+            "Unit/Core/Events/MouseEventsTest.cpp",
+            "Unit/Core/BeastEngineTest.cpp"
           ]
         }
       }

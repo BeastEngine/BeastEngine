@@ -10,7 +10,7 @@ namespace be
         virtual ~IWindow() = default;
 
         /**
-         * Defines passed handler to be used whenever any type of the KeyboardEvent occurs.
+         * Saves passed handler to be used whenever any type of the KeyboardEvent occurs.
          * 
          * @see KeyboardEvent
          * 
@@ -19,7 +19,7 @@ namespace be
         virtual void SetKeyboardEventsHandler(KeyboardEventHandler handler) = 0;
 
         /**
-         * Defines passed handler to be used whenever any type of the MouseEvent occurs.
+         * Saves passed handler to be used whenever any type of the MouseEvent occurs.
          * 
          * @see MouseEvent
          * 

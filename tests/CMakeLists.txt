@@ -1,6 +1,7 @@
 include("${PROJECT_CONFIG_PATH}/lab/config.cmake")
 
 add_executable(${BEAST_TESTS_TARGET_NAME} "${LAB_SRC_LIST}" "${LAB_HEADERS_LIST}")
+target_include_directories(${BEAST_TESTS_TARGET_NAME} PRIVATE "${LAB_INCLUDE_DIR}")
 
 target_link_libraries(${BEAST_TESTS_TARGET_NAME} PRIVATE ${BEAST_LIB_TARGET_NAME})
 target_link_libraries(${BEAST_TESTS_TARGET_NAME} PRIVATE CONAN_PKG::gtest CONAN_PKG::spdlog)
