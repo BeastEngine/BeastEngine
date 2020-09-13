@@ -25,6 +25,7 @@ You can also use it for building the project with desired configuration.{reset}
 {purple}Configuration commands{white}
  {green}{init}{white}          Installs BeastEngine. Creates 'build' directory and downloads all necessary dependencies
  {green}{configure}{white}     Configures CMake project inside the 'build' directory
+ {green}{install_deps}{white}       Installs and/or updates project dependencies 
 
 {purple}Development commands{white}
  {green}{build}{white}         Builds BeastEngine project based on given parameters
@@ -77,3 +78,5 @@ You can also use it for building the project with desired configuration.{reset}
             Build(self.config_manager, self.cmake).execute()
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_CLASS:
             ClassCommand(self.config_manager, self.cmake, self.target_config_manager, self.class_files_helper)
+        elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_INSTALL_DEPENDENCIES:
+            self.conan.install(True)
