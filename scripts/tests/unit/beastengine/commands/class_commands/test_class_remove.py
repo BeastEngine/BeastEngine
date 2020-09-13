@@ -12,8 +12,6 @@ from tests.tests_utilities.micro_mock import MicroMock
 
 class CommonTestData:
     def __init__(self):
-        self.argv = ['arg1', 'arg2', 'arg3', 'arg4']
-
         self.class_files_helper_mock = MagicMock(class_files_helper.ClassFilesHelper)
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
@@ -44,13 +42,13 @@ class CommonTestData:
         pass
 
 
-def test_constructor_will_retrieve_all_arguments_starting_from_fourth():
+def test_constructor_will_retrieve_all_arguments_starting_from_fifth():
     test_data = CommonTestData()
     test_data.mock_create_arguments_parser_function()
     test_data.class_files_helper_mock.class_files_exist = MagicMock(return_value=False)
 
-    sys.argv = ['arg1', 'arg2', 'arg3', 'arg4']
-    expected_arguments = ['arg4']
+    sys.argv = ['arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'arg6']
+    expected_arguments = ['arg5', 'arg6']
 
     class_remove.ClassRemove(
         test_data.headers_base_dir,

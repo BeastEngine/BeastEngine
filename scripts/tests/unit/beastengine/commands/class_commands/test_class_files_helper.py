@@ -191,7 +191,7 @@ def test_create_class_files_will_create_class_files_with_proper_content():
     is_verbose = True
 
     expected_header_file_content = '#pragma once'
-    expected_source_file_content = f'#include "BeastEngine/{class_name}.h"'
+    expected_source_file_content = f''
 
     cwd = '/project/dir'
     class_files_helper.get_project_path = MagicMock(return_value=cwd)
@@ -224,15 +224,15 @@ f'''#pragma once
 namespace {expected_namespace}
 {{
 
-}}
+}} // namespace {expected_namespace}
 '''
     expected_source_file_content =\
-f'''#include "BeastEngine/{class_name}.h"
+f'''
 
 namespace {expected_namespace}
 {{
 
-}}
+}} // namespace {expected_namespace}
 '''
 
     cwd = '/project/dir'

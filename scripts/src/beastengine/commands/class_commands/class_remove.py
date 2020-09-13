@@ -24,7 +24,7 @@ If class name contains slashes, it will also delete empty subdirectories inside 
         parser = create_arguments_parser(usage=BeastCommandHelper.format_text(self.PROGRAM_USAGE))
         parser.add_argument('class_name', help='class to add', metavar='<class_name>')
 
-        command_line_arguments = parser.parse_args(sys.argv[3:])
+        command_line_arguments = parser.parse_args(sys.argv[4:])
         is_verbose = is_verbose_set(command_line_arguments)
 
         class_name = command_line_arguments.class_name
