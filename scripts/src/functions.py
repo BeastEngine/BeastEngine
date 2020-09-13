@@ -23,7 +23,7 @@ def get_config_path():
 
 
 def is_verbose_set(args):
-    return args.verbose
+    return not args.no_verbose
 
 
 def get_target_cmake_variables_full_file_path(cmake_dir_name: str, variables_config: Config.CMake.Target.Variables):
@@ -36,5 +36,5 @@ def create_arguments_parser(program=None, usage=None, description=None, formatte
     else:
         parser = ArgumentParser(prog=program, usage=usage, description=description, formatter_class=formatter_class)
 
-    parser.add_argument('-v', '--verbose', help='show command output', action='store_true')
+    parser.add_argument('-nv', '--no-verbose', help='do not show command output', action='store_true')
     return parser

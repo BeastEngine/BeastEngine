@@ -42,15 +42,15 @@ def test_get_config_path_will_return_valid_path():
     assert functions.get_config_path() == expected_config_path
 
 
-def test_is_verbose_set_will_return_false_when_verbose_attribute_is_set_to_false():
-    data = MicroMock(verbose=False)
+def test_is_verbose_set_will_return_false_when_no_verbose_attribute_is_set_to_true():
+    data = MicroMock(no_verbose=True)
 
     expected_result = False
     assert functions.is_verbose_set(data) == expected_result
 
 
-def test_is_verbose_set_will_return_false_when_verbose_attribute_is_set_to_true():
-    data = MicroMock(verbose=True)
+def test_is_verbose_set_will_return_true_when_no_verbose_attribute_is_set_to_false():
+    data = MicroMock(no_verbose=False)
 
     expected_result = True
     assert functions.is_verbose_set(data) == expected_result
@@ -130,9 +130,9 @@ def test_create_arguments_parser_will_create_parser_with_given_formatter_class()
 
 
 def test_create_arguments_parser_will_create_parser_with_verbose_as_optional_argument():
-    expected_argument_short_name = '-v'
-    expected_argument_full_name = '--verbose'
-    expected_argument_help = 'show command output'
+    expected_argument_short_name = '-nv'
+    expected_argument_full_name = '--no-verbose'
+    expected_argument_help = 'do not show command output'
     expected_argument_action = 'store_true'
 
     add_argument_mock = MagicMock()
