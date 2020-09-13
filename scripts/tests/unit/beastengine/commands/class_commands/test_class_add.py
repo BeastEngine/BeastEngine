@@ -12,8 +12,6 @@ from tests.tests_utilities.micro_mock import MicroMock
 
 class CommonTestData:
     def __init__(self):
-        self.argv = ['arg1', 'arg2', 'arg3', 'arg4']
-
         self.class_files_helper_mock = MagicMock(class_files_helper.ClassFilesHelper)
 
         self.parser_mock = MagicMock(argparse.ArgumentParser)
@@ -51,13 +49,13 @@ class CommonTestData:
         return MicroMock(class_name=class_name, namespace=namespace, header_only=header_only, source_only=source_only)
 
 
-def test_constructor_will_retrieve_all_arguments_starting_from_fourth():
+def test_constructor_will_retrieve_all_arguments_starting_from_fifth():
     test_data = CommonTestData()
     test_data.mock_create_arguments_parser_function()
     test_data.class_files_helper_mock.class_files_exist = MagicMock(return_value=False)
 
-    sys.argv = ['arg1', 'arg2', 'arg3', 'arg4']
-    expected_arguments = ['arg4']
+    sys.argv = ['arg1', 'arg2', 'arg3', 'arg4', 'arg5', 'arg6']
+    expected_arguments = ['arg5', 'arg6']
 
     class_add.ClassAdd(
         test_data.headers_base_dir,
@@ -87,9 +85,9 @@ def test_constructor_will_add_required_class_name_argument_to_parser():
         test_data.config.cmake.lib,
         test_data.config_manager_mock
     )
-    test_data\
-        .parser_mock\
-        .add_argument\
+    test_data \
+        .parser_mock \
+        .add_argument \
         .assert_has_calls(
             [call(expected_argument_name, help=expected_argument_help, metavar=expected_argument_metavar)],
             any_order=True
@@ -119,7 +117,8 @@ def test_constructor_will_add_namespace_optional_argument_to_parser():
         .parser_mock \
         .add_argument \
         .assert_has_calls(
-            [call(expected_argument_name_short, expected_argument_full_name, help=expected_argument_help, type=expected_argument_type)],
+            [call(expected_argument_name_short, expected_argument_full_name, help=expected_argument_help,
+                  type=expected_argument_type)],
             any_order=True
         )
 
@@ -213,9 +212,9 @@ def test_constructor_will_create_class_if_passed_class_does_not_exist():
         test_data.config_manager_mock
     )
 
-    test_data\
-        .class_files_helper_mock\
-        .create_class_files\
+    test_data \
+        .class_files_helper_mock \
+        .create_class_files \
         .assert_called_with(
             expected_class_name,
             test_data.headers_base_dir,
@@ -249,9 +248,9 @@ def test_constructor_will_create_class_with_namespace_parameter_if_one_specified
         test_data.config_manager_mock
     )
 
-    test_data\
-        .class_files_helper_mock\
-        .create_class_files\
+    test_data \
+        .class_files_helper_mock \
+        .create_class_files \
         .assert_called_with(
             class_name,
             test_data.headers_base_dir,

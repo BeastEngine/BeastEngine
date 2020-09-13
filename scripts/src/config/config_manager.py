@@ -58,6 +58,9 @@ class Config:
 class ConfigManager:
     JSON_STR_INDENT = 2
 
+    TARGET_NAME_LIB = 'lib'
+    TARGET_NAME_TESTS = 'tests'
+
     json_config: dict
     config: Config
 
@@ -70,6 +73,15 @@ class ConfigManager:
 
     def update_config(self):
         self.json_manager.save_to_file(self.json_config, self.config_path, self.JSON_STR_INDENT)
+
+    def get_target_config_by_name(self, target_name: str) -> Config.CMake.Target:
+        if target_name == self.TARGET_NAME_LIB:
+            return self.config.cmake.lib
+
+        if target_name == self.TARGET_NAME_TESTS:
+            return self.config.cmake.tests
+
+        return None
 
     def __generate_config_objects(self):
         self.config = Config()

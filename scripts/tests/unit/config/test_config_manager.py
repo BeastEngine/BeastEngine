@@ -2,6 +2,8 @@ import copy
 import json
 from unittest.mock import MagicMock
 
+import pytest
+
 from src.config.config_manager import ConfigManager, Config
 from src.json_utils.json_manager import JSONManager
 
@@ -433,3 +435,32 @@ def test_update_config_will_save_updated_config_object_into_selected_config_file
     test_data.json_manager_mock.save_to_file.assert_called_with(sut.json_config, file_path, sut.JSON_STR_INDENT)
     assert config_before != sut.config
     assert sut.config == expected_config_after
+
+
+def test_get_target_config_bu_name_will_return_empty_object_if_invalid_name_passed():
+    invalid_target_name = 'Invalid'
+
+    test_data = CommonTestData()
+    expected_config = None
+
+    file_path = 'path/to/json/file/json'
+    test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
+
+    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    actual_config = sut.get_target_config_by_name(invalid_target_name)
+
+    assert expected_config == actual_config
+
+
+@pytest.mark.parametrize('expected_target_name', [ConfigManager.TARGET_NAME_LIB, ConfigManager.TARGET_NAME_TESTS])
+def test_get_target_config_by_name_will_return_valid_config_if_valid_name_passed(expected_target_name):
+    test_data = CommonTestData()
+    expected_config = test_data.config_json['cmake_config']['targets'][expected_target_name]
+
+    file_path = 'path/to/json/file/json'
+    test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
+
+    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    actual_config = sut.get_target_config_by_name(expected_target_name)
+
+    assert expected_config['target_name'] == actual_config.target_name

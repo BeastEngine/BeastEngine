@@ -32,7 +32,7 @@ class ClassFilesHelper:
 
     def create_class_header(self, class_name, headers_base_dir, is_verbose, namespace=None):
         cwd = get_project_path()
-
+        print(is_verbose)
         if class_name.find(self.CLASS_NAME_DIRECTORY_SEPARATOR) != -1:
             class_sub_directories_path = self.__get_class_subdirectories_path(class_name)
             headers_path = Path(f'{headers_base_dir}/{class_sub_directories_path}')
@@ -56,7 +56,7 @@ class ClassFilesHelper:
         source_file_name = self.get_source_file_name(class_name)
         source_file_path = f'{sources_base_dir}/{source_file_name}'
 
-        self.__create_source_file(source_file_path, "", cwd, is_verbose, namespace)
+        self.__create_source_file(source_file_path, cwd, is_verbose, namespace)
 
     def create_class_files(
             self,
@@ -78,7 +78,7 @@ class ClassFilesHelper:
         source_file_path = f'{sources_base_dir}/{source_file_name}'
 
         self.__create_header_file(header_file_path, cwd, is_verbose, namespace)
-        self.__create_source_file(source_file_path, header_file_name, cwd, is_verbose, namespace)
+        self.__create_source_file(source_file_path, cwd, is_verbose, namespace)
 
     def delete_class_files(self, class_name: str, headers_base_dir: str, sources_base_dir: str, is_verbose: bool):
         header_file_name = self.get_header_file_name(class_name)
@@ -144,19 +144,17 @@ class ClassFilesHelper:
     def __create_header_file(self, header_file_path: str, cwd: str, is_verbose: bool, namespace):
         file_content = '#pragma once'
         if namespace is not None:
-            file_content += f'\n\nnamespace {namespace}\n{{\n\n}}\n'
+            file_content += f'\n\nnamespace {namespace}\n{{\n\n}} // namespace {namespace}\n'
 
         self.command_runner.run_command(f'{self.COMMAND_CREATE_FILE} {header_file_path}', cwd, is_verbose)
         header_file = self.file_opener.open(header_file_path)
         header_file.replace_content(file_content)
 
-    def __create_source_file(self, source_file_path: str, header_file_name: str, cwd: str, is_verbose: bool, namespace):
+    def __create_source_file(self, source_file_path: str, cwd: str, is_verbose: bool, namespace):
         file_content = ''
-        if header_file_name:
-            file_content = f'#include "BeastEngine/{header_file_name}"'
 
         if namespace is not None:
-            file_content += f'\n\nnamespace {namespace}\n{{\n\n}}\n'
+            file_content += f'\n\nnamespace {namespace}\n{{\n\n}} // namespace {namespace}\n'
 
         self.command_runner.run_command(f'{self.COMMAND_CREATE_FILE} {source_file_path}', cwd, is_verbose)
         source_file = self.file_opener.open(source_file_path)

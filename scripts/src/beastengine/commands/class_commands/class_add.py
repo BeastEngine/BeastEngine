@@ -9,7 +9,7 @@ from src.config.config_manager import Config, ConfigManager
 class ClassAdd:
     PROGRAM_USAGE = '''{green}beast {class} {class_add} <class_name> [<args>]
 
-{white}This command creates single header and single source files under the headers and sources base directories.
+{white}This command creates single header and single source files under the headers and sources base directories of the given CMake target.
 If class name contains slashes, it will create subdirectories inside base directory.
 Eg. {yellow}beast {class} {class_add} subDir/myClass{white} will result in creation of the 'myClass.h' and 'myClass.cpp'
 files under the 'baseDirectory/subDir' path.{white}
@@ -33,7 +33,7 @@ files under the 'baseDirectory/subDir' path.{white}
         group.add_argument('-ho', '--header_only', help='create only header file and omit the source file', action='store_true')
         group.add_argument('-so', '--source_only', help='create only source file and omit the header file', action='store_true')
 
-        command_line_arguments = parser.parse_args(sys.argv[3:])
+        command_line_arguments = parser.parse_args(sys.argv[4:])
         is_verbose = is_verbose_set(command_line_arguments)
 
         class_name = command_line_arguments.class_name
