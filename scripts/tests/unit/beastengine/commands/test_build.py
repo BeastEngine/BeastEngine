@@ -99,15 +99,13 @@ def test_constructor_will_save_verbose_argument_into_variable(expected_verbose):
 @pytest.mark.parametrize('config', ['', False, None])
 def test_execute_will_print_warning_message_when_passed_arguments_config_parameter_is_empty(config):
     expected_arguments = MicroMock(config=config)
-    expected_default_config = build.ConfigNames.CONFIG_DEBUG
     expected_info_message =\
         f'{colorama.Fore.YELLOW}' \
         f'No configuration specified, ' \
-        f'building for default \'{expected_default_config}\' configuration {colorama.Fore.RESET}'
+        f'building for all configurations {colorama.Fore.RESET}'
 
     test_data = CommonTestData()
     test_data.mock_print_function()
-    test_data.config.default_build_type = expected_default_config
     test_data.mock_config_names_from_string_method()
 
     test_data.parser_mock.parse_args = MagicMock(return_value=expected_arguments)
@@ -117,26 +115,6 @@ def test_execute_will_print_warning_message_when_passed_arguments_config_paramet
     sut.execute()
 
     test_data.print_mock.assert_called_with(expected_info_message)
-
-
-@pytest.mark.parametrize('config', ['', False, None])
-def test_execute_will_convert_default_config_string_to_enum_when_passed_config_argument_is_empty(config):
-    expected_default_config = build.ConfigNames.CONFIG_DEBUG
-    expected_arguments = MicroMock(config=config)
-
-    test_data = CommonTestData()
-    test_data.mock_print_function()
-    test_data.config.default_build_type = expected_default_config
-    test_data.mock_config_names_from_string_method()
-
-    test_data.parser_mock.parse_args = MagicMock(return_value=expected_arguments)
-    test_data.mock_create_arguments_parser_function()
-
-    sut = build.Build(test_data.config_manager_mock, MagicMock(CMake))
-    sut.execute()
-
-    build.ConfigNames.from_string.assert_called_once_with(expected_default_config)
-
 
 @pytest.mark.parametrize(
     'expected_config', CommonTestData.CONFIG_NAMES
