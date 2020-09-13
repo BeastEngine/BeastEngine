@@ -6,6 +6,7 @@ class BeastCommandHelper:
 
     COMMAND_NAME_INIT = 'init'
     COMMAND_NAME_CONFIGURE = 'configure'
+    COMMAND_NAME_INSTALL_DEPENDENCIES = 'install'
     COMMAND_NAME_BUILD = 'build'
     COMMAND_NAME_CLASS = 'class'
     COMMAND_NAME_CLASS_ADD = 'add'
@@ -23,6 +24,7 @@ class BeastCommandHelper:
             'reset': colorama.Fore.RESET,
             'init': BeastCommandHelper.COMMAND_NAME_INIT,
             'configure': BeastCommandHelper.COMMAND_NAME_CONFIGURE,
+            'install_deps': BeastCommandHelper.COMMAND_NAME_INSTALL_DEPENDENCIES,
             'build': BeastCommandHelper.COMMAND_NAME_BUILD,
             'class': BeastCommandHelper.COMMAND_NAME_CLASS,
             'class_add': BeastCommandHelper.COMMAND_NAME_CLASS_ADD,

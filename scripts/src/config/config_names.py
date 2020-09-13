@@ -22,5 +22,13 @@ class ConfigNames(Enum):
         names += ']'
         return names
 
+    @staticmethod
+    def all_configs():
+        configs = []
+        for name, member in ConfigNames.__members__.items():
+            configs.append(member)
+
+        return configs
+
     def __str__(self):
         return self.value
