@@ -21,8 +21,6 @@ class CommonTestData:
     ]
 
     def __init__(self):
-        self.argv = ['arg1', 'arg2', 'arg3', 'arg4']
-
         self.parser_mock = MagicMock(argparse.ArgumentParser)
         self.parser_mock.parse_args = MagicMock()
         self.project_dir = 'project/dir'
