@@ -19,7 +19,7 @@ namespace be
         constexpr static const IntVec2 DEFAULT_COORDINATES = {0, 0};
         constexpr static const IntVec2 DEFAULT_SCROLL_VALUES = {0, 0};
 
-        IMPLEMENT_CONSTRUCTORS_DEFAULT(MouseEvent)
+        BE_IMPLEMENT_CONSTRUCTORS_DEFAULT(MouseEvent)
 
         /**
          * Initializes MouseEvent.

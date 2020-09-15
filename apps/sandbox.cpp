@@ -1,13 +1,20 @@
-#include <iostream>
+#include <BeastEngine/EntryPoint.h>
 
-#include <BeastEngine/BeastEngine.h>
-
-int main()
+class BasicApplication final : public be::AApplication
 {
-    const auto engine = be::CreateUniquePtr<be::BeastEngine>(be::EngineConfig());
-    engine->PrintInfo();
+public:
+    BasicApplication(be::EngineConfig engineConfig)
+        : be::AApplication(std::move(engineConfig))
+    {
+    }
 
-    std::getchar();
+    virtual void Run() override
+    {
+        m_engine->PrintInfo();
+    }
+};
 
-    return 0;
+be::UniquePtr<be::AApplication> be::CreateApplication()
+{
+    return be::CreateUniquePtr<BasicApplication>(be::EngineConfig());
 }
