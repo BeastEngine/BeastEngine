@@ -14,7 +14,7 @@ namespace be
     class KeyboardEvent
     {
     public:
-        IMPLEMENT_CONSTRUCTORS_DEFAULT(KeyboardEvent)
+        BE_IMPLEMENT_CONSTRUCTORS_DEFAULT(KeyboardEvent)
 
         /**
          * Initializes KeyboardEvent with provided code for the key the event concerns.

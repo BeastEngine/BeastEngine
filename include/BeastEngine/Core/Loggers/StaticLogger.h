@@ -9,7 +9,7 @@ namespace be::internals
         friend class BeastEngine;
 
     public:
-        IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger)
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger)
 
         template<typename... Args>
         static void LogInfo(const std::string& message, const Args&... args)

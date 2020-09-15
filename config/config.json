@@ -55,7 +55,10 @@
             "Core/Events/MouseEvents.h",
             "Core/Windows/AWindow.h",
             "Core/Windows/IWindowFactory.h",
-            "Core/Windows/WindowFactory.h"
+            "Core/Windows/WindowFactory.h",
+            "EntryPoint.h",
+            "Core/PlatformSetup.h",
+            "Core/Application.h"
           ]
         },
         "sources": {

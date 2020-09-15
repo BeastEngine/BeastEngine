@@ -9,7 +9,7 @@ namespace be::internals
         friend class BeastEngine;
 
     public:
-        IMPLEMENT_CONSTRUCTORS_DELETED(WindowFactory)
+        BE_IMPLEMENT_CONSTRUCTORS_DELETED(WindowFactory)
 
         WindowFactory() = default;
         ~WindowFactory() = default;
