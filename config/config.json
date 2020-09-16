@@ -58,7 +58,9 @@
             "Core/Windows/WindowFactory.h",
             "EntryPoint.h",
             "Core/PlatformSetup.h",
-            "Core/Application.h"
+            "Core/Application.h",
+            "Core/Windows/Windows/WindowsWindow.h",
+            "Core/DataStructures.h"
           ]
         },
         "sources": {
@@ -67,7 +69,8 @@
           "files": [
             "Core/BeastEngine.cpp",
             "Core/Loggers/LoggersFactory.cpp",
-            "Core/Windows/WindowFactory.cpp"
+            "Core/Windows/WindowFactory.cpp",
+            "Core/Windows/Windows/WindowsWindow.cpp"
           ]
         }
       },
@@ -113,7 +116,8 @@
             "Unit/Core/Events/KeyboardEventsTest.h",
             "Unit/Core/Events/MouseEventsTest.h",
             "Unit/Core/BeastEngineTest.h",
-            "Unit/TestSetup.h"
+            "Unit/TestSetup.h",
+            "Unit/Core/DataStructuresTests.h"
           ]
         },
         "sources": {
@@ -124,7 +128,8 @@
             "Unit/Core/Loggers/LoggersFactoryTest.cpp",
             "Unit/Core/Events/KeyboardEventsTest.cpp",
             "Unit/Core/Events/MouseEventsTest.cpp",
-            "Unit/Core/BeastEngineTest.cpp"
+            "Unit/Core/BeastEngineTest.cpp",
+            "Unit/Core/DataStructuresTests.cpp"
           ]
         }
       }

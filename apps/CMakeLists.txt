@@ -1,4 +1,4 @@
-add_executable(${BEAST_EXE_TARGET_NAME} sandbox.cpp)
+add_executable(${BEAST_EXE_TARGET_NAME} WIN32 sandbox.cpp)
 target_link_libraries(${BEAST_EXE_TARGET_NAME} PRIVATE ${BEAST_LIB_TARGET_NAME})
 
 install(TARGETS ${BEAST_EXE_TARGET_NAME} DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
