@@ -18,7 +18,7 @@ target_compile_definitions(
 )
 
 if(WIN32)
-	target_compile_definitions(${BEAST_LIB_TARGET_NAME} PRIVATE BE_PLATFORM_WINDOWS)
+	target_compile_definitions(${BEAST_LIB_TARGET_NAME} PUBLIC BE_PLATFORM_WINDOWS)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -39,4 +39,5 @@ target_precompile_headers(
 		<vector>
 		<memory>
 		<cstdint>
+		<array>
 )

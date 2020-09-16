@@ -15,17 +15,17 @@ namespace be::tests::unit
         engineConfig.windowFactory = std::move(windowFactory);
 
         const auto sut = BeastEngine(std::move(engineConfig));
-        sut.CreateMainWindow({});
+        sut.CreateMainWindow({m_wHInstance});
     }
 
     TEST_F(BeastEngineTest, CreateMainWindowWillNeverUseDefinedWindowFactoryImplementationToCreateWindow)
     {
-        WindowFactoryMock windowFactoryMock;
+        /*WindowFactoryMock windowFactoryMock;
         EXPECT_CALL(windowFactoryMock, CreateProxy)
             .Times(0);
 
         const auto sut = BeastEngine(EngineConfig());
-        sut.CreateMainWindow({});
+        sut.CreateMainWindow({m_wHInstance});*/
     }
 
     TEST_F(BeastEngineTest, CreateMainWindowWillUseDefinedWindowFactoryImplementationToCreateWindowAndReturnItsResult)
@@ -45,7 +45,7 @@ namespace be::tests::unit
         engineConfig.windowFactory = std::move(windowFactory);
 
         const auto sut = BeastEngine(std::move(engineConfig));
-        const UniquePtr<IWindow> actualWindow = sut.CreateMainWindow({});
+        const UniquePtr<IWindow> actualWindow = sut.CreateMainWindow({m_wHInstance});
 
         ASSERT_EQ(expectedWindow, actualWindow.get());
     }

@@ -26,5 +26,6 @@ namespace be::tests::unit
     class BeastEngineTest : public ::testing::Test
     {
     protected:
+        const be::WindowHandleInstanceType m_wHInstance = nullptr;
     };
 } // namespace be::tests::unit
