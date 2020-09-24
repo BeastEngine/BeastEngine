@@ -6,12 +6,12 @@
 namespace be
 {
     /******************************************************/
-    /******************** WINDOW FLAGS ********************/
-    enum class WindowFlags
+    /******************** WINDOW STYLE ********************/
+    enum class WindowStyle
     {
-        WINDOW_FULLSCREEN,
-        WINDOW_BORDERLESS,
-        WINDOW_RESIZABLE,
+        WINDOW_FULLSCREEN, // Window is taking the whole screen and is the topmost windoww
+        WINDOW_BORDERLESS, // Maximized normal window taking the whole screen area
+        WINDOW_DEFUALT, // Default, normal window with title and sizing buttons
     };
     /******************************************************/
     /******************************************************/
@@ -56,7 +56,7 @@ namespace be
         std::string title = "BeastEngine";
         IntVec2 dimensions = {800, 600};
         IntVec2 position = {0.0, 0.0};
-        std::vector<WindowFlags> flags = {WindowFlags::WINDOW_RESIZABLE};
+        WindowStyle style = {WindowStyle::WINDOW_DEFUALT};
         WindowHandleInstance handleInstance;
     };
     /******************************************************/
@@ -86,6 +86,13 @@ namespace be
          * @param handler
          */
         virtual void SetMouseEventsHandler(MouseEventHandler handler) = 0;
+
+        /**
+         * Saves passed handler to be used whenever WindowClosed event occurs.
+         * 
+         * @param handler
+         */
+        virtual void SetWindowClosedEventHandler(WindowClosedEventHandler handler) = 0;
 
         /**
          * Processes messages received from the operating system and converts them into the engine's events.

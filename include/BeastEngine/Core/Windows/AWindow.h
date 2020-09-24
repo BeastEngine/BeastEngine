@@ -20,6 +20,11 @@ namespace be
             m_mouseEventsHandler = handler;
         }
 
+        virtual void SetWindowClosedEventHandler(WindowClosedEventHandler handler) override
+        {
+            m_windowClosedEventHandler = handler;
+        }
+
     protected:
         /**
          * Dispatches provided KeyboardEvent if event handler is defined.
@@ -29,7 +34,7 @@ namespace be
          */
         void DispatchEvent(const KeyboardEvent& event) const
         {
-            if (m_keyboardEventsHandler != nullptr)
+            if (m_keyboardEventsHandler)
             {
                 m_keyboardEventsHandler(event);
                 return;
@@ -46,7 +51,7 @@ namespace be
          */
         void DispatchEvent(const MouseEvent& event) const
         {
-            if (m_mouseEventsHandler != nullptr)
+            if (m_mouseEventsHandler)
             {
                 m_mouseEventsHandler(event);
                 return;
@@ -55,8 +60,24 @@ namespace be
             BE_DEBUG_LOG_WARNING("No handler specified for MouseEvents");
         }
 
+        /**
+         * Dispatches WindowClosedEvent if event handler is defined.
+         * Leaves event unhandled otherwise.
+         */
+        void DispatchWindowClosedEvent() const
+        {
+            if (m_windowClosedEventHandler)
+            {
+                m_windowClosedEventHandler();
+                return;
+            }
+
+            BE_DEBUG_LOG_WARNING("No handler specified for WindowClosed event");
+        }
+
     private:
         KeyboardEventHandler m_keyboardEventsHandler;
         MouseEventHandler m_mouseEventsHandler;
+        WindowClosedEventHandler m_windowClosedEventHandler;
     };
 } // namespace be
