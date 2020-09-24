@@ -15,24 +15,28 @@ namespace be::internals
         static void LogInfo(const std::string& message, const Args&... args)
         {
             m_logger->info(message, args...);
+            m_logger->flush();
         }
 
         template<typename... Args>
         static void LogWarning(const std::string& message, const Args&... args)
         {
             m_logger->warn(message, args...);
+            m_logger->flush();
         }
 
         template<typename... Args>
         static void LogError(const std::string& message, const Args&... args)
         {
             m_logger->error(message, args...);
+            m_logger->flush();
         }
 
         template<typename... Args>
         static void LogFatalError(const std::string& message, const Args&... args)
         {
             m_logger->critical(message, args...);
+            m_logger->flush();
         }
 
     private:

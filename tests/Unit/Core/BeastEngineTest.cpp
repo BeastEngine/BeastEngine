@@ -18,14 +18,14 @@ namespace be::tests::unit
         sut.CreateMainWindow({m_wHInstance});
     }
 
-    TEST_F(BeastEngineTest, CreateMainWindowWillNeverUseDefinedWindowFactoryImplementationToCreateWindow)
+    TEST_F(BeastEngineTest, CreateMainWindowWillReturnValidWindowWhenNoWindowFactoryImplementationProvided)
     {
-        /*WindowFactoryMock windowFactoryMock;
-        EXPECT_CALL(windowFactoryMock, CreateProxy)
-            .Times(0);
+        auto windowParams = WindowDescriptor(m_wHInstance);
+        windowParams.dimensions = {0, 0};
 
         const auto sut = BeastEngine(EngineConfig());
-        sut.CreateMainWindow({m_wHInstance});*/
+        const auto result = sut.CreateMainWindow(windowParams);
+        ASSERT_NE(nullptr, result);
     }
 
     TEST_F(BeastEngineTest, CreateMainWindowWillUseDefinedWindowFactoryImplementationToCreateWindowAndReturnItsResult)

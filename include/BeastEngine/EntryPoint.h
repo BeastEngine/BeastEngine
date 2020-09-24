@@ -21,8 +21,15 @@ namespace be
 
 BE_MAIN()
 {
-    auto application = be::CreateApplication(BE_WINDOW_HANDLE_INSTANCE);
-    application->Run();
+    try
+    {
+        auto application = be::CreateApplication(BE_WINDOW_HANDLE_INSTANCE);
+        application->Run();
+    }
+    catch (const std::exception& ex)
+    {
+        printf(ex.what());
+    }
 
     return 0;
 }

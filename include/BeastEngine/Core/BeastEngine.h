@@ -14,8 +14,17 @@ namespace be
      */
     struct EngineConfig
     {
-        /** Type of logger that will be used by engine subsystems */
-        LoggerType staticLoggerType = LoggerType::LOGGER_CONSOLE;
+        /**
+         * Type of logger that will be used by engine subsystems.
+         * Additional logger parameters.
+         * 
+         * @example Use the additionalParams parameter to define file logger's output filename
+         */
+        struct
+        {
+            LoggerType type = LoggerType::LOGGER_CONSOLE;
+            std::string additionalParams;
+        } staticLogger;
         
         /**
          * IWindowFactory implementation that will be used to create windows by the engine.

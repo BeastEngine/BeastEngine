@@ -15,7 +15,7 @@
     //#define NOVIRTUALKEYCODES		// VK_*
     //#define NOWINMESSAGES			// WM_*, EM_*, LB_*, CB_*
     //#define NOWINSTYLES			// WS_*, CS_*, ES_*, LBS_*, SBS_*, CBS_*
-    #define NOSYSMETRICS  // SM_*
+    //#define NOSYSMETRICS  // SM_*
     #define NOMENUS       // MF_*
     #define NOICONS       // IDI_*
     #define NOKEYSTATES   // MK_*
@@ -63,11 +63,14 @@
     #include <Windows.h>
 #endif
 
+namespace be
+{
 #ifndef BE_WINDOW_HANDLE_INSTANCE_TYPE
     #define BE_WINDOW_HANDLE_INSTANCE_TYPE 1
     #ifdef BE_PLATFORM_WINDOWS
-using WindowHandleInstanceType = HINSTANCE;
+    using WindowHandleInstanceType = HINSTANCE;
     #else
         #error "No instance defined for this platform!"
     #endif
 #endif
+} // namespace be

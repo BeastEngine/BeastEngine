@@ -31,7 +31,7 @@ namespace be
     {
         internals::StaticLogger::SetLogger(
             std::move(
-                internals::LoggersFactory::Create(m_config.staticLoggerType)
+                internals::LoggersFactory::Create(m_config.staticLogger.type, m_config.staticLogger.additionalParams)
             )
         );
     }
