@@ -5,7 +5,7 @@
 
 #include <spdlog/sinks/basic_file_sink.h>
 
-namespace be::tests::unit
+namespace be::tests::integration
 {
     static const std::string EMPTY_PARAMS = "";
 
@@ -22,7 +22,8 @@ namespace be::tests::unit
     {
         const auto expectedLoggerName = "file_logger";
         const auto loggerType = LoggerType::LOGGER_FILE;
-        const std::string filename = "Log.txt";
+
+        std::string filename = TempFilePath() + "Log.txt";
 
         const auto result = internals::LoggersFactory::Create(loggerType, filename);
         ASSERT_STREQ(expectedLoggerName, result->name().c_str());
@@ -36,26 +37,34 @@ namespace be::tests::unit
         ASSERT_TRUE(result == nullptr);
     }
 
+    INSTANTIATE_TEST_SUITE_P(
+        LoggerTypeParams,
+        LoggersFactoryTest,
+        testing::Values(
+            LoggersFactoryTestParams{LoggerType::LOGGER_CONSOLE, EMPTY_PARAMS},
+            LoggersFactoryTestParams{LoggerType::LOGGER_FILE, LoggersFactoryTest::TempFilePath() + "Log.txt"}
+        )
+    );
+
     TEST_P(LoggersFactoryTest, CreateWillReturnTheSameInstanceIfCalledMultipleTimesWithTheSameParameter)
     {
-        const auto loggerType = GetParam();
+        const LoggersFactoryTestParams testParams = GetParam();
+        const auto loggerType = testParams.loggerType;
+        const auto additionalParams = testParams.additionalParams;
 
-        const auto firstLoggerInstance = internals::LoggersFactory::Create(loggerType, EMPTY_PARAMS);
-        const auto secondLoggerInstance = internals::LoggersFactory::Create(loggerType, EMPTY_PARAMS);
+        const auto firstLoggerInstance = internals::LoggersFactory::Create(loggerType, additionalParams);
+        const auto secondLoggerInstance = internals::LoggersFactory::Create(loggerType, additionalParams);
 
         ASSERT_EQ(firstLoggerInstance, secondLoggerInstance);
     }
 
     TEST_P(LoggersFactoryTest, CreateWillReturnNotEmptyLoggerWhenCalledWithValidLoggerTypePassed)
     {
-        const auto loggerType = GetParam();
-        const auto actualLogger = internals::LoggersFactory::Create(loggerType, EMPTY_PARAMS);
+        const LoggersFactoryTestParams testParams = GetParam();
+        const auto loggerType = testParams.loggerType;
+        const auto additionalParams = testParams.additionalParams;
+
+        const auto actualLogger = internals::LoggersFactory::Create(loggerType, additionalParams);
         ASSERT_TRUE(actualLogger != nullptr);
     }
-
-    INSTANTIATE_TEST_SUITE_P(
-        LoggerTypeParams,
-        LoggersFactoryTest,
-        testing::Values(LoggerType::LOGGER_CONSOLE, LoggerType::LOGGER_FILE)
-    );
-} // namespace be::tests::unit
+} // namespace be::tests::integration

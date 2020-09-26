@@ -1,4 +1,6 @@
-add_executable(${BEAST_EXE_TARGET_NAME} sandbox.cpp)
+set(SANDBOX_SRC_LIST sandbox.cpp)
+
+add_executable(${BEAST_EXE_TARGET_NAME} "${SANDBOX_SRC_LIST}")
 if (WIN32)
 	# Create WinApi application while using the system console
 	target_link_options(

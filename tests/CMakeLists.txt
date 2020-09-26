@@ -11,3 +11,13 @@ GROUP_FILES("${LAB_HEADERS_LIST}" "${LAB_INCLUDE_DIR}")
 GROUP_FILES("${LAB_SRC_LIST}" "${LAB_SRC_DIR}")
 
 install(TARGETS ${BEAST_TESTS_TARGET_NAME} DESTINATION "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+
+target_precompile_headers(
+	${BEAST_TESTS_TARGET_NAME}
+	PRIVATE
+		<string>
+		<vector>
+		<memory>
+		<cstdint>
+		<array>
+)

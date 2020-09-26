@@ -41,8 +41,7 @@ namespace be::internals
             NULL, // Parent window
             NULL, // Menu
             wc.hInstance,
-            this
-        );
+            this);
 
         if (m_hwnd == NULL)
         {
@@ -54,10 +53,7 @@ namespace be::internals
 
     WindowsWindow::~WindowsWindow()
     {
-        if (m_hwnd)
-        {
-            DestroyWindow(m_hwnd);
-        }
+        DestroyWindow(m_hwnd);
         UnregisterClass(WINDOW_CLASS_NAME, m_hInstance);
     }
 
@@ -69,6 +65,11 @@ namespace be::internals
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
+    }
+
+    HWND WindowsWindow::GetNativeHandle() const noexcept
+    {
+        return m_hwnd;
     }
 
     std::wstring WindowsWindow::ConvertWindowTitle(const std::string& narrowTitle) const
@@ -145,13 +146,50 @@ namespace be::internals
     {
         switch (uMsg)
         {
-        case WM_DESTROY:
+        case WM_CLOSE:
             DispatchWindowClosedEvent();
             PostQuitMessage(0);
+            return 0;
+
+        /******************************************************/
+        /******************* MOUSE EVENTS ********************/
+        // Perform the same action for basic mouse buttons
+        case WM_LBUTTONDOWN:
+        case WM_RBUTTONDOWN:
+        case WM_MBUTTONDOWN:
+            SetCapture(m_hwnd);
+            DispatchEvent(MouseButtonPressedEvent(m_mouseButtonsCodesMap.At(uMsg), GetMouseCoordinates(lParam)));
             break;
+        case WM_XBUTTONDOWN:
+            // We need to get the mouse button code differently here
+            SetCapture(m_hwnd);
+            DispatchEvent(MouseButtonPressedEvent(m_mouseButtonsCodesMap.At(GET_XBUTTON_WPARAM(wParam)), GetMouseCoordinates(lParam)));
+            break;
+        case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
+        case WM_MBUTTONUP:
+            ReleaseCapture();
+            DispatchEvent(MouseButtonReleasedEvent(m_mouseButtonsCodesMap.At(uMsg), GetMouseCoordinates(lParam)));
+            break;
+        case WM_XBUTTONUP:
+            // We need to get the mouse button code differently here
+            ReleaseCapture();
+            DispatchEvent(MouseButtonReleasedEvent(m_mouseButtonsCodesMap.At(GET_XBUTTON_WPARAM(wParam)), GetMouseCoordinates(lParam)));
+            break;
+        case WM_MOUSEMOVE:
+            DispatchEvent(MouseMovedEvent(GetMouseCoordinates(lParam)));
+            break;
+        case WM_MOUSEWHEEL:
+            DispatchEvent(MouseScrolledEvent(GET_WHEEL_DELTA_WPARAM(wParam), GetMouseCoordinates(lParam)));
+            break;
+        // Might be usefull in the future
+        case WM_LBUTTONDBLCLK:
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
+        /******************************************************/
+        /******************************************************/
+
         default:
             return DefWindowProc(hWnd, uMsg, wParam, lParam);
-            break;
         }
 
         return 0;

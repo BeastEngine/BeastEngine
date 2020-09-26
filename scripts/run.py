@@ -35,15 +35,18 @@ cmake =\
 target_config_manager = TargetConfigManager(TargetCMakeVarsFileOpener(file_opener))
 class_files_helper = ClassFilesHelper(command_runner, file_opener)
 
-BeastEngine(
-    project_working_dir,
-    build_dir,
-    command_runner,
-    config_manager,
-    conan,
-    cmake,
-    target_config_manager,
-    class_files_helper
-)
+try:
+    BeastEngine(
+        project_working_dir,
+        build_dir,
+        command_runner,
+        config_manager,
+        conan,
+        cmake,
+        target_config_manager,
+        class_files_helper
+    )
+except Exception as ex:
+    print(ex)
 
 colorama.deinit()

@@ -70,7 +70,8 @@
             "Core/BeastEngine.cpp",
             "Core/Loggers/LoggersFactory.cpp",
             "Core/Windows/WindowFactory.cpp",
-            "Core/Windows/Windows/WindowsWindow.cpp"
+            "Core/Windows/Windows/WindowsWindow.cpp",
+            "Core/Application.cpp"
           ]
         }
       },
@@ -112,12 +113,13 @@
           "base_dir": "${LAB_INCLUDE_DIR}",
           "files_list_placeholder": "lab_headers",
           "files": [
-            "Unit/Core/Loggers/LoggersFactoryTest.h",
+            "Integration/Core/Loggers/LoggersFactoryTest.h",
             "Unit/Core/Events/KeyboardEventsTest.h",
             "Unit/Core/Events/MouseEventsTest.h",
             "Unit/Core/BeastEngineTest.h",
-            "Unit/TestSetup.h",
-            "Unit/Core/DataStructuresTests.h"
+            "Unit/Core/DataStructuresTests.h",
+            "Functional/Core/Windows/Windows/WindowsWindowTest.h",
+            "TestSetup.h"
           ]
         },
         "sources": {
@@ -125,11 +127,12 @@
           "files_list_placeholder": "lab_sources",
           "files": [
             "lab.cpp",
-            "Unit/Core/Loggers/LoggersFactoryTest.cpp",
+            "Integration/Core/Loggers/LoggersFactoryTest.cpp",
             "Unit/Core/Events/KeyboardEventsTest.cpp",
             "Unit/Core/Events/MouseEventsTest.cpp",
             "Unit/Core/BeastEngineTest.cpp",
-            "Unit/Core/DataStructuresTests.cpp"
+            "Unit/Core/DataStructuresTests.cpp",
+            "Functional/Core/Windows/Windows/WindowsWindowTest.cpp"
           ]
         }
       }

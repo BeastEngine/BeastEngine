@@ -1,5 +1,5 @@
 #pragma once
-#include "Unit/TestSetup.h"
+#include "TestSetup.h"
 
 #include <BeastEngine/Core/Windows/IWindowFactory.h>
 #include <BeastEngine/Core/Windows/AWindow.h>

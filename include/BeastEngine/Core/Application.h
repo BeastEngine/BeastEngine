@@ -1,9 +1,50 @@
 #pragma once
 #include "BeastEngine/Core/Helpers.h"
 #include "BeastEngine/Core/BeastEngine.h"
+#include "BeastEngine/Core/Windows/IWindow.h"
 
 namespace be
 {
+    namespace internals
+    {
+        class Mouse
+        {
+        public:
+            Mouse(IWindow& window) noexcept;
+
+            void SetWheelScrollThreshold(uint16 threshold) noexcept;
+            void SetWheelScrolledListener(MouseWheelScrolledListener listener) noexcept;
+
+            bool IsButtonPressed(MouseButtonCode buttonCode) const noexcept
+            {
+                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
+                {
+                    return buttonState->second;
+                }
+
+                return false;
+            }
+
+            const auto& GetCoordinates() const noexcept
+            {
+                return m_coordinates;
+            }
+
+        private:
+            MouseEventHandler GetEventHandler() noexcept;
+            void ScrollWheel(int16 scrollAmount) noexcept;
+
+        private:
+            IntVec2 m_coordinates;
+            std::unordered_map<MouseButtonCode, bool> m_buttonsStates;
+
+            uint16 m_scrollThreshold = 120;
+            int16 m_currentScrollValue = 0;
+
+            MouseWheelScrolledListener m_mouseScrolledListener;
+        };
+    } // namespace internals
+
     class AApplication
     {
     public:
@@ -13,19 +54,20 @@ namespace be
          * Creates instance of the AApplication class initializing engine instance with passed be::EngineConfig.
          * 
          * @param engineConfig
+         * @param mainWindowDescriptor
          */
-        AApplication(EngineConfig engineConfig)
-        {
-            m_engine = CreateUniquePtr<BeastEngine>(std::move(engineConfig));
-        }
+        AApplication(EngineConfig engineConfig, const WindowDescriptor& mainWindowDescriptor);
         virtual ~AApplication() = default;
 
         /**
          * Starts the application.
          * Should contain all the run-time code of the app.
-         * 
          */
         virtual void Run() = 0;
+
+    protected:
+        UniquePtr<internals::Mouse> m_mouse = nullptr;
+        UniquePtr<IWindow> m_window = nullptr;
 
     protected:
         UniquePtr<BeastEngine> m_engine;
