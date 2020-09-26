@@ -1,5 +1,5 @@
 #pragma once
-#include "Unit/TestSetup.h"
+#include "TestSetup.h"
 
 namespace be::tests::unit
 {

@@ -13,11 +13,17 @@ namespace be
         EVENT_MOUSE_BUTTON_RELEASED,
     };
 
+    enum class WheelScrollDirection
+    {
+        SCROLL_UP,
+        SCROLL_DOWN,
+    };
+
     class MouseEvent
     {
     public:
         constexpr static const IntVec2 DEFAULT_COORDINATES = {0, 0};
-        constexpr static const IntVec2 DEFAULT_SCROLL_VALUES = {0, 0};
+        constexpr static const int16 DEFAULT_SCROLL_VALUE = 0;
 
         BE_IMPLEMENT_CONSTRUCTORS_DEFAULT(MouseEvent)
 
@@ -26,18 +32,18 @@ namespace be
          * 
          * @param eventType - what type of mouse event should be created
          * @param coordinates - cooridnates of the mouse cursor
-         * @param scrollValues - vertical and horizontal scroll values
+         * @param scrollValue - how much the mouse wheel was scrolled
          * @param buttonCode - which button (if any) was pressed
          */
         MouseEvent(
             MouseEventType eventType,
             IntVec2 coordinates = DEFAULT_COORDINATES,
-            IntVec2 scrollValues = DEFAULT_SCROLL_VALUES,
+            int16 scrollValues = DEFAULT_SCROLL_VALUE,
             MouseButtonCode buttonCode = MouseButtonCode::INVALID
         )
             : m_eventType(eventType),
               m_coordinates(coordinates),
-              m_scrollValues(scrollValues),
+              m_scrollValue(scrollValues),
               m_buttonCode(buttonCode)
         {
         }
@@ -49,7 +55,7 @@ namespace be
          * 
          * @return 
          */
-        MouseEventType GetType() const
+        MouseEventType GetType() const noexcept
         {
             return m_eventType;
         }
@@ -59,20 +65,20 @@ namespace be
          * 
          * @return
          */
-        const IntVec2& GetCoordinates() const
+        const IntVec2& GetCoordinates() const noexcept
         {
             return m_coordinates;
         }
 
         /**
-         * Returns vertical and horizontal scroll values.
-         * If no scrolling occurred, these are {0, 0}
+         * Returns number indicating how much has the mouse wheel been scrolled.
+         * If no scrolling occurred, this value is equal to 0
          * 
          * @return 
          */
-        const IntVec2& GetScrollValues() const
+        int16 GetScrollValue() const noexcept
         {
-            return m_scrollValues;
+            return m_scrollValue;
         }
 
         /**
@@ -81,7 +87,7 @@ namespace be
          * 
          * @return 
          */
-        MouseButtonCode GetButton() const
+        MouseButtonCode GetButton() const noexcept
         {
             return m_buttonCode;
         }
@@ -89,7 +95,7 @@ namespace be
     private:
         MouseEventType m_eventType;
         IntVec2 m_coordinates = DEFAULT_COORDINATES;
-        IntVec2 m_scrollValues = DEFAULT_SCROLL_VALUES;
+        int16 m_scrollValue = DEFAULT_SCROLL_VALUE;
         MouseButtonCode m_buttonCode;
     };
 
@@ -112,15 +118,15 @@ namespace be
     {
     public:
         /**
-         * Initializes MouseEvent with given scroll values containing data about how much has been scrolled vertically and horizontally.
+         * Initializes MouseEvent with given scroll values containing data about how much has the mouse wheel been scrolled.
          * Sets event tyep to MouseEventType::EVENT_MOUSE_SCROLLED.
          * Initializes event with cursor position
          * 
          * @param scrollValues
          * @param coordinates
          */
-        MouseScrolledEvent(IntVec2 scrollValues, IntVec2 coordinates)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_SCROLLED, std::move(coordinates), std::move(scrollValues))
+        MouseScrolledEvent(int16 scrollValue, IntVec2 coordinates)
+            : MouseEvent(MouseEventType::EVENT_MOUSE_SCROLLED, std::move(coordinates), std::move(scrollValue))
         {
         }
     };
@@ -135,7 +141,7 @@ namespace be
          * @param coordinates
          */
         MouseButtonPressedEvent(MouseButtonCode button, IntVec2 coordinates)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_PRESSED, coordinates, DEFAULT_SCROLL_VALUES, button)
+            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_PRESSED, coordinates, DEFAULT_SCROLL_VALUE, button)
         {
         }
     };
@@ -150,7 +156,7 @@ namespace be
          * @param coordinates
          */
         MouseButtonReleasedEvent(MouseButtonCode button, IntVec2 coordinates)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_RELEASED, coordinates, DEFAULT_SCROLL_VALUES, button)
+            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_RELEASED, coordinates, DEFAULT_SCROLL_VALUE, button)
         {
         }
     };

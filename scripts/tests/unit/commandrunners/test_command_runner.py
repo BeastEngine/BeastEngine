@@ -38,6 +38,7 @@ def test_run_command_will_start_subprocess_with_given_command():
     expected_capture_output_param = True
     expected_text_param = True
     cwd = 'cwd'
+    encoding = 'utf-8'
 
     sut = CommandRunner()
     sut.run_command(expected_command, cwd)
@@ -46,7 +47,8 @@ def test_run_command_will_start_subprocess_with_given_command():
         args=expected_command,
         capture_output=expected_capture_output_param,
         text=expected_text_param,
-        cwd=cwd
+        cwd=cwd,
+        encoding=encoding
     )
 
 
@@ -244,6 +246,7 @@ def test_run_command_will_execute_command_from_passed_working_directory():
         args=command,
         capture_output=capture_output_param,
         text=text_param,
-        cwd=expected_current_working_dir
+        cwd=expected_current_working_dir,
+        encoding='utf-8'
     )
 

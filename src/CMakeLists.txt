@@ -1,5 +1,9 @@
 include("${PROJECT_CONFIG_PATH}/beastengine/config.cmake")
 
+if(WIN32)
+	list(APPEND BEAST_SRC_LIST "${BEAST_SRC_DIR}/BeastEngine/beastengine.dll.manifest")
+endif()
+
 add_library(${BEAST_LIB_TARGET_NAME} SHARED "${BEAST_SRC_LIST}" "${BEAST_HEADERS_LIST}")
 target_include_directories(${BEAST_LIB_TARGET_NAME} PUBLIC "${BEAST_INCLUDE_DIR}")
 target_compile_features(${BEAST_LIB_TARGET_NAME} PUBLIC cxx_std_17)

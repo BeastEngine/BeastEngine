@@ -10,6 +10,7 @@ namespace be
 
     // Mouse
     using MouseEventHandler = std::function<void(const MouseEvent&)>;
+    using MouseWheelScrolledListener = std::function<void(WheelScrollDirection)>;
 
     // Window
     using WindowClosedEventHandler = std::function<void()>;

@@ -9,10 +9,30 @@ namespace be::internals
     class WindowsWindow final : public AWindow
     {
     public:
+        /**
+         * Creates WinAPI's window using given descriptor.
+         *  Registers WinAPI's window class and initializes HWND.
+         * 
+         * @param windowDescriptor
+         */
         WindowsWindow(const WindowDescriptor& windowDescriptor);
+
+        /**
+         * Destroys WinAPI's window and unregisters its class. Deletes HWND.
+         */
         ~WindowsWindow();
 
+        /**
+         * @see IWindow::ProcessInput
+         */
         virtual void ProcessInput() override;
+
+        /**
+         * Returns WinAPI's window handle.
+         * 
+         * @return 
+         */
+        HWND GetNativeHandle() const noexcept;
 
     private:
         /**
@@ -20,7 +40,7 @@ namespace be::internals
          *  This function is used to convert strings ONLY for WinAPI purposes.
          * 
          * @param narrowTitle
-         * @return 
+         * @return
          */
         std::wstring ConvertWindowTitle(const std::string& narrowTitle) const;
 
@@ -28,7 +48,7 @@ namespace be::internals
          * Returns WinAPI's window style based on given Engine's window style.
          * 
          * @param windowStyle
-         * @return 
+         * @return
          */
         uint32 GetWindowStyle(WindowStyle windowStyle) const;
 
@@ -97,6 +117,18 @@ namespace be::internals
          */
         LRESULT HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const;
 
+        /**
+         * Returns mouse coordinates as IntVec2 extracted from the LPARAM of the WindowProc message.
+         * 
+         * @param lParam
+         * @return 
+         */
+        IntVec2 GetMouseCoordinates(LPARAM lParam) const
+        {
+            const auto point = MAKEPOINTS(lParam);
+            return {point.x, point.y};
+        }
+
     private:
         static constexpr const wchar_t* WINDOW_CLASS_NAME = L"BeastEngineWindow";
 
@@ -123,6 +155,24 @@ namespace be::internals
                 {WindowStyle::WINDOW_BORDERLESS, SW_MAXIMIZE},
             }};
         static constexpr WindowDisplayParamsMap m_displayParamsMap{m_displayParamsMappings};
+        /******************************************************/
+        /******************************************************/
+
+        /******************************************************/
+        /**************** MOUSE BUTTON EVENTS *****************/
+        using MouseButtonsMap = ConstexprMap<uint64, MouseButtonCode, 8>;
+        static constexpr MouseButtonsMap::StorageType m_mouseButtonsCodes{
+            {
+                {WM_LBUTTONDOWN, MouseButtonCode::BUTTON1},
+                {WM_LBUTTONUP, MouseButtonCode::BUTTON1},
+                {WM_RBUTTONDOWN, MouseButtonCode::BUTTON2},
+                {WM_RBUTTONUP, MouseButtonCode::BUTTON2},
+                {WM_MBUTTONDOWN, MouseButtonCode::BUTTON3},
+                {WM_MBUTTONUP, MouseButtonCode::BUTTON3},
+                {XBUTTON1, MouseButtonCode::BUTTON4},
+                {XBUTTON2, MouseButtonCode::BUTTON5},
+            }};
+        static constexpr MouseButtonsMap m_mouseButtonsCodesMap{m_mouseButtonsCodes};
         /******************************************************/
         /******************************************************/
 

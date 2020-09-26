@@ -16,7 +16,6 @@ namespace be
         BUTTON3 = 3,
         BUTTON4 = 4,
         BUTTON5 = 5,
-        BUTTON6 = 6,
 
         BUTTON_LEFT = BUTTON1,
         BUTTON_MIDDLE = BUTTON3,

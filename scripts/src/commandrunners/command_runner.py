@@ -16,7 +16,7 @@ class CommandRunner:
                 )
             )
 
-        process_result = subprocess.run(args=command, capture_output=True, text=True, cwd=cwd)
+        process_result = subprocess.run(args=command, capture_output=True, text=True, cwd=cwd, encoding='utf-8', errors='ignore')
         if verbose is False:
             return process_result.returncode
 
