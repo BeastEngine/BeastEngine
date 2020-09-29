@@ -10,6 +10,7 @@ namespace be
         EVENT_MOUSE_MOVED,
         EVENT_MOUSE_SCROLLED,
         EVENT_MOUSE_BUTTON_PRESSED,
+        EVENT_MOUSE_BUTTON_HELD_DOWN,
         EVENT_MOUSE_BUTTON_RELEASED,
     };
 
@@ -146,11 +147,26 @@ namespace be
         }
     };
 
+    class MouseButtonHeldDownEvent final : public MouseEvent
+    {
+    public:
+        /**
+         * Initializes MouseEvent with held down button code, cursor coordinates and MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN.
+         * 
+         * @param button
+         * @param coordinates
+         */
+        MouseButtonHeldDownEvent(MouseButtonCode button)
+            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN, DEFAULT_COORDINATES, DEFAULT_SCROLL_VALUE, button)
+        {
+        }
+    };
+
     class MouseButtonReleasedEvent final : public MouseEvent
     {
     public:
         /**
-         * Initializes MouseEvent with pressed button code, cursor coordinates and MouseEventType::EVENT_MOUSE_BUTTON_RELEASED.
+         * Initializes MouseEvent with released button code, cursor coordinates and MouseEventType::EVENT_MOUSE_BUTTON_RELEASED.
          * 
          * @param button
          * @param coordinates

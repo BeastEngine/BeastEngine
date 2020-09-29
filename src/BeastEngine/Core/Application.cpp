@@ -2,6 +2,8 @@
 
 namespace be
 {
+    /******************************************************************************/
+    /********** CREATED FOR TESTING PURPOSES. THIS IS SUBJECT TO CHANGE **********/
     internals::Mouse::Mouse(IWindow& window) noexcept
     {
         window.SetMouseEventsHandler(GetEventHandler());
@@ -20,15 +22,29 @@ namespace be
     MouseEventHandler internals::Mouse::GetEventHandler() noexcept
     {
         return [&](const MouseEvent& event) {
-            m_coordinates = event.GetCoordinates();
+            if (event.GetType() != MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN)
+            {
+                m_coordinates = event.GetCoordinates();
+            }
 
+            auto& buttonState = m_buttonsStates[event.GetButton()];
             switch (event.GetType())
             {
             case MouseEventType::EVENT_MOUSE_BUTTON_PRESSED:
-                m_buttonsStates[event.GetButton()] = true;
+                buttonState.isPressed = true;
+                break;
+            case MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN:
+                if (buttonState.isPressed == false)
+                {
+                    return;
+                }
+
+                buttonState.isPressed = false;
+                buttonState.isHeldDown = true;
                 break;
             case MouseEventType::EVENT_MOUSE_BUTTON_RELEASED:
-                m_buttonsStates[event.GetButton()] = false;
+                buttonState.isPressed = false;
+                buttonState.isHeldDown = false;
                 break;
             case MouseEventType::EVENT_MOUSE_SCROLLED:
                 ScrollWheel(event.GetScrollValue());
@@ -59,10 +75,46 @@ namespace be
         }
     }
 
+    internals::Keyboard::Keyboard(IWindow& window) noexcept
+    {
+        window.SetKeyboardEventsHandler(GetEventHandler());
+    }
+
+    KeyboardEventHandler be::internals::Keyboard::GetEventHandler() noexcept
+    {
+        return [&](const KeyboardEvent& event) {
+            auto& buttonState = m_buttonsStates[event.GetKey()];
+            switch (event.GetType())
+            {
+            case KeyboardEventType::EVENT_KEY_PRESSED:
+                buttonState.isPressed = true;
+                break;
+            case KeyboardEventType::EVENT_KEY_HELD_DOWN:
+                if (buttonState.isPressed == false)
+                {
+                    return;
+                }
+
+                buttonState.isPressed = false;
+                buttonState.isHeldDown = true;
+                break;
+            case KeyboardEventType::EVENT_KEY_RELEASED:
+                buttonState.isPressed = false;
+                buttonState.isHeldDown = false;
+                break;
+            default:
+                return;
+            }
+        };
+    }
+    /******************************************************************************/
+    /******************************************************************************/
+
     AApplication::AApplication(EngineConfig engineConfig, const WindowDescriptor& mainWindowDescriptor)
     {
         m_engine = CreateUniquePtr<BeastEngine>(std::move(engineConfig));
         m_window = m_engine->CreateMainWindow(mainWindowDescriptor);
         m_mouse = CreateUniquePtr<internals::Mouse>(*m_window);
+        m_keyboard = CreateUniquePtr<internals::Keyboard>(*m_window);
     }
 } // namespace be

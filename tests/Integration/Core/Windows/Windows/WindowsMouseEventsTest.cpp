@@ -1,10 +1,10 @@
-#ifdef BE_PLATFORM_WINDOWS
-    #include "WindowsWindowTest.h"
+#include "WindowsMouseEventsTest.h"
 
+#if LAB_CAN_BUILD_WINAPI_TESTS
     #include <BeastEngine/Core/Windows/Windows/WindowsWindow.h>
     #include <BeastEngine/Core/Events/Events.h>
 
-namespace be::tests::functional
+namespace be::tests::integration
 {
     TEST_F(MouseMessagesTest, ProcessInputWillProperlyHandleAndDispatchMouseMoveMessage)
     {
@@ -40,9 +40,8 @@ namespace be::tests::functional
     INSTANTIATE_TEST_SUITE_P(
         WindowsWindowTest_MouseWheelMessagesTest,
         MouseWheelMessagesTest,
-        testing::Values(120, 80, 500, -120, -80, 500)
-    );
-    
+        testing::Values(120, 80, 500, -120, -80, 500));
+
     TEST_P(MouseWheelMessagesTest, ProcessInputWillProperlyHandleAndDispatchMouseWheelMessageWithPositiveDelta)
     {
         bool wasHandlerCalled = false;
@@ -83,28 +82,26 @@ namespace be::tests::functional
         WindowsWindowTest_MouseButtonsDownMessagesTest,
         MouseButtonsDownMessagesTest,
         testing::Values(
-            MouseButtonMessageTestParam{WM_LBUTTONDOWN, MouseButtonCode::BUTTON_LEFT},
-            MouseButtonMessageTestParam{WM_MBUTTONDOWN, MouseButtonCode::BUTTON_MIDDLE},
-            MouseButtonMessageTestParam{WM_RBUTTONDOWN, MouseButtonCode::BUTTON_RIGHT},
-            MouseButtonMessageTestParam{WM_XBUTTONDOWN, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
-            MouseButtonMessageTestParam{WM_XBUTTONDOWN, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}
-        )
-    );
+            MouseButtonMessageTestParams{WM_LBUTTONDOWN, MouseButtonCode::BUTTON_LEFT},
+            MouseButtonMessageTestParams{WM_MBUTTONDOWN, MouseButtonCode::BUTTON_MIDDLE},
+            MouseButtonMessageTestParams{WM_RBUTTONDOWN, MouseButtonCode::BUTTON_RIGHT},
+            MouseButtonMessageTestParams{WM_XBUTTONDOWN, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
+            MouseButtonMessageTestParams{WM_XBUTTONDOWN, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}));
 
     TEST_P(MouseButtonsDownMessagesTest, ProcessInputWillProperlyHandleAndDispatchMouseButtonDownMessages)
     {
-        const MouseButtonMessageTestParam testParams = GetParam();
+        const MouseButtonMessageTestParams testParams = GetParam();
 
         bool wasHandlerCalled = false;
         const auto expectedEventType = MouseEventType::EVENT_MOUSE_BUTTON_PRESSED;
-        const auto expectedMouseButtonCode = testParams.expectedButtonCode;
+        const auto expectedButtonCode = testParams.expectedButtonCode;
         const auto expectedMouseClickCoords = IntVec2(400, 300);
 
         MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
             wasHandlerCalled = true;
 
             ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedMouseButtonCode, event.GetButton());
+            ASSERT_EQ(expectedButtonCode, event.GetButton());
             ASSERT_EQ(expectedMouseClickCoords, event.GetCoordinates());
         };
 
@@ -124,7 +121,7 @@ namespace be::tests::functional
 
     TEST_P(MouseButtonsDownMessagesTest, ProcessInputWillCaptureWindowWhenMouseButtonsDownMessagesAreSent)
     {
-        const MouseButtonMessageTestParam testParams = GetParam();
+        const MouseButtonMessageTestParams testParams = GetParam();
 
         // Make window invisible to avoid accidental mouse movement event triggering
         WindowDescriptor windowDescriptor(GetModuleHandle(nullptr));
@@ -153,28 +150,26 @@ namespace be::tests::functional
         WindowsWindowTest_MouseButtonsUpMessagesTest,
         MouseButtonsUpMessagesTest,
         testing::Values(
-            MouseButtonMessageTestParam{WM_LBUTTONUP, MouseButtonCode::BUTTON_LEFT},
-            MouseButtonMessageTestParam{WM_MBUTTONUP, MouseButtonCode::BUTTON_MIDDLE},
-            MouseButtonMessageTestParam{WM_RBUTTONUP, MouseButtonCode::BUTTON_RIGHT},
-            MouseButtonMessageTestParam{WM_XBUTTONUP, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
-            MouseButtonMessageTestParam{WM_XBUTTONUP, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}
-        )
-    );
+            MouseButtonMessageTestParams{WM_LBUTTONUP, MouseButtonCode::BUTTON_LEFT},
+            MouseButtonMessageTestParams{WM_MBUTTONUP, MouseButtonCode::BUTTON_MIDDLE},
+            MouseButtonMessageTestParams{WM_RBUTTONUP, MouseButtonCode::BUTTON_RIGHT},
+            MouseButtonMessageTestParams{WM_XBUTTONUP, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
+            MouseButtonMessageTestParams{WM_XBUTTONUP, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}));
 
     TEST_P(MouseButtonsUpMessagesTest, ProcessInputWillProperlyHandleAndDispatchMouseButtonUpMessages)
     {
-        const MouseButtonMessageTestParam testParams = GetParam();
+        const MouseButtonMessageTestParams testParams = GetParam();
 
         bool wasHandlerCalled = false;
         const auto expectedEventType = MouseEventType::EVENT_MOUSE_BUTTON_RELEASED;
-        const auto expectedMouseButtonCode = testParams.expectedButtonCode;
+        const auto expectedButtonCode = testParams.expectedButtonCode;
         const auto expectedMouseClickCoords = IntVec2(400, 300);
 
         MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
             wasHandlerCalled = true;
 
             ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedMouseButtonCode, event.GetButton());
+            ASSERT_EQ(expectedButtonCode, event.GetButton());
             ASSERT_EQ(expectedMouseClickCoords, event.GetCoordinates());
         };
 
@@ -194,7 +189,7 @@ namespace be::tests::functional
 
     TEST_P(MouseButtonsUpMessagesTest, ProcessInputWillReleaseWindowWhenMouseButtonsUpMessagesAreSent)
     {
-        const MouseButtonMessageTestParam testParams = GetParam();
+        const MouseButtonMessageTestParams testParams = GetParam();
         bool wasHandlerCalled = false;
 
         // Make window invisible to avoid accidental mouse movement event triggering
@@ -218,5 +213,59 @@ namespace be::tests::functional
     }
     /******************************************************/
     /******************************************************/
-} // namespace be::tests::functional
+
+    INSTANTIATE_TEST_SUITE_P(
+        WindowsWindowTest_MouseButtonsHeldDownMessagesTest,
+        MouseButtonsHeldDownMessagesTest,
+        testing::Values(
+            MouseButtonsHeldDownMessagesTestParams{MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP, MouseButtonCode::BUTTON_LEFT},
+            MouseButtonsHeldDownMessagesTestParams{MOUSEEVENTF_MIDDLEDOWN, MOUSEEVENTF_MIDDLEUP, MouseButtonCode::BUTTON_MIDDLE},
+            MouseButtonsHeldDownMessagesTestParams{MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP, MouseButtonCode::BUTTON_RIGHT},
+            MouseButtonsHeldDownMessagesTestParams{MOUSEEVENTF_XDOWN, MOUSEEVENTF_XUP, MouseButtonCode::BUTTON4, XBUTTON1},
+            MouseButtonsHeldDownMessagesTestParams{MOUSEEVENTF_XDOWN, MOUSEEVENTF_XUP, MouseButtonCode::BUTTON5, XBUTTON2}));
+
+    TEST_P(MouseButtonsHeldDownMessagesTest, ProcessInputWillProperlyDispatchMouseButtonHeldDownEventsWhenAppropriateMouseButtonIsPressed)
+    {
+        const MouseButtonsHeldDownMessagesTestParams testParams = GetParam();
+
+        bool wasHandlerCalled = false;
+        const auto expectedEventType = MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN;
+        const auto expectedButtonCode = testParams.expectedButtonCode;
+
+        MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
+            wasHandlerCalled = true;
+
+            EXPECT_EQ(expectedEventType, event.GetType());
+            EXPECT_EQ(expectedButtonCode, event.GetButton());
+        };
+
+        // Make window invisible to avoid accidental mouse movement event triggering
+        WindowDescriptor windowDescriptor(GetModuleHandle(nullptr));
+        windowDescriptor.dimensions = {0, 0};
+
+        auto sut = be::internals::WindowsWindow(windowDescriptor);
+        sut.SetMouseEventsHandler(expectedHandler);
+
+        MOUSEINPUT inputData = {0};
+        inputData.mouseData = testParams.additionalEventData;
+        inputData.dwFlags = testParams.pressedVirtualKeyCode;
+
+        INPUT inputs[] = {INPUT{INPUT_MOUSE, inputData}};
+        SendInput(1, inputs, sizeof(inputs));
+
+        sut.ProcessInput();
+        EXPECT_TRUE(wasHandlerCalled);
+
+        // Clear the input state
+        {
+            MOUSEINPUT mouseInput = {0};
+            mouseInput.mouseData = testParams.additionalEventData;
+            mouseInput.dwFlags = testParams.virtualKeyCodeToReset;
+
+            INPUT clearingInputs[] = {INPUT{INPUT_MOUSE, mouseInput}};
+            SendInput(1, clearingInputs, sizeof(clearingInputs));
+            sut.ProcessInput();
+        }
+    }
+} // namespace be::tests::integration
 #endif

@@ -17,27 +17,68 @@ public:
     {
         m_engine->PrintInfo();
 
+
         while (m_isRunning)
         {
+            system("CLS");
             const auto& coords = m_mouse->GetCoordinates();
 
             m_window->ProcessInput();
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_LEFT))
             {
                 std::cout << "Left button pressed\n";
+                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
             }
 
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_MIDDLE))
             {
                 std::cout << "Middle button pressed\n";
+                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
             }
 
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_RIGHT))
             {
                 std::cout << "Right button pressed\n";
+                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
             }
-            /*system("CLS");
-            std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";*/
+
+            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_LEFT))
+            {
+                std::cout << "Left button held down\n";
+                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+            }
+
+            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_MIDDLE))
+            {
+                std::cout << "Middle button held down\n";
+                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+            }
+
+            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_RIGHT))
+            {
+                std::cout << "Right button held down\n";
+                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+            }
+
+            if (m_keyboard->IsKeyPressed(be::KeyCode::LeftShift))
+            {
+                std::cout << "Right arrow pressed\n";
+            }
+
+            if (m_keyboard->IsKeyHeldDown(be::KeyCode::LeftShift))
+            {
+                std::cout << "Right arrow held down!\n";
+            }
+
+            if (m_keyboard->IsKeyDown(be::KeyCode::LeftShift))
+            {
+                std::cout << "Right arrow is down!\n";
+            }
+
+            if (m_keyboard->IsKeyPressed(be::KeyCode::Escape))
+            {
+                break;
+            }
         }
     }
 

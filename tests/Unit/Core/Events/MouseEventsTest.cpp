@@ -5,7 +5,7 @@
 
 namespace be::tests::unit
 {
-    TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializesWithDefaultValues)
+    TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializeWithDefaultValues)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_MOVED;
         const auto expectedCoordinates = IntVec2(0, 0);
@@ -19,7 +19,7 @@ namespace be::tests::unit
         ASSERT_EQ(expectedMouseButton, sut.GetButton());
     }
 
-    TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializesWithPassedValues)
+    TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializeWithPassedValues)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_MOVED;
         const auto expectedCoordinates = IntVec2(10, 0);
@@ -33,7 +33,7 @@ namespace be::tests::unit
         ASSERT_EQ(expectedMouseButton, sut.GetButton());
     }
 
-    TEST_F(MouseEventsTest, MouseMovedEventConstructorWillProperlyInitializesParentWithDefaultValues)
+    TEST_F(MouseEventsTest, MouseMovedEventConstructorWillProperlyInitializeParentWithDefaultValues)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_MOVED;
         const auto expectedCoordinates = IntVec2(5, 10);
@@ -48,7 +48,7 @@ namespace be::tests::unit
         ASSERT_EQ(expectedMouseButton, sut.GetButton());
     }
 
-    TEST_F(MouseEventsTest, MouseScrolledEventConstructorWillProperlyInitializesParentWithDefaultValues)
+    TEST_F(MouseEventsTest, MouseScrolledEventConstructorWillProperlyInitializeParentWithDefaultValues)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_SCROLLED;
         const auto expectedScrollValue = 412;
@@ -63,7 +63,7 @@ namespace be::tests::unit
         ASSERT_EQ(expectedMouseButton, sut.GetButton());
     }
 
-    TEST_F(MouseEventsTest, MouseButtonPressedEventConstructorWillProperlyInitializesParentWithDefaultValues)
+    TEST_F(MouseEventsTest, MouseButtonPressedEventConstructorWillProperlyInitializeParentWithDefaultValues)
     {
         const auto expectedMouseButton = MouseButtonCode::BUTTON_LEFT;
         const auto expectedCoordinates = IntVec2(532, 131);
@@ -78,7 +78,20 @@ namespace be::tests::unit
         ASSERT_EQ(expectedMouseButton, sut.GetButton());
     }
 
-    TEST_F(MouseEventsTest, MouseButtonReleasedEventConstructorWillProperlyInitializesParentWithDefaultValues)
+    TEST_F(MouseEventsTest, MouseButtonHeldEventConstructorWillProperlyInitializeParentWithDefeaultValues)
+    {
+        const auto expectedMouseButton = MouseButtonCode::BUTTON_LEFT;
+        const auto expectedType = MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN;
+
+        const auto expectedScrollValue = 0;
+
+        const auto sut = MouseButtonHeldDownEvent(expectedMouseButton);
+        ASSERT_EQ(expectedType, sut.GetType());
+        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
+        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+    }
+
+    TEST_F(MouseEventsTest, MouseButtonReleasedEventConstructorWillProperlyInitializeParentWithDefaultValues)
     {
         const auto expectedMouseButton = MouseButtonCode::BUTTON_LEFT;
         const auto expectedCoordinates = IntVec2(532, 131);

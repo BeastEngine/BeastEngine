@@ -13,7 +13,7 @@ namespace be::internals
          * Creates WinAPI's window using given descriptor.
          *  Registers WinAPI's window class and initializes HWND.
          * 
-         * @param windowDescriptor
+         * @param windowDescriptor Struct containing details about window
          */
         WindowsWindow(const WindowDescriptor& windowDescriptor);
 
@@ -39,7 +39,7 @@ namespace be::internals
          * Converts std::string into WinAPI's wide string.
          *  This function is used to convert strings ONLY for WinAPI purposes.
          * 
-         * @param narrowTitle
+         * @param narrowTitle 'Narrow' UTF-8 string
          * @return
          */
         std::wstring ConvertWindowTitle(const std::string& narrowTitle) const;
@@ -47,7 +47,7 @@ namespace be::internals
         /**
          * Returns WinAPI's window style based on given Engine's window style.
          * 
-         * @param windowStyle
+         * @param windowStyle BeastEngine's window style to convert
          * @return
          */
         uint32 GetWindowStyle(WindowStyle windowStyle) const;
@@ -118,9 +118,15 @@ namespace be::internals
         LRESULT HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const;
 
         /**
+         * Checks if mouse buttons are held down.
+         *  Dispatches MouseButtonHeldDownEvent with valid MouseButtonCode if specific button is held down.
+         */
+        void ProcessHeldDownMessages() const;
+
+        /**
          * Returns mouse coordinates as IntVec2 extracted from the LPARAM of the WindowProc message.
          * 
-         * @param lParam
+         * @param lParam LPARAM from WindowProc which to retrieve the coordinates from
          * @return 
          */
         IntVec2 GetMouseCoordinates(LPARAM lParam) const
@@ -129,8 +135,33 @@ namespace be::internals
             return {point.x, point.y};
         }
 
+        /**
+         * Returns info about whether the button represented by the given keyCode is currently pressed.
+         * 
+         * @param keyCode The key to examine
+         * @return 
+         */
+        bool IsKeyPressed(int keyCode) const
+        {
+            return GetKeyState(keyCode) & KEY_STATE_IS_PRESSED;
+        }
+
+        /**
+         * Returns info about whether the virtual key's previous state represtened by the given LPARAM is VK_DOWN.
+         *  Uses bit number 30 of the given param to determine the value.
+         * 
+         * @param lParam LPARAM containing information about current WM_KEYDOWN virtual key
+         * @return 
+         */
+        bool IsKeyHeldDown(LPARAM lParam) const
+        {
+            return lParam & KEY_STATE_IS_PRESSED_AND_REPEATED;
+        }
+
     private:
         static constexpr const wchar_t* WINDOW_CLASS_NAME = L"BeastEngineWindow";
+        static constexpr const uint16 KEY_STATE_IS_PRESSED = 0x8000;
+        static constexpr const LPARAM KEY_STATE_IS_PRESSED_AND_REPEATED = 0x40000000;
 
         /******************************************************/
         /******************* WINDOW STYLES ********************/

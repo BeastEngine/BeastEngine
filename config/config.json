@@ -118,7 +118,9 @@
             "Unit/Core/Events/MouseEventsTest.h",
             "Unit/Core/BeastEngineTest.h",
             "Unit/Core/DataStructuresTests.h",
-            "Functional/Core/Windows/Windows/WindowsWindowTest.h",
+            "Integration/Core/Windows/Windows/WindowsMouseEventsTest.h",
+            "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.h",
+            "Integration/Core/Windows/Windows/WinTestSetup.h",
             "TestSetup.h"
           ]
         },
@@ -132,7 +134,8 @@
             "Unit/Core/Events/MouseEventsTest.cpp",
             "Unit/Core/BeastEngineTest.cpp",
             "Unit/Core/DataStructuresTests.cpp",
-            "Functional/Core/Windows/Windows/WindowsWindowTest.cpp"
+            "Integration/Core/Windows/Windows/WindowsMouseEventsTest.cpp",
+            "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.cpp"
           ]
         }
       }
