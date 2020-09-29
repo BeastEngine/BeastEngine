@@ -5,8 +5,16 @@
 
 namespace be
 {
+    /******************************************************************************/
+    /********** CREATED FOR TESTING PURPOSES. THIS IS SUBJECT TO CHANGE **********/
     namespace internals
     {
+        struct ButtonState
+        {
+            bool isPressed = false;
+            bool isHeldDown = false;
+        };
+
         class Mouse
         {
         public:
@@ -19,7 +27,17 @@ namespace be
             {
                 if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
                 {
-                    return buttonState->second;
+                    return buttonState->second.isPressed;
+                }
+
+                return false;
+            }
+
+            bool IsButtonHeldDown(MouseButtonCode buttonCode) const noexcept
+            {
+                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
+                {
+                    return buttonState->second.isHeldDown;
                 }
 
                 return false;
@@ -36,14 +54,58 @@ namespace be
 
         private:
             IntVec2 m_coordinates;
-            std::unordered_map<MouseButtonCode, bool> m_buttonsStates;
+            std::unordered_map<MouseButtonCode, ButtonState> m_buttonsStates;
 
             uint16 m_scrollThreshold = 120;
             int16 m_currentScrollValue = 0;
 
             MouseWheelScrolledListener m_mouseScrolledListener;
         };
+
+        class Keyboard
+        {
+        public:
+            Keyboard(IWindow& window) noexcept;
+
+            bool IsKeyPressed(KeyCode keyCode) const noexcept
+            {
+                if (const auto buttonState = m_buttonsStates.find(keyCode); buttonState != m_buttonsStates.end())
+                {
+                    return buttonState->second.isPressed;
+                }
+
+                return false;
+            }
+
+            bool IsKeyHeldDown(KeyCode buttonCode) const noexcept
+            {
+                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
+                {
+                    return buttonState->second.isHeldDown;
+                }
+
+                return false;
+            }
+
+            bool IsKeyDown(KeyCode buttonCode) const noexcept
+            {
+                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
+                {
+                    return buttonState->second.isHeldDown || buttonState->second.isPressed;
+                }
+
+                return false;
+            }
+
+        private:
+            KeyboardEventHandler GetEventHandler() noexcept;
+
+        private:
+            std::unordered_map<KeyCode, ButtonState> m_buttonsStates;
+        };
     } // namespace internals
+    /******************************************************************************/
+    /******************************************************************************/
 
     class AApplication
     {
@@ -67,6 +129,7 @@ namespace be
 
     protected:
         UniquePtr<internals::Mouse> m_mouse = nullptr;
+        UniquePtr<internals::Keyboard> m_keyboard = nullptr;
         UniquePtr<IWindow> m_window = nullptr;
 
     protected:

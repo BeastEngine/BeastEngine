@@ -1,10 +1,10 @@
-#ifdef BE_PLATFORM_WINDOWS
-    #include "TestSetup.h"
+#include "WinTestSetup.h"
 
+#if LAB_CAN_BUILD_WINAPI_TESTS
     #include <BeastEngine/Core/Types.h>
     #include <BeastEngine/Core/Events/Events.h>
 
-namespace be::tests::functional
+namespace be::tests::integration
 {
     /**
      * Class for general mouse messages/events tests.
@@ -20,8 +20,8 @@ namespace be::tests::functional
     {
     protected:
     };
- 
-    struct MouseButtonMessageTestParam
+
+    struct MouseButtonMessageTestParams
     {
         uint32 winApiMessageToSend;
         MouseButtonCode expectedButtonCode;
@@ -33,7 +33,7 @@ namespace be::tests::functional
      */
     class MouseButtonsDownMessagesTest
         : public MouseMessagesTest,
-          public ::testing::WithParamInterface<MouseButtonMessageTestParam>
+          public ::testing::WithParamInterface<MouseButtonMessageTestParams>
     {
     protected:
     };
@@ -43,9 +43,27 @@ namespace be::tests::functional
      */
     class MouseButtonsUpMessagesTest
         : public MouseMessagesTest,
-          public ::testing::WithParamInterface<MouseButtonMessageTestParam>
+          public ::testing::WithParamInterface<MouseButtonMessageTestParams>
     {
     protected:
     };
-} // namespace be::tests::functional
+
+    struct MouseButtonsHeldDownMessagesTestParams
+    {
+        unsigned long pressedVirtualKeyCode;
+        unsigned long virtualKeyCodeToReset;
+        MouseButtonCode expectedButtonCode;
+        DWORD additionalEventData = NULL;
+    };
+
+    /**
+     * Class for mouse buttons held down messages/events tests.
+     */
+    class MouseButtonsHeldDownMessagesTest
+        : public MouseMessagesTest,
+          public ::testing::WithParamInterface<MouseButtonsHeldDownMessagesTestParams>
+    {
+    protected:
+    };
+} // namespace be::tests::integration
 #endif
