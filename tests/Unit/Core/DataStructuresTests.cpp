@@ -3,8 +3,6 @@
 #include <BeastEngine/Core/Types.h>
 #include <BeastEngine/Core/DataStructures.h>
 
-#include <array>
-
 namespace be::tests::unit
 {
     TEST_F(ConstexprMapTest, AtWillReturnValidElement)

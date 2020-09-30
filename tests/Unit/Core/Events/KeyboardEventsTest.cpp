@@ -24,7 +24,7 @@ namespace be::tests::unit
         ASSERT_EQ(expectedEventType, sut.GetType());
     }
 
-    TEST_F(KeyboardEventsTest, KeyDownEventConstructorWillProperltyInitializeParent)
+    TEST_F(KeyboardEventsTest, KeyHeldDownEventConstructorWillProperltyInitializeParent)
     {
         const auto expectedKeyCode = KeyCode::INVALID;
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_HELD_DOWN;

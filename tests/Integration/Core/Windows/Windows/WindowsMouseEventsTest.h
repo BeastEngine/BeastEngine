@@ -9,19 +9,19 @@ namespace be::tests::integration
     /**
      * Class for general mouse messages/events tests.
      */
-    class MouseMessagesTest : public ::testing::Test
+    class WindowsMouseEventsTest : public WinTest
     {
     protected:
     };
 
-    class MouseWheelMessagesTest
-        : public MouseMessagesTest,
+    class WindowsMouseWheelEventsTest
+        : public WindowsMouseEventsTest,
           public ::testing::WithParamInterface<int32>
     {
     protected:
     };
 
-    struct MouseButtonMessageTestParams
+    struct WindowsMouseButtonEventsTestParams
     {
         uint32 winApiMessageToSend;
         MouseButtonCode expectedButtonCode;
@@ -31,9 +31,9 @@ namespace be::tests::integration
     /**
      * Class for mouse buttons down messages/events tests.
      */
-    class MouseButtonsDownMessagesTest
-        : public MouseMessagesTest,
-          public ::testing::WithParamInterface<MouseButtonMessageTestParams>
+    class WindowsMouseButtonsDownEventsTest
+        : public WindowsMouseEventsTest,
+          public ::testing::WithParamInterface<WindowsMouseButtonEventsTestParams>
     {
     protected:
     };
@@ -41,27 +41,9 @@ namespace be::tests::integration
     /**
      * Class for mouse buttons up messages/events tests.
      */
-    class MouseButtonsUpMessagesTest
-        : public MouseMessagesTest,
-          public ::testing::WithParamInterface<MouseButtonMessageTestParams>
-    {
-    protected:
-    };
-
-    struct MouseButtonsHeldDownMessagesTestParams
-    {
-        unsigned long pressedVirtualKeyCode;
-        unsigned long virtualKeyCodeToReset;
-        MouseButtonCode expectedButtonCode;
-        DWORD additionalEventData = NULL;
-    };
-
-    /**
-     * Class for mouse buttons held down messages/events tests.
-     */
-    class MouseButtonsHeldDownMessagesTest
-        : public MouseMessagesTest,
-          public ::testing::WithParamInterface<MouseButtonsHeldDownMessagesTestParams>
+    class WindowsMouseButtonsUpEventsTest
+        : public WindowsMouseEventsTest,
+          public ::testing::WithParamInterface<WindowsMouseButtonEventsTestParams>
     {
     protected:
     };

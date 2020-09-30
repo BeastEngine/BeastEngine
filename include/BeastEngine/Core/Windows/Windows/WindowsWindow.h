@@ -3,19 +3,23 @@
     #include "BeastEngine/Core/Windows/AWindow.h"
     #include "BeastEngine/Core/PlatformSetup.h"
     #include "BeastEngine/Core/DataStructures.h"
+    #include "BeastEngine/Core/Helpers.h"
 
 namespace be::internals
 {
     class WindowsWindow final : public AWindow
     {
     public:
+        BE_IMPLEMENT_CONSTRUCTORS_DELETED(WindowsWindow);
+
         /**
          * Creates WinAPI's window using given descriptor.
          *  Registers WinAPI's window class and initializes HWND.
          * 
          * @param windowDescriptor Struct containing details about window
+         * @param windowClassName Name of the WinAPI class to register for this window
          */
-        WindowsWindow(const WindowDescriptor& windowDescriptor);
+        WindowsWindow(const WindowDescriptor& windowDescriptor, const wchar_t* windowClassName);
 
         /**
          * Destroys WinAPI's window and unregisters its class. Deletes HWND.
@@ -30,7 +34,7 @@ namespace be::internals
         /**
          * Returns WinAPI's window handle.
          * 
-         * @return 
+         * @return HWND of the window
          */
         HWND GetNativeHandle() const noexcept;
 
@@ -40,7 +44,7 @@ namespace be::internals
          *  This function is used to convert strings ONLY for WinAPI purposes.
          * 
          * @param narrowTitle 'Narrow' UTF-8 string
-         * @return
+         * @return std::wstring representation of the given std::string
          */
         std::wstring ConvertWindowTitle(const std::string& narrowTitle) const;
 
@@ -48,7 +52,7 @@ namespace be::internals
          * Returns WinAPI's window style based on given Engine's window style.
          * 
          * @param windowStyle BeastEngine's window style to convert
-         * @return
+         * @return Appropriate WS_* flag(s)
          */
         uint32 GetWindowStyle(WindowStyle windowStyle) const;
 
@@ -60,7 +64,7 @@ namespace be::internals
          *  This function is used because we need to know actual display dimensions in order to make the window
          *  fullscreen.
          * 
-         * @return 
+         * @return IntVec2{x=width, y=height}
          */
         IntVec2 GetWindowDimensions() const;
 
@@ -127,7 +131,7 @@ namespace be::internals
          * Returns mouse coordinates as IntVec2 extracted from the LPARAM of the WindowProc message.
          * 
          * @param lParam LPARAM from WindowProc which to retrieve the coordinates from
-         * @return 
+         * @return
          */
         IntVec2 GetMouseCoordinates(LPARAM lParam) const
         {
@@ -138,8 +142,10 @@ namespace be::internals
         /**
          * Returns info about whether the button represented by the given keyCode is currently pressed.
          * 
+         * @see https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-getkeystate
+         * 
          * @param keyCode The key to examine
-         * @return 
+         * @return True if the given key state's bit 16 is set to 1 and false otherwise
          */
         bool IsKeyPressed(int keyCode) const
         {
@@ -150,8 +156,10 @@ namespace be::internals
          * Returns info about whether the virtual key's previous state represtened by the given LPARAM is VK_DOWN.
          *  Uses bit number 30 of the given param to determine the value.
          * 
+         * @see https://docs.microsoft.com/en-us/windows/win32/learnwin32/keyboard-input
+         * 
          * @param lParam LPARAM containing information about current WM_KEYDOWN virtual key
-         * @return 
+         * @return True if the given lParam's bit 30 is set to 1 and false otherwise
          */
         bool IsKeyHeldDown(LPARAM lParam) const
         {
@@ -159,7 +167,7 @@ namespace be::internals
         }
 
     private:
-        static constexpr const wchar_t* WINDOW_CLASS_NAME = L"BeastEngineWindow";
+        const wchar_t* WINDOW_CLASS_NAME = L"";
         static constexpr const uint16 KEY_STATE_IS_PRESSED = 0x8000;
         static constexpr const LPARAM KEY_STATE_IS_PRESSED_AND_REPEATED = 0x40000000;
 
