@@ -9,7 +9,7 @@ namespace be::internals
     UniquePtr<IWindow> WindowFactory::Create(const WindowDescriptor& descriptor)
     {
 #ifdef BE_PLATFORM_WINDOWS
-        return CreateUniquePtr<WindowsWindow>(descriptor);
+        return CreateUniquePtr<WindowsWindow>(descriptor, L"BeastEngineWindowClassName");
 #else
         return nullptr;
 #endif

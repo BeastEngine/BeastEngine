@@ -14,7 +14,12 @@
 namespace be
 {
     /**
-     * Creats AApplication instance.
+     * Creates AApplication instance.
+     *  Definition must be provided by the user!
+     * 
+     * @param WindowHandleInstance Handle to be used as parent window handle provided by the OS
+     * 
+     * @return Pointer to the implementation of the AApplication instance
      */
     extern UniquePtr<AApplication> CreateApplication(WindowHandleInstance windowHandleInstance);
 } // namespace be

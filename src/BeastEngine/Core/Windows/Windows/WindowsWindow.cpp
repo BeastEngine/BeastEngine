@@ -2,6 +2,8 @@
     #include "BeastEngine/Core/Windows/Windows/WindowsWindow.h"
     #include "BeastEngine/Core/Assertions.h"
 
+#include <iostream>
+
 namespace be::internals
 {
     #ifndef BE_WINAPI_CALL
@@ -143,8 +145,8 @@ namespace be::internals
         {VK_OEM_8, KeyCode::OEMSpecific},
     };
 
-    WindowsWindow::WindowsWindow(const WindowDescriptor& windowDescriptor)
-        : m_hInstance(windowDescriptor.handleInstance.Get()), m_descriptor(windowDescriptor)
+    WindowsWindow::WindowsWindow(const WindowDescriptor& windowDescriptor, const wchar_t* windowClassName)
+        : WINDOW_CLASS_NAME(windowClassName), m_hInstance(windowDescriptor.handleInstance.Get()), m_descriptor(windowDescriptor)
     {
         WNDCLASS wc = {0};
 
@@ -165,7 +167,8 @@ namespace be::internals
             NULL, // Parent window
             NULL, // Menu
             wc.hInstance,
-            this);
+            this
+        );
 
         if (m_hwnd == NULL)
         {
@@ -177,8 +180,8 @@ namespace be::internals
 
     WindowsWindow::~WindowsWindow()
     {
-        DestroyWindow(m_hwnd);
-        UnregisterClass(WINDOW_CLASS_NAME, m_hInstance);
+        BE_ASSERT(DestroyWindow(m_hwnd));
+        BE_ASSERT(UnregisterClass(WINDOW_CLASS_NAME, m_hInstance));
     }
 
     void WindowsWindow::ProcessInput()
@@ -277,6 +280,8 @@ namespace be::internals
             PostQuitMessage(0);
             return 0;
 
+        /******************************************************/
+        /****************** KEYBOARD EVENTS *******************/
         case WM_KEYDOWN:
             if (IsKeyHeldDown(lParam))
             {
@@ -289,6 +294,8 @@ namespace be::internals
         case WM_KEYUP:
             DispatchEvent(KeyReleasedEvent(KEY_CODES_MAP.at(wParam)));
             break;
+        /******************************************************/
+        /******************************************************/
 
         /******************************************************/
         /******************* MOUSE EVENTS ********************/

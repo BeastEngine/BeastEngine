@@ -5,18 +5,15 @@
 
 namespace be::tests::integration
 {
-    struct KeyboardMessageTestParams
+    struct WindowsKeyboardEventsTestParams
     {
         WPARAM virtualKeyCode;
         KeyCode expectedKeyCode;
     };
 
-    /**
-     * Class for general mouse messages/events tests.
-     */
-    class KeyboardMessagesTest
-        : public ::testing::Test,
-          public ::testing::WithParamInterface<KeyboardMessageTestParams>
+    class KeyboardEventsTest
+        : public WinTest,
+          public ::testing::WithParamInterface<WindowsKeyboardEventsTestParams>
     {
     protected:
     };

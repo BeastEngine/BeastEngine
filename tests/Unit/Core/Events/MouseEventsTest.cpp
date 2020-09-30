@@ -78,7 +78,7 @@ namespace be::tests::unit
         ASSERT_EQ(expectedMouseButton, sut.GetButton());
     }
 
-    TEST_F(MouseEventsTest, MouseButtonHeldEventConstructorWillProperlyInitializeParentWithDefeaultValues)
+    TEST_F(MouseEventsTest, MouseButtonHeldDownEventConstructorWillProperlyInitializeParentWithDefaultValues)
     {
         const auto expectedMouseButton = MouseButtonCode::BUTTON_LEFT;
         const auto expectedType = MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN;

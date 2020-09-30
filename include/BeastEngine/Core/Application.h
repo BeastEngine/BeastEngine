@@ -115,8 +115,8 @@ namespace be
         /**
          * Creates instance of the AApplication class initializing engine instance with passed be::EngineConfig.
          * 
-         * @param engineConfig
-         * @param mainWindowDescriptor
+         * @param engineConfig Configuration which will be used to create the engine instance
+         * @param mainWindowDescriptor Descriptor which will be used to create the main window
          */
         AApplication(EngineConfig engineConfig, const WindowDescriptor& mainWindowDescriptor);
         virtual ~AApplication() = default;
