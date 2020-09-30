@@ -5,7 +5,7 @@ from copy import deepcopy
 
 import pytest
 from mock import MagicMock, call
-from src.config.config_manager import ConfigManager, Config
+from src.config.config import Config, Config
 from src.beastengine.commands.class_commands import class_remove, class_files_helper
 from tests.tests_utilities.micro_mock import MicroMock
 
@@ -27,7 +27,7 @@ class CommonTestData:
         self.config.cmake.lib.headers = Config.CMake.Target.Files()
         self.config.cmake.lib.sources = Config.CMake.Target.Files()
 
-        self.config_manager_mock = MagicMock(ConfigManager)
+        self.config_manager_mock = MagicMock(Config)
         self.config_manager_mock.config = self.config
 
         self.print_mock = MagicMock()
@@ -254,4 +254,4 @@ def test_constructor_will_update_config():
         test_data.config_manager_mock
     )
 
-    test_data.config_manager_mock.update_config.assert_called_once()
+    test_data.config_manager_mock.update.assert_called_once()

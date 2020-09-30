@@ -2,7 +2,7 @@ import os
 
 from src.files.file_opener import FileOpener
 from src.commandrunners.command_runner import CommandRunner
-from src.config.config_manager import Config
+from src.config.config import Config
 from src.functions import get_project_path
 from pathlib import Path
 
@@ -21,23 +21,23 @@ class ClassFilesHelper:
         self.command_runner = command_runner
         self.file_opener = file_opener
 
-    def class_files_exist(self, target_config: Config.CMake.Target, class_name: str):
-        headers_files = target_config.headers.files
-        sources_files = target_config.sources.files
+    def class_files_exist(self, target_config, class_name: str):
+        headers_files = target_config['headers']['files']
+        sources_files = target_config['sources']['files']
 
         header_file = self.get_header_file_name(class_name)
         source_file = self.get_source_file_name(class_name)
 
         return headers_files.__contains__(header_file) or sources_files.__contains__(source_file)
 
-    def class_header_file_exist(self, target_config: Config.CMake.Target, class_name: str):
-        header_files = target_config.headers.files
+    def class_header_file_exist(self, target_config, class_name: str):
+        header_files = target_config['headers']['files']
         header_file = self.get_source_file_name(class_name)
 
         return header_files.__contains__(header_file)
 
-    def class_source_file_exist(self, target_config: Config.CMake.Target, class_name: str):
-        source_files = target_config.sources.files
+    def class_source_file_exist(self, target_config, class_name: str):
+        source_files = target_config['sources']['files']
         source_file = self.get_source_file_name(class_name)
 
         return source_files.__contains__(source_file)

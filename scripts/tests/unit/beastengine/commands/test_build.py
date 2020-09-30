@@ -7,7 +7,7 @@ import pytest
 from mock import MagicMock
 
 from src.commandrunners.cmake.cmake import CMake
-from src.config.config_manager import ConfigManager, Config
+from src.config.config import Config, Config
 from src.beastengine.commands import build
 from tests.tests_utilities.micro_mock import MicroMock
 
@@ -26,7 +26,7 @@ class CommonTestData:
         self.project_dir = 'project/dir'
 
         self.config = Config()
-        self.config_manager_mock = MagicMock(ConfigManager)
+        self.config_manager_mock = MagicMock(Config)
         self.config_manager_mock.config = self.config
 
         self.print_mock = MagicMock()

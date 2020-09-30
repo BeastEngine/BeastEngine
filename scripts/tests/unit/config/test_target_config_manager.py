@@ -2,7 +2,7 @@ import pytest
 from mock import MagicMock
 
 from src.config.target_config_manager import TargetConfigManager
-from src.config.config_manager import Config
+from src.config.config import Config
 from src.beastengine.commands.class_commands.target_cmake_vars_file_opener import TargetCMakeVarsFileOpener
 
 

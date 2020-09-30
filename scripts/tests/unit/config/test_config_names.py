@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 
-from src.config.config_manager import ConfigManager, Config
+from src.config.config import Config, Config
 from src.config.config_names import ConfigNames
 
 

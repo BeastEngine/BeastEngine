@@ -7,7 +7,7 @@ from mock import MagicMock, call
 
 from src.beastengine.beast_command_helper import BeastCommandHelper
 from src.beastengine.commands.class_commands.class_files_helper import ClassFilesHelper
-from src.config.config_manager import ConfigManager, Config
+from src.config.config import Config, Config
 from src.beastengine.commands.class_commands import class_command
 from tests.tests_utilities.micro_mock import MicroMock
 
@@ -22,7 +22,7 @@ class CommonTestData:
         self.config.cmake = Config.CMake()
         self.config.cmake.lib = Config.CMake.Target()
 
-        self.config_manager_mock = MagicMock(ConfigManager)
+        self.config_manager_mock = MagicMock(Config)
         self.config_manager_mock.config = self.config
 
         self.print_mock = MagicMock()
@@ -164,7 +164,7 @@ def test_constructor_will_call_add_class_command_when_valid_command_line_argumen
     test_data = CommonTestData()
     test_data.mock_create_arguments_parser_function()
 
-    cli_arguments_mock = MicroMock(command=expected_command, target=ConfigManager.TARGET_NAME_LIB)
+    cli_arguments_mock = MicroMock(command=expected_command, target=Config.TARGET_NAME_LIB)
     test_data.parser_mock.parse_args = MagicMock(return_value=cli_arguments_mock)
     test_data.config_manager_mock.get_target_config_by_name = MagicMock(return_value=test_data.config.cmake.lib)
     test_data.target_config_manager_mock.get_headers_base_directory = MagicMock(return_value=headers_base_directory)
@@ -202,7 +202,7 @@ def test_constructor_will_call_remove_class_command_when_valid_command_line_argu
     test_data = CommonTestData()
     test_data.mock_create_arguments_parser_function()
 
-    cli_arguments_mock = MicroMock(command=expected_command, target=ConfigManager.TARGET_NAME_LIB)
+    cli_arguments_mock = MicroMock(command=expected_command, target=Config.TARGET_NAME_LIB)
     test_data.parser_mock.parse_args = MagicMock(return_value=cli_arguments_mock)
     test_data.config_manager_mock.get_target_config_by_name = MagicMock(return_value=test_data.config.cmake.lib)
     test_data.target_config_manager_mock.get_headers_base_directory = MagicMock(return_value=headers_base_directory)
@@ -240,7 +240,7 @@ def test_constructor_will_show_headers_and_sources_base_directories_when_valid_c
     test_data.mock_create_arguments_parser_function()
     test_data.mock_print_function()
 
-    cli_arguments_mock = MicroMock(command=expected_command, target=ConfigManager.TARGET_NAME_LIB)
+    cli_arguments_mock = MicroMock(command=expected_command, target=Config.TARGET_NAME_LIB)
     test_data.parser_mock.parse_args = MagicMock(return_value=cli_arguments_mock)
     test_data.config_manager_mock.get_target_config_by_name = MagicMock(return_value=test_data.config.cmake.lib)
     test_data.target_config_manager_mock.get_headers_base_directory = MagicMock(return_value=headers_base_directory)

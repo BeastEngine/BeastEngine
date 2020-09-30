@@ -1,6 +1,6 @@
 from src.commandrunners.cmake.cmake_config_files_creator import CMakeConfigFilesCreator
 from src.commandrunners.command_runner import CommandRunner
-from src.config.config_manager import ConfigManager, Config
+from src.config.config import Config
 from src.config.config_names import ConfigNames
 
 
@@ -16,7 +16,7 @@ class CMake:
             self,
             command_runner: CommandRunner,
             config_files_creator: CMakeConfigFilesCreator,
-            general_config_manager: ConfigManager,
+            config: Config,
             project_dir: str,
             build_dir: str
     ):
@@ -26,8 +26,9 @@ class CMake:
         self.project_dir = project_dir
         self.build_dir = build_dir
 
-        self.config = general_config_manager.config.cmake
-        self.config_dir = f'{self.project_dir}/{self.config.directory_name}'
+        self.config = config.cmake
+        self.config_dir = f'{self.project_dir}/{self.config["directory_name"]}'
+        self.targets_config = self.config['targets']
 
     def configure(self, verbose: bool):
         self.command_runner.run_command(CMake.COMMAND_INIT.format(self.build_dir), self.project_dir, verbose)
@@ -43,9 +44,9 @@ class CMake:
         self.config_files_creator.generate_main_config(self.config, self.config_dir, verbose)
 
     def generate_targets_configs(self, verbose: bool):
-        self.generate_target_config(self.config.lib, verbose)
-        self.generate_target_config(self.config.exe, verbose)
-        self.generate_target_config(self.config.tests, verbose)
+        self.generate_target_config(self.targets_config['beastengine'], verbose)
+        self.generate_target_config(self.targets_config['sandbox'], verbose)
+        self.generate_target_config(self.targets_config['lab'], verbose)
 
-    def generate_target_config(self, target: Config.CMake.Target, verbose: bool):
+    def generate_target_config(self, target, verbose: bool):
         self.config_files_creator.generate_target_config(target, self.config_dir, verbose)

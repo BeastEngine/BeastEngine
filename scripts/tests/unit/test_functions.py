@@ -3,7 +3,7 @@ import src.functions as functions
 
 from mock import MagicMock
 
-from src.config.config_manager import Config
+from src.config.config import Config
 from tests.tests_utilities.micro_mock import MicroMock
 
 

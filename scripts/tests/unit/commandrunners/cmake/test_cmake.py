@@ -7,7 +7,7 @@ from src.files.file_opener import FileOpener
 from src.config.config_names import ConfigNames
 from src.commandrunners.cmake.cmake import CMake
 from src.commandrunners.command_runner import CommandRunner
-from src.config.config_manager import ConfigManager, Config
+from src.config.config import Config, Config
 
 
 class CommonTestData:
@@ -38,7 +38,7 @@ class CommonTestData:
         self.command_runner_mock = MagicMock(CommandRunner)
         self.command_runner_mock.run_command = MagicMock()
 
-        self.config_manager_mock = MagicMock(ConfigManager)
+        self.config_manager_mock = MagicMock(Config)
         type(self.config_manager_mock).config = self.get_empty_config()
 
         self.file_opener_mock = MagicMock(FileOpener)

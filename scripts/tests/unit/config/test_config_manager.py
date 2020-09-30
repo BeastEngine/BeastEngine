@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from src.config.config_manager import ConfigManager, Config
+from src.config.config import Config, Config
 from src.json_utils.json_manager import JSONManager
 
 
@@ -110,7 +110,7 @@ def test_init_will_load_config_json_from_given_file():
     expected_file_path = 'path/to/json/file/json'
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
 
-    ConfigManager(expected_file_path, test_data.json_manager_mock)
+    Config(expected_file_path, test_data.json_manager_mock)
     test_data.json_manager_mock.load_from_file.assert_called_with(expected_file_path)
 
 
@@ -120,7 +120,7 @@ def test_init_will_generate_config_class_with_proper_default_build_type():
 
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config
 
     assert actual_config.default_build_type == test_data.config_json['default_build_type']
@@ -133,7 +133,7 @@ def test_init_will_generate_config_class_with_proper_cmake_config():
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake
 
     assert actual_config.directory_name == expected_config['directory_name']
@@ -148,7 +148,7 @@ def test_init_will_generate_config_class_with_proper_cmake_project_config():
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['project']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.project
 
     assert actual_config.name_placeholder == expected_config['name_placeholder']
@@ -168,7 +168,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_config():
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.lib
 
     assert actual_config.target_name == expected_config['target_name']
@@ -182,7 +182,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_config_fil
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['config_files']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.lib.config_files
 
     assert actual_config.dist_filename == expected_config['dist_filename']
@@ -196,7 +196,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_variables_
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['variables']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.lib.variables
 
     assert actual_config.target_cmake_variables_file_path_placeholder == expected_config['target_cmake_variables_file_path_placeholder']
@@ -210,7 +210,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_directorie
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['directories']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.lib.directories
 
     assert actual_config.source_directory == expected_config['source_directory']
@@ -226,7 +226,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_headers_co
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['headers']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.lib.headers
 
     assert actual_config.base_dir == expected_config['base_dir']
@@ -241,7 +241,7 @@ def test_init_will_generate_config_class_with_proper_cmake_lib_target_sources_co
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['lib']['sources']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.lib.sources
 
     assert actual_config.base_dir == expected_config['base_dir']
@@ -256,7 +256,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_config():
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.exe
 
     assert actual_config.target_name == expected_config['target_name']
@@ -270,7 +270,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_config_fil
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['config_files']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.exe.config_files
 
     assert actual_config == expected_config
@@ -283,7 +283,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_variables_
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['variables']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.exe.variables
 
     assert actual_config == expected_config
@@ -296,7 +296,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_directorie
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['directories']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.exe.directories
 
     assert actual_config == expected_config
@@ -309,7 +309,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_headers_co
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['headers']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.exe.headers
 
     assert actual_config.base_dir == expected_config['base_dir']
@@ -324,7 +324,7 @@ def test_init_will_generate_config_class_with_proper_cmake_exe_target_sources_co
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['exe']['sources']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.exe.sources
 
     assert actual_config.base_dir == expected_config['base_dir']
@@ -339,7 +339,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_config()
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.tests
 
     assert actual_config.target_name == expected_config['target_name']
@@ -353,7 +353,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_config_f
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['config_files']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.tests.config_files
 
     assert actual_config == expected_config
@@ -366,7 +366,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_variable
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['variables']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.tests.variables
 
     assert actual_config == expected_config
@@ -379,7 +379,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_director
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['directories']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.tests.directories
 
     assert actual_config == expected_config
@@ -392,7 +392,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_headers_
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['headers']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.tests.headers
 
     assert actual_config.base_dir == expected_config['base_dir']
@@ -407,7 +407,7 @@ def test_init_will_generate_config_class_with_proper_cmake_tests_target_sources_
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     expected_config = test_data.config_json['cmake_config']['targets']['tests']['sources']
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.config.cmake.tests.sources
 
     assert actual_config.base_dir == expected_config['base_dir']
@@ -426,11 +426,11 @@ def test_update_config_will_save_updated_config_object_into_selected_config_file
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
     test_data.json_manager_mock.save_to_file = MagicMock()
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     config_before = copy.deepcopy(sut.config)
 
     sut.config = expected_config_after
-    sut.update_config()
+    sut.update()
 
     test_data.json_manager_mock.save_to_file.assert_called_with(sut.json_config, file_path, sut.JSON_STR_INDENT)
     assert config_before != sut.config
@@ -446,13 +446,13 @@ def test_get_target_config_bu_name_will_return_empty_object_if_invalid_name_pass
     file_path = 'path/to/json/file/json'
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.get_target_config_by_name(invalid_target_name)
 
     assert expected_config == actual_config
 
 
-@pytest.mark.parametrize('expected_target_name', [ConfigManager.TARGET_NAME_LIB, ConfigManager.TARGET_NAME_TESTS])
+@pytest.mark.parametrize('expected_target_name', [Config.TARGET_NAME_LIB, Config.TARGET_NAME_TESTS])
 def test_get_target_config_by_name_will_return_valid_config_if_valid_name_passed(expected_target_name):
     test_data = CommonTestData()
     expected_config = test_data.config_json['cmake_config']['targets'][expected_target_name]
@@ -460,7 +460,7 @@ def test_get_target_config_by_name_will_return_valid_config_if_valid_name_passed
     file_path = 'path/to/json/file/json'
     test_data.json_manager_mock.load_from_file.return_value = test_data.config_json
 
-    sut = ConfigManager(file_path, test_data.json_manager_mock)
+    sut = Config(file_path, test_data.json_manager_mock)
     actual_config = sut.get_target_config_by_name(expected_target_name)
 
     assert expected_config['target_name'] == actual_config.target_name

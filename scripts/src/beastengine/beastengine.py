@@ -11,7 +11,7 @@ from src.beastengine.commands.build import Build
 from src.beastengine.beast_command_helper import BeastCommandHelper
 from src.commandrunners.cmake.cmake import CMake
 from src.commandrunners.conan import Conan
-from src.config.config_manager import ConfigManager
+from src.config.config import Config
 
 
 class BeastEngine:
@@ -39,13 +39,13 @@ You can also use it for building the project with desired configuration.{reset}
             project_working_dir,
             build_dir,
             command_runner: CommandRunner,
-            config_manager: ConfigManager,
+            config: Config,
             conan: Conan,
             cmake: CMake,
             target_config_manager: TargetConfigManager,
             class_files_helper: ClassFilesHelper
     ):
-        self.config_manager = config_manager
+        self.config = config
         self.command_runner = command_runner
 
         self.project_dir = project_working_dir
@@ -75,8 +75,8 @@ You can also use it for building the project with desired configuration.{reset}
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_CONFIGURE:
             Configure(self.cmake)
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_BUILD:
-            Build(self.config_manager, self.cmake).execute()
+            Build(self.config, self.cmake).execute()
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_CLASS:
-            ClassCommand(self.config_manager, self.cmake, self.target_config_manager, self.class_files_helper)
+            ClassCommand(self.config, self.cmake, self.target_config_manager, self.class_files_helper)
         elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_INSTALL_DEPENDENCIES:
             self.conan.install(True)
