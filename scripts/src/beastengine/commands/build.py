@@ -3,7 +3,7 @@ import sys
 from src.functions import create_arguments_parser, is_verbose_set
 from src.beastengine.beast_command_helper import BeastCommandHelper
 from src.commandrunners.cmake.cmake import CMake
-from src.config.config_manager import ConfigManager
+from src.config.config import Config
 from src.config.config_names import ConfigNames
 
 
@@ -21,7 +21,7 @@ class Build:
     INVALID_CONFIG_ERROR_MESSAGE_TEMPLATE =\
         "{red}'{config}' is not a valid configuration!\n{yellow}The available configurations are: {configs}"
 
-    def __init__(self, config_manager: ConfigManager, cmake: CMake):
+    def __init__(self, config_manager: Config, cmake: CMake):
         self.config_manager = config_manager
         self.cmake = cmake
 

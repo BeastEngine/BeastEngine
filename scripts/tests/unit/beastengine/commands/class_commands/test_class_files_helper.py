@@ -5,7 +5,7 @@ from mock import MagicMock, call
 
 from src.files.file_opener import FileOpener
 from src.commandrunners.command_runner import CommandRunner
-from src.config.config_manager import Config
+from src.config.config import Config
 from src.beastengine.commands.class_commands import class_files_helper
 
 

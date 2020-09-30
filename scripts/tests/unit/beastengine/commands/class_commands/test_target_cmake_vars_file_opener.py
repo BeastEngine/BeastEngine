@@ -4,7 +4,7 @@ import pytest
 from mock import MagicMock
 
 from src.files.file_opener import FileOpener
-from src.config.config_manager import Config
+from src.config.config import Config
 import src.beastengine.commands.class_commands.target_cmake_vars_file_opener as file_opener
 
 

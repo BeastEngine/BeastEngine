@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from inspect import currentframe, getframeinfo
 from pathlib import Path
 
-from src.config.config_manager import Config
+from src.config.config import Config
 
 
 def get_project_path():
@@ -26,8 +26,8 @@ def is_verbose_set(args):
     return not args.no_verbose
 
 
-def get_target_cmake_variables_full_file_path(cmake_dir_name: str, variables_config: Config.CMake.Target.Variables):
-    return f'{get_project_path()}/{cmake_dir_name}/{variables_config.target_cmake_variables_file_path}'
+def get_target_cmake_variables_full_file_path(cmake_dir_name: str, variables_config):
+    return f'{get_project_path()}/{cmake_dir_name}/{variables_config["target_cmake_variables_file_path"]}'
 
 
 def create_arguments_parser(program=None, usage=None, description=None, formatter_class=None):
