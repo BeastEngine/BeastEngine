@@ -10,7 +10,7 @@ namespace be::tests::unit
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_PRESSED;
 
         const auto sut = KeyboardEvent(expectedKeyCode, expectedEventType);
-        ASSERT_EQ(expectedKeyCode, sut.GetKeyCode());
+        ASSERT_EQ(expectedKeyCode, sut.GetKey());
         ASSERT_EQ(expectedEventType, sut.GetType());
     }
 
@@ -20,17 +20,17 @@ namespace be::tests::unit
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_PRESSED;
 
         const auto sut = KeyPressedEvent(expectedKeyCode);
-        ASSERT_EQ(expectedKeyCode, sut.GetKeyCode());
+        ASSERT_EQ(expectedKeyCode, sut.GetKey());
         ASSERT_EQ(expectedEventType, sut.GetType());
     }
 
-    TEST_F(KeyboardEventsTest, KeyDownEventConstructorWillProperltyInitializeParent)
+    TEST_F(KeyboardEventsTest, KeyHeldDownEventConstructorWillProperltyInitializeParent)
     {
         const auto expectedKeyCode = KeyCode::INVALID;
-        const auto expectedEventType = KeyboardEventType::EVENT_KEY_DOWN;
+        const auto expectedEventType = KeyboardEventType::EVENT_KEY_HELD_DOWN;
 
-        const auto sut = KeyDownEvent(expectedKeyCode);
-        ASSERT_EQ(expectedKeyCode, sut.GetKeyCode());
+        const auto sut = KeyHeldDownEvent(expectedKeyCode);
+        ASSERT_EQ(expectedKeyCode, sut.GetKey());
         ASSERT_EQ(expectedEventType, sut.GetType());
     }
 
@@ -40,7 +40,7 @@ namespace be::tests::unit
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_RELEASED;
 
         const auto sut = KeyReleasedEvent(expectedKeyCode);
-        ASSERT_EQ(expectedKeyCode, sut.GetKeyCode());
+        ASSERT_EQ(expectedKeyCode, sut.GetKey());
         ASSERT_EQ(expectedEventType, sut.GetType());
     }
 } // namespace be::tests::unit

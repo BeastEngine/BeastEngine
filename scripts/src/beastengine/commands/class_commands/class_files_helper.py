@@ -30,6 +30,18 @@ class ClassFilesHelper:
 
         return headers_files.__contains__(header_file) or sources_files.__contains__(source_file)
 
+    def class_header_file_exist(self, target_config: Config.CMake.Target, class_name: str):
+        header_files = target_config.headers.files
+        header_file = self.get_source_file_name(class_name)
+
+        return header_files.__contains__(header_file)
+
+    def class_source_file_exist(self, target_config: Config.CMake.Target, class_name: str):
+        source_files = target_config.sources.files
+        source_file = self.get_source_file_name(class_name)
+
+        return source_files.__contains__(source_file)
+
     def create_class_header(self, class_name, headers_base_dir, is_verbose, namespace=None):
         cwd = get_project_path()
         print(is_verbose)

@@ -3,7 +3,7 @@
 
 namespace be::tests::unit
 {
-    class KeyboardEventsTest : public ::testing::Test
+    class ConstexprMapTest : public ::testing::Test
     {
     protected:
     };

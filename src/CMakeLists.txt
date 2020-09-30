@@ -1,5 +1,9 @@
 include("${PROJECT_CONFIG_PATH}/beastengine/config.cmake")
 
+if(WIN32)
+	list(APPEND BEAST_SRC_LIST "${BEAST_SRC_DIR}/BeastEngine/beastengine.dll.manifest")
+endif()
+
 add_library(${BEAST_LIB_TARGET_NAME} SHARED "${BEAST_SRC_LIST}" "${BEAST_HEADERS_LIST}")
 target_include_directories(${BEAST_LIB_TARGET_NAME} PUBLIC "${BEAST_INCLUDE_DIR}")
 target_compile_features(${BEAST_LIB_TARGET_NAME} PUBLIC cxx_std_17)
@@ -12,13 +16,14 @@ GROUP_FILES("${BEAST_HEADERS_LIST}" "${BEAST_INCLUDE_DIR}")
 GROUP_FILES("${BEAST_SRC_LIST}" "${BEAST_SRC_DIR}")
 
 target_compile_definitions(
-	${BEAST_LIB_TARGET_NAME} PRIVATE
-		$<$<CONFIG:Debug>:BE_DEBUGGING_INFO_ENABLED BE_ASSERTIONS_ENABLED>
-		$<$<CONFIG:RelWithDebInfo>:BE_DEBUGGING_INFO_ENABLED BE_ASSERTIONS_ENABLED>
+	${BEAST_LIB_TARGET_NAME}
+	PRIVATE
+		# Set debugging and assertions macros when bulding with debug info
+		$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${BEAST_DEBUGGING_DEFINES}>
 )
 
 if(WIN32)
-	target_compile_definitions(${BEAST_LIB_TARGET_NAME} PRIVATE BE_PLATFORM_WINDOWS)
+	target_compile_definitions(${BEAST_LIB_TARGET_NAME} PUBLIC BE_PLATFORM_WINDOWS)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -39,4 +44,5 @@ target_precompile_headers(
 		<vector>
 		<memory>
 		<cstdint>
+		<array>
 )

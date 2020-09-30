@@ -15,6 +15,8 @@ Eg. {yellow}beast {class} {class_add} subDir/myClass{white} will result in creat
 files under the 'baseDirectory/subDir' path.{white}
 '''
 
+    CLASS_SOURCE_FILE_EXISTS_ERROR_MESSAGE_TEMPLATE = "'{}' source file already exists!"
+    CLASS_HEADER_FILE_EXISTS_ERROR_MESSAGE_TEMPLATE = "'{}' header file already exists!"
     CLASS_EXISTS_ERROR_MESSAGE_TEMPLATE = "'{}' class already exists!"
 
     def __init__(
@@ -37,21 +39,30 @@ files under the 'baseDirectory/subDir' path.{white}
         is_verbose = is_verbose_set(command_line_arguments)
 
         class_name = command_line_arguments.class_name
-        if class_files_helper.class_files_exist(target_config, class_name):
-            print(self.CLASS_EXISTS_ERROR_MESSAGE_TEMPLATE.format(class_name))
-            return
 
         namespace = None
         if command_line_arguments:
             namespace = command_line_arguments.namespace
 
         if command_line_arguments.header_only:
+            if class_files_helper.class_header_file_exist(target_config, class_name):
+                print(self.CLASS_EXISTS_ERROR_MESSAGE_TEMPLATE.format(class_name))
+                return
+
             class_files_helper.create_class_header(class_name, headers_base_dir, is_verbose, namespace)
             target_config.headers.files.append(class_files_helper.get_header_file_name(class_name))
         elif command_line_arguments.source_only:
+            if class_files_helper.class_source_file_exist(target_config, class_name):
+                print(self.CLASS_SOURCE_FILE_EXISTS_ERROR_MESSAGE_TEMPLATE.format(class_name))
+                return
+
             class_files_helper.create_class_source(class_name, sources_base_dir, is_verbose, namespace)
             target_config.sources.files.append(class_files_helper.get_source_file_name(class_name))
         else:
+            if class_files_helper.class_files_exist(target_config, class_name):
+                print(self.CLASS_EXISTS_ERROR_MESSAGE_TEMPLATE.format(class_name))
+                return
+
             class_files_helper.create_class_files(class_name, headers_base_dir, sources_base_dir, is_verbose, namespace)
             target_config.headers.files.append(class_files_helper.get_header_file_name(class_name))
             target_config.sources.files.append(class_files_helper.get_source_file_name(class_name))

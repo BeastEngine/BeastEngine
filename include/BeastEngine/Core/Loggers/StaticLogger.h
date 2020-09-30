@@ -9,30 +9,58 @@ namespace be::internals
         friend class BeastEngine;
 
     public:
-        IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger)
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger)
 
         template<typename... Args>
-        static void LogInfo(const std::string& message, const Args&... args)
+        static void LogInfo(const std::string& message, const Args&... args) noexcept
         {
-            m_logger->info(message, args...);
+            try
+            {
+                m_logger->info(message, args...);
+                m_logger->flush();
+            }
+            catch (const std::exception&)
+            {
+            }
         }
 
         template<typename... Args>
-        static void LogWarning(const std::string& message, const Args&... args)
+        static void LogWarning(const std::string& message, const Args&... args) noexcept
         {
-            m_logger->warn(message, args...);
+            try
+            {
+                m_logger->warn(message, args...);
+                m_logger->flush();
+            }
+            catch (const std::exception&)
+            {
+            }
         }
 
         template<typename... Args>
-        static void LogError(const std::string& message, const Args&... args)
+        static void LogError(const std::string& message, const Args&... args) noexcept
         {
-            m_logger->error(message, args...);
+            try
+            {
+                m_logger->error(message, args...);
+                m_logger->flush();
+            }
+            catch (const std::exception&)
+            {
+            }
         }
 
         template<typename... Args>
-        static void LogFatalError(const std::string& message, const Args&... args)
+        static void LogFatalError(const std::string& message, const Args&... args) noexcept
         {
-            m_logger->critical(message, args...);
+            try
+            {
+                m_logger->critical(message, args...);
+                m_logger->flush();
+            }
+            catch (const std::exception&)
+            {
+            }
         }
 
     private:

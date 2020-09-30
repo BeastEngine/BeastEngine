@@ -7,14 +7,14 @@ namespace be
     enum class KeyboardEventType
     {
         EVENT_KEY_PRESSED,
-        EVENT_KEY_DOWN,
+        EVENT_KEY_HELD_DOWN,
         EVENT_KEY_RELEASED,
     };
 
     class KeyboardEvent
     {
     public:
-        IMPLEMENT_CONSTRUCTORS_DEFAULT(KeyboardEvent)
+        BE_IMPLEMENT_CONSTRUCTORS_DEFAULT(KeyboardEvent)
 
         /**
          * Initializes KeyboardEvent with provided code for the key the event concerns.
@@ -32,7 +32,7 @@ namespace be
          * 
          * @return KeyCode
          */
-        KeyCode GetKeyCode() const noexcept
+        KeyCode GetKey() const noexcept
         {
             return m_keyCode;
         }
@@ -68,17 +68,17 @@ namespace be
         }
     };
 
-    class KeyDownEvent final : public KeyboardEvent
+    class KeyHeldDownEvent final : public KeyboardEvent
     {
     public:
         /**
-         * Initializes KeyDownEvent with provided key code.
+         * Initializes KeyHeldDownEvent with provided key code.
          * Creates KeyboardEvent with the same key code and with KeyboardEventType::EVENT_KEY_PRESSED event type
          * 
          * @param keyCode
          */
-        KeyDownEvent(KeyCode keyCode)
-            : KeyboardEvent(keyCode, KeyboardEventType::EVENT_KEY_DOWN)
+        KeyHeldDownEvent(KeyCode keyCode)
+            : KeyboardEvent(keyCode, KeyboardEventType::EVENT_KEY_HELD_DOWN)
         {
         }
     };

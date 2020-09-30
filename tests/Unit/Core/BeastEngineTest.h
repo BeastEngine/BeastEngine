@@ -1,5 +1,5 @@
 #pragma once
-#include "Unit/TestSetup.h"
+#include "TestSetup.h"
 
 #include <BeastEngine/Core/Windows/IWindowFactory.h>
 #include <BeastEngine/Core/Windows/AWindow.h>
@@ -26,5 +26,6 @@ namespace be::tests::unit
     class BeastEngineTest : public ::testing::Test
     {
     protected:
+        const be::WindowHandleInstanceType m_wHInstance = nullptr;
     };
 } // namespace be::tests::unit
