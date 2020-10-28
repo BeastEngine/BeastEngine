@@ -34,7 +34,7 @@ cmake =\
     )
 
 target_config_manager = TargetConfigManager(TargetCMakeVarsFileOpener(file_opener))
-class_files_helper = ClassFilesHelper(command_runner, file_opener)
+class_files_helper = ClassFilesHelper(file_opener)
 
 try:
     BeastEngine(
@@ -47,8 +47,8 @@ try:
         target_config_manager,
         class_files_helper
     )
-except Exception:
-    print(colorama.Fore.LIGHTRED_EX + "An error occurred!")
+except Exception as exception:
+    print(f'{colorama.Fore.LIGHTRED_EX} {exception}')
     traceback.print_exc()
 
 colorama.deinit()

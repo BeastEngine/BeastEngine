@@ -34,11 +34,15 @@ def get_command_to_print(command, cwd):
 def test_run_command_will_start_subprocess_with_given_command():
     subprocess_mock = SubprocessMock()
 
+    print_mock = MagicMock()
+    builtins.print = print_mock
+
     expected_command = 'ls -l'
     expected_capture_output_param = True
     expected_text_param = True
     cwd = 'cwd'
     encoding = 'utf-8'
+    errors = 'ignore'
 
     sut = CommandRunner()
     sut.run_command(expected_command, cwd)
@@ -48,7 +52,8 @@ def test_run_command_will_start_subprocess_with_given_command():
         capture_output=expected_capture_output_param,
         text=expected_text_param,
         cwd=cwd,
-        encoding=encoding
+        encoding=encoding,
+        errors=errors
     )
 
 
@@ -56,11 +61,7 @@ def test_run_command_will_return_subprocess_return_code():
     expected_return_code = 0
     cwd = 'cwd'
 
-    process_result_mock = MagicMock(subprocess.CompletedProcess)
-    type(process_result_mock).returncode = expected_return_code
-
-    subprocess_run_mock = MagicMock(return_value=process_result_mock)
-    subprocess.run = subprocess_run_mock
+    SubprocessMock(expected_return_code)
 
     sut = CommandRunner()
     actual_return_code = sut.run_command('ls -l', cwd)
@@ -68,7 +69,7 @@ def test_run_command_will_return_subprocess_return_code():
     assert expected_return_code == actual_return_code
 
 
-def test_run_command_will_print_name_of_the_executed_command_in_right_color_if_verbose_flag_passed():
+def test_run_command_will_print_name_of_the_executed_command_in_right_color():
     SubprocessMock()
 
     cwd = 'cwd'
@@ -79,12 +80,12 @@ def test_run_command_will_print_name_of_the_executed_command_in_right_color_if_v
     builtins.print = print_mock
 
     sut = CommandRunner()
-    sut.run_command(command_to_execute, cwd, verbose=True)
+    sut.run_command(command_to_execute, cwd)
 
     print_mock.assert_called_with(expected_command_print)
 
 
-def test_run_command_will_print_stdout_in_right_color_if_verbose_flag_passed_and_result_contains_stdout():
+def test_run_command_will_print_stdout_in_right_color_if_result_contains_stdout():
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
@@ -101,12 +102,12 @@ def test_run_command_will_print_stdout_in_right_color_if_verbose_flag_passed_and
     builtins.print = print_mock
 
     sut = CommandRunner()
-    sut.run_command(command_to_execute, cwd, verbose=True)
+    sut.run_command(command_to_execute, cwd)
 
     print_mock.assert_has_calls([print_command_call, expected_stdout_print_call])
 
 
-def test_run_command_will_not_print_stdout_in_right_color_if_verbose_flag_passed_and_result_does_not_contain_stdout():
+def test_run_command_will_not_print_stdout_in_right_color_if_result_does_not_contain_stdout():
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
@@ -119,12 +120,12 @@ def test_run_command_will_not_print_stdout_in_right_color_if_verbose_flag_passed
     builtins.print = print_mock
 
     sut = CommandRunner()
-    sut.run_command(command_to_execute, cwd, verbose=True)
+    sut.run_command(command_to_execute, cwd)
 
     print_mock.assert_called_once_with(command_to_print)
 
 
-def test_run_command_will_not_print_stdout_in_right_color_if_verbose_flag_passed_and_result_contains_empty_stdout():
+def test_run_command_will_not_print_stdout_in_right_color_if_result_contains_empty_stdout():
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
@@ -137,12 +138,12 @@ def test_run_command_will_not_print_stdout_in_right_color_if_verbose_flag_passed
     builtins.print = print_mock
 
     sut = CommandRunner()
-    sut.run_command(command_to_execute, cwd, verbose=True)
+    sut.run_command(command_to_execute, cwd)
 
     print_mock.assert_called_once_with(command_to_print)
 
 
-def test_run_command_will_print_stderr_of_run_subprocess_in_right_color_if_verbose_flag_passed():
+def test_run_command_will_print_stderr_of_run_subprocess_in_right_color():
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
@@ -159,12 +160,12 @@ def test_run_command_will_print_stderr_of_run_subprocess_in_right_color_if_verbo
     builtins.print = print_mock
 
     sut = CommandRunner()
-    sut.run_command(command_to_execute, cwd, verbose=True)
+    sut.run_command(command_to_execute, cwd)
 
     print_mock.assert_has_calls([print_command_call, expected_stout_print_call])
 
 
-def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed_and_result_does_not_contain_stderr():
+def test_run_command_will_not_print_stderr_in_right_color_if_result_does_not_contain_stderr():
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
@@ -177,12 +178,12 @@ def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed
     builtins.print = print_mock
 
     sut = CommandRunner()
-    sut.run_command(command_to_execute, cwd, verbose=True)
+    sut.run_command(command_to_execute, cwd)
 
     print_mock.assert_called_once_with(command_to_print)
 
 
-def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed_and_result_contains_empty_stderr():
+def test_run_command_will_not_print_stderr_in_right_color_if_result_contains_empty_stderr():
     cwd = 'cwd'
 
     command_to_execute = 'ls -l'
@@ -195,45 +196,16 @@ def test_run_command_will_not_print_stderr_in_right_color_if_verbose_flag_passed
     builtins.print = print_mock
 
     sut = CommandRunner()
-    sut.run_command(command_to_execute, cwd, verbose=True)
+    sut.run_command(command_to_execute, cwd)
 
     print_mock.assert_called_once_with(command_to_print)
 
 
-def test_run_command_will_not_print_anything_if_verbose_is_false():
-    cwd = 'cwd'
-
-    subprocess_stdout = 'subprocess stdout'
-    subprocess_stderr = 'subprocess stderr'
-    SubprocessMock(expected_stdout=subprocess_stdout, expected_stderr=subprocess_stderr)
-
-    print_mock = MagicMock()
-    builtins.print = print_mock
-
-    sut = CommandRunner()
-    sut.run_command('ls -l', cwd, verbose=False)
-
-    print_mock.assert_not_called()
-
-
-def test_run_command_will_not_print_anything_if_verbose_parameter_is_omitted():
-    cwd = 'cwd'
-
-    subprocess_stdout = 'subprocess stdout'
-    subprocess_stderr = 'subprocess stderr'
-    SubprocessMock(expected_stdout=subprocess_stdout, expected_stderr=subprocess_stderr)
-
-    print_mock = MagicMock()
-    builtins.print = print_mock
-
-    sut = CommandRunner()
-    sut.run_command('ls -l', cwd)
-
-    print_mock.assert_not_called()
-
-
 def test_run_command_will_execute_command_from_passed_working_directory():
     subprocess_mock = SubprocessMock()
+
+    print_mock = MagicMock()
+    builtins.print = print_mock
 
     expected_current_working_dir = 'current/working/dir'
     command = 'ls -l'
@@ -247,6 +219,7 @@ def test_run_command_will_execute_command_from_passed_working_directory():
         capture_output=capture_output_param,
         text=text_param,
         cwd=expected_current_working_dir,
-        encoding='utf-8'
+        encoding='utf-8',
+        errors='ignore'
     )
 

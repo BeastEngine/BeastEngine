@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class ConfigNames(Enum):
+class BuildConfigNames(Enum):
     CONFIG_DEBUG = 'Debug'
     CONFIG_RELEASE = 'Release'
     CONFIG_REL_WITH_DEBUG = 'RelWithDebInfo'
@@ -9,12 +9,12 @@ class ConfigNames(Enum):
 
     @staticmethod
     def from_string(name: str):
-        return ConfigNames(name)
+        return BuildConfigNames(name)
 
     @staticmethod
     def available_names():
         names = '['
-        for name, member in ConfigNames.__members__.items():
+        for name, member in BuildConfigNames.__members__.items():
             names += member.value
             names += ', '
 
@@ -25,7 +25,7 @@ class ConfigNames(Enum):
     @staticmethod
     def all_configs():
         configs = []
-        for name, member in ConfigNames.__members__.items():
+        for name, member in BuildConfigNames.__members__.items():
             configs.append(member)
 
         return configs

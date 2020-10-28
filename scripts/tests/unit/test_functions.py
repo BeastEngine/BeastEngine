@@ -2,8 +2,6 @@ import argparse
 import src.functions as functions
 
 from mock import MagicMock
-
-from src.config.config import Config
 from tests.tests_utilities.micro_mock import MicroMock
 
 
@@ -40,20 +38,6 @@ def test_get_config_path_will_return_valid_path():
 
     expected_config_path = f'{project_path}/{config_path}'
     assert functions.get_config_path() == expected_config_path
-
-
-def test_is_verbose_set_will_return_false_when_no_verbose_attribute_is_set_to_true():
-    data = MicroMock(no_verbose=True)
-
-    expected_result = False
-    assert functions.is_verbose_set(data) == expected_result
-
-
-def test_is_verbose_set_will_return_true_when_no_verbose_attribute_is_set_to_false():
-    data = MicroMock(no_verbose=False)
-
-    expected_result = True
-    assert functions.is_verbose_set(data) == expected_result
 
 
 def test_create_arguments_parser_will_create_empty_parser_when_no_data_passed():
@@ -129,31 +113,11 @@ def test_create_arguments_parser_will_create_parser_with_given_formatter_class()
     )
 
 
-def test_create_arguments_parser_will_create_parser_with_verbose_as_optional_argument():
-    expected_argument_short_name = '-nv'
-    expected_argument_full_name = '--no-verbose'
-    expected_argument_help = 'do not show command output'
-    expected_argument_action = 'store_true'
-
-    add_argument_mock = MagicMock()
-    functions.ArgumentParser = argparse.ArgumentParser
-    functions.ArgumentParser.add_argument = add_argument_mock
-
-    functions.create_arguments_parser()
-    add_argument_mock.assert_called_with(
-        expected_argument_short_name,
-        expected_argument_full_name,
-        help=expected_argument_help,
-        action=expected_argument_action
-    )
-
-
 def test_get_target_cmake_variables_file_path_will_return_path_created_from_project_dir_cmake_dir_name_and_target_vars_file_path():
     cmake_dir_name = 'dir_name'
 
     variables_file_path = 'vars_file_path'
-    target_variables = Config.CMake.Target.Variables()
-    target_variables.target_cmake_variables_file_path = variables_file_path
+    target_variables = {'target_cmake_variables_file_path': variables_file_path}
 
     project_path = 'project/path'
     functions.get_project_path = MagicMock(return_value=project_path)
