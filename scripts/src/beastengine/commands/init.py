@@ -1,23 +1,24 @@
-import sys
+import os
+import shutil
+import colorama
 
 from src.commandrunners.cmake.cmake import CMake
-from src.commandrunners.command_runner import CommandRunner
 from src.commandrunners.conan import Conan
-from src.functions import get_build_dir_name, create_arguments_parser, is_verbose_set
+from src.functions import get_build_dir_name
 
 
 class Init:
-    def __init__(self, project_dir: str, command_runner: CommandRunner, conan: Conan, cmake: CMake):
-        build = get_build_dir_name()
-        command_remove_build_dir = f'rm -rf {build}'
-        command_create_build_dir = f'mkdir {build}'
+    def __init__(self, project_dir: str, conan: Conan, cmake: CMake):
+        build_dir_path = f'{project_dir}/{get_build_dir_name()}'
 
-        parser = create_arguments_parser()
-        args = parser.parse_args(sys.argv[2:])
-        is_verbose = is_verbose_set(args)
+        # Remove build directory if exists
+        if os.path.isdir(build_dir_path):
+            print(f'{colorama.Fore.YELLOW}Removing "{build_dir_path}" directory')
+            shutil.rmtree(build_dir_path)
 
-        command_runner.run_command(command_remove_build_dir, project_dir, is_verbose)
-        command_runner.run_command(command_create_build_dir, project_dir, is_verbose)
+        # Create build directory
+        print(f'{colorama.Fore.YELLOW}Recreating "{build_dir_path}" directory{colorama.Fore.WHITE}\n')
+        os.mkdir(build_dir_path)
 
-        conan.install(is_verbose)
-        cmake.generate_configs(is_verbose)
+        conan.install()
+        cmake.generate_configs()

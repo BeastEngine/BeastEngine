@@ -1,13 +1,10 @@
-import sys
-
-from src.beastengine.beast_command_helper import BeastCommandHelper
 from src.beastengine.commands.class_commands.class_files_helper import ClassFilesHelper
-from src.functions import create_arguments_parser, is_verbose_set
-from src.config.config_manager import Config, ConfigManager
+from src.config.config import Config
+from src.config.target_config_manager import TargetConfigManager
 
 
 class ClassAdd:
-    PROGRAM_USAGE = '''{green}beast {class} {class_add} <class_name> [<args>]
+    PROGRAM_USAGE = '''{green}beast {class} {class_add} <target> <class_name> [<args>]
 
 {white}This command creates single header and single source files under the headers and sources base directories of the given CMake target.
 If class name contains slashes, it will create subdirectories inside base directory.
@@ -21,50 +18,40 @@ files under the 'baseDirectory/subDir' path.{white}
 
     def __init__(
             self,
-            headers_base_dir: str,
-            sources_base_dir: str,
+            config: Config,
+            target_config_manager: TargetConfigManager,
             class_files_helper: ClassFilesHelper,
-            target_config: Config.CMake.Target,
-            config_manager: ConfigManager
+            target_config,
+            class_name: str,
+            namespace=None,
+            header_only: bool = False,
+            source_only: bool = False
     ):
-        parser = create_arguments_parser(usage=BeastCommandHelper.format_text(self.PROGRAM_USAGE))
-        parser.add_argument('class_name', help='class to add', metavar='<class_name>')
-        parser.add_argument('-n', '--namespace', help='namespace in which the class should reside', type=str)
+        self.target_config_manager = target_config_manager
+        self.class_files_helper = class_files_helper
 
-        group = parser.add_mutually_exclusive_group()
-        group.add_argument('-ho', '--header_only', help='create only header file and omit the source file', action='store_true')
-        group.add_argument('-so', '--source_only', help='create only source file and omit the header file', action='store_true')
+        if header_only == source_only:
+            self.create_header(class_name, target_config, config.cmake, namespace)
+            self.create_source(class_name, target_config, config.cmake, namespace)
+        elif header_only is True:
+            self.create_header(class_name, target_config, config.cmake, namespace)
+        elif source_only is True:
+            self.create_source(class_name, target_config, config.cmake, namespace)
 
-        command_line_arguments = parser.parse_args(sys.argv[4:])
-        is_verbose = is_verbose_set(command_line_arguments)
+        config.update()
 
-        class_name = command_line_arguments.class_name
+    def create_header(self, class_name, target_config, cmake_config, namespace):
+        header_name = self.class_files_helper.create_class_header(
+            class_name,
+            self.target_config_manager.get_headers_base_directory(target_config, cmake_config),
+            namespace
+        )
+        self.target_config_manager.add_file_to_headers_list(header_name, target_config)
 
-        namespace = None
-        if command_line_arguments:
-            namespace = command_line_arguments.namespace
-
-        if command_line_arguments.header_only:
-            if class_files_helper.class_header_file_exist(target_config, class_name):
-                print(self.CLASS_EXISTS_ERROR_MESSAGE_TEMPLATE.format(class_name))
-                return
-
-            class_files_helper.create_class_header(class_name, headers_base_dir, is_verbose, namespace)
-            target_config.headers.files.append(class_files_helper.get_header_file_name(class_name))
-        elif command_line_arguments.source_only:
-            if class_files_helper.class_source_file_exist(target_config, class_name):
-                print(self.CLASS_SOURCE_FILE_EXISTS_ERROR_MESSAGE_TEMPLATE.format(class_name))
-                return
-
-            class_files_helper.create_class_source(class_name, sources_base_dir, is_verbose, namespace)
-            target_config.sources.files.append(class_files_helper.get_source_file_name(class_name))
-        else:
-            if class_files_helper.class_files_exist(target_config, class_name):
-                print(self.CLASS_EXISTS_ERROR_MESSAGE_TEMPLATE.format(class_name))
-                return
-
-            class_files_helper.create_class_files(class_name, headers_base_dir, sources_base_dir, is_verbose, namespace)
-            target_config.headers.files.append(class_files_helper.get_header_file_name(class_name))
-            target_config.sources.files.append(class_files_helper.get_source_file_name(class_name))
-
-        config_manager.update_config()
+    def create_source(self, class_name, target_config, cmake_config, namespace):
+        source_name = self.class_files_helper.create_class_source(
+            class_name,
+            self.target_config_manager.get_sources_base_directory(target_config, cmake_config),
+            namespace
+        )
+        self.target_config_manager.add_file_to_sources_list(source_name, target_config)

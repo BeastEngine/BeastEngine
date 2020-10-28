@@ -1,144 +1,157 @@
 {
-  "default_build_type": "Debug",
-  "cmake_config": {
-    "directory_name": "cmake/config",
-    "config_files": {
-      "dist_filename": "config.cmake.dist",
-      "filename": "config.cmake"
-    },
-    "project": {
-      "name": "BeastEngine",
-      "version_major": "0",
-      "version_minor": "0",
-      "version_patch": "1",
-      "name_placeholder": "project_name",
-      "version_major_placeholder": "project_version_major",
-      "version_minor_placeholder": "project_version_minor",
-      "version_patch_placeholder": "project_version_patch"
-    },
-    "targets": {
-      "lib": {
-        "target_name": "beastengine",
-        "target_name_placeholder": "lib_target_name",
+    "default_build_type": "Debug",
+    "cmake_config": {
+        "directory_name": "cmake/config",
         "config_files": {
-          "dist_filename": "beastengine/config.cmake.dist",
-          "filename": "beastengine/config.cmake"
+            "dist_filename": "config.cmake.dist",
+            "filename": "config.cmake"
         },
-        "variables": {
-          "target_cmake_variables_file_path_placeholder": "beast_cmake_vars_file_path",
-          "target_cmake_variables_file_path": "beastengine/beast_vars.txt"
+        "project": {
+            "name": "BeastEngine",
+            "version_major": "0",
+            "version_minor": "0",
+            "version_patch": "1",
+            "name_placeholder": "project_name",
+            "version_major_placeholder": "project_version_major",
+            "version_minor_placeholder": "project_version_minor",
+            "version_patch_placeholder": "project_version_patch"
         },
-        "directories": {
-          "include_directory_placeholder": "beast_include_dir",
-          "include_directory": "\"${BeastEngine_SOURCE_DIR}/include\"",
-          "source_directory_placeholder": "beast_src_dir",
-          "source_directory": "\"${BeastEngine_SOURCE_DIR}/src\""
-        },
-        "headers": {
-          "base_dir": "${BEAST_INCLUDE_DIR}/BeastEngine",
-          "files_list_placeholder": "beast_headers",
-          "files": [
-            "Core/BeastEngine.h",
-            "Core/Loggers/StaticLogger.h",
-            "Core/Types.h",
-            "Core/Loggers/LoggersTypes.h",
-            "Core/Loggers/LoggersFactory.h",
-            "Core/Helpers.h",
-            "Core/Logging.h",
-            "Core/Assertions.h",
-            "Core/Versions.h",
-            "BeastEngine.h",
-            "Core/Windows/IWindow.h",
-            "Core/Events/KeyboardEvents.h",
-            "Core/Input/InputCodes.h",
-            "Core/Events/Events.h",
-            "Core/Events/MouseEvents.h",
-            "Core/Windows/AWindow.h",
-            "Core/Windows/IWindowFactory.h",
-            "Core/Windows/WindowFactory.h",
-            "EntryPoint.h",
-            "Core/PlatformSetup.h",
-            "Core/Application.h",
-            "Core/Windows/Windows/WindowsWindow.h",
-            "Core/DataStructures.h"
-          ]
-        },
-        "sources": {
-          "base_dir": "${BEAST_SRC_DIR}/BeastEngine",
-          "files_list_placeholder": "beast_sources",
-          "files": [
-            "Core/BeastEngine.cpp",
-            "Core/Loggers/LoggersFactory.cpp",
-            "Core/Windows/WindowFactory.cpp",
-            "Core/Windows/Windows/WindowsWindow.cpp",
-            "Core/Application.cpp"
-          ]
+        "targets": {
+            "beastengine": {
+                "name": "beastengine",
+                "name_placeholder": "lib_target_name",
+                "config_files": {
+                    "dist_filename": "beastengine/config.cmake.dist",
+                    "filename": "beastengine/config.cmake"
+                },
+                "variables": {
+                    "target_cmake_variables_file_path_placeholder": "beast_cmake_vars_file_path",
+                    "target_cmake_variables_file_path": "beastengine/beast_vars.txt"
+                },
+                "directories": {
+                    "include_directory_placeholder": "beast_include_dir",
+                    "include_directory": "\"${BeastEngine_SOURCE_DIR}/include\"",
+                    "source_directory_placeholder": "beast_src_dir",
+                    "source_directory": "\"${BeastEngine_SOURCE_DIR}/src\""
+                },
+                "headers": {
+                    "base_dir": "${BEAST_INCLUDE_DIR}/BeastEngine",
+                    "files_list_placeholder": "beast_headers",
+                    "files": [
+                        "Core/BeastEngine.h",
+                        "Core/Loggers/StaticLogger.h",
+                        "Core/Types.h",
+                        "Core/Loggers/LoggersTypes.h",
+                        "Core/Loggers/LoggersFactory.h",
+                        "Core/Helpers.h",
+                        "Core/Logging.h",
+                        "Core/Assertions.h",
+                        "Core/Versions.h",
+                        "BeastEngine.h",
+                        "Core/Windows/IWindow.h",
+                        "Core/Events/KeyboardEvents.h",
+                        "Core/Input/InputCodes.h",
+                        "Core/Events/Events.h",
+                        "Core/Events/MouseEvents.h",
+                        "Core/Windows/AWindow.h",
+                        "Core/Windows/IWindowFactory.h",
+                        "Core/Windows/WindowFactory.h",
+                        "EntryPoint.h",
+                        "Core/PlatformSetup.h",
+                        "Core/Application.h",
+                        "Core/Windows/Windows/WindowsWindow.h",
+                        "Core/DataStructures.h"
+                    ]
+                },
+                "sources": {
+                    "base_dir": "${BEAST_SRC_DIR}/BeastEngine",
+                    "files_list_placeholder": "beast_sources",
+                    "files": [
+                        "Core/BeastEngine.cpp",
+                        "Core/Loggers/LoggersFactory.cpp",
+                        "Core/Windows/WindowFactory.cpp",
+                        "Core/Windows/Windows/WindowsWindow.cpp",
+                        "Core/Application.cpp"
+                    ]
+                }
+            },
+            "sandbox": {
+                "name": "sandbox",
+                "name_placeholder": "exe_target_name",
+                "config_files": {
+                    "dist_filename": "sandbox/config.cmake.dist",
+                    "filename": "sandbox/config.cmake"
+                },
+                "variables": {
+                    "target_cmake_variables_file_path_placeholder": "sandbox_cmake_vars_file_path",
+                    "target_cmake_variables_file_path": "sandbox/sandbox_vars.txt"
+                },
+                "directories": {
+                    "include_directory_placeholder": "sandbox_include_dir",
+                    "include_directory": "\"${BeastEngine_SOURCE_DIR}/apps\"",
+                    "source_directory_placeholder": "sandbox_src_dir",
+                    "source_directory": "\"${BeastEngine_SOURCE_DIR}/apps\""
+                },
+                "headers": {
+                    "base_dir": "${SANDBOX_INCLUDE_DIR}",
+                    "files_list_placeholder": "sandbox_headers",
+                    "files": []
+                },
+                "sources": {
+                    "base_dir": "${SANDBOX_SRC_DIR}",
+                    "files_list_placeholder": "sandbox_sources",
+                    "files": [
+                        "sandbox.cpp"
+                    ]
+                }
+            },
+            "lab": {
+                "name": "lab",
+                "name_placeholder": "tests_target_name",
+                "config_files": {
+                    "dist_filename": "lab/config.cmake.dist",
+                    "filename": "lab/config.cmake"
+                },
+                "variables": {
+                    "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
+                    "target_cmake_variables_file_path": "lab/lab_vars.txt"
+                },
+                "directories": {
+                    "include_directory_placeholder": "lab_include_dir",
+                    "include_directory": "\"${BeastEngine_SOURCE_DIR}/tests\"",
+                    "source_directory_placeholder": "lab_src_dir",
+                    "source_directory": "\"${BeastEngine_SOURCE_DIR}/tests\""
+                },
+                "headers": {
+                    "base_dir": "${LAB_INCLUDE_DIR}",
+                    "files_list_placeholder": "lab_headers",
+                    "files": [
+                        "Integration/Core/Loggers/LoggersFactoryTest.h",
+                        "Unit/Core/Events/KeyboardEventsTest.h",
+                        "Unit/Core/Events/MouseEventsTest.h",
+                        "Unit/Core/BeastEngineTest.h",
+                        "Unit/Core/DataStructuresTests.h",
+                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.h",
+                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.h",
+                        "Integration/Core/Windows/Windows/WinTestSetup.h",
+                        "TestSetup.h"
+                    ]
+                },
+                "sources": {
+                    "base_dir": "${LAB_SRC_DIR}",
+                    "files_list_placeholder": "lab_sources",
+                    "files": [
+                        "lab.cpp",
+                        "Integration/Core/Loggers/LoggersFactoryTest.cpp",
+                        "Unit/Core/Events/KeyboardEventsTest.cpp",
+                        "Unit/Core/Events/MouseEventsTest.cpp",
+                        "Unit/Core/BeastEngineTest.cpp",
+                        "Unit/Core/DataStructuresTests.cpp",
+                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.cpp",
+                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.cpp"
+                    ]
+                }
+            }
         }
-      },
-      "exe": {
-        "target_name": "sandbox",
-        "target_name_placeholder": "exe_target_name",
-        "config_files": null,
-        "variables": null,
-        "directories": null,
-        "headers": {
-          "base_dir": "",
-          "files_list_placeholder": "",
-          "files": []
-        },
-        "sources": {
-          "base_dir": "",
-          "files_list_placeholder": "",
-          "files": []
-        }
-      },
-      "tests": {
-        "target_name": "lab",
-        "target_name_placeholder": "tests_target_name",
-        "config_files": {
-          "dist_filename": "lab/config.cmake.dist",
-          "filename": "lab/config.cmake"
-        },
-        "variables": {
-          "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
-          "target_cmake_variables_file_path": "lab/lab_vars.txt"
-        },
-        "directories": {
-          "include_directory_placeholder": "lab_include_dir",
-          "include_directory": "\"${BeastEngine_SOURCE_DIR}/tests\"",
-          "source_directory_placeholder": "lab_src_dir",
-          "source_directory": "\"${BeastEngine_SOURCE_DIR}/tests\""
-        },
-        "headers": {
-          "base_dir": "${LAB_INCLUDE_DIR}",
-          "files_list_placeholder": "lab_headers",
-          "files": [
-            "Integration/Core/Loggers/LoggersFactoryTest.h",
-            "Unit/Core/Events/KeyboardEventsTest.h",
-            "Unit/Core/Events/MouseEventsTest.h",
-            "Unit/Core/BeastEngineTest.h",
-            "Unit/Core/DataStructuresTests.h",
-            "Integration/Core/Windows/Windows/WindowsMouseEventsTest.h",
-            "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.h",
-            "Integration/Core/Windows/Windows/WinTestSetup.h",
-            "TestSetup.h"
-          ]
-        },
-        "sources": {
-          "base_dir": "${LAB_SRC_DIR}",
-          "files_list_placeholder": "lab_sources",
-          "files": [
-            "lab.cpp",
-            "Integration/Core/Loggers/LoggersFactoryTest.cpp",
-            "Unit/Core/Events/KeyboardEventsTest.cpp",
-            "Unit/Core/Events/MouseEventsTest.cpp",
-            "Unit/Core/BeastEngineTest.cpp",
-            "Unit/Core/DataStructuresTests.cpp",
-            "Integration/Core/Windows/Windows/WindowsMouseEventsTest.cpp",
-            "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.cpp"
-          ]
-        }
-      }
     }
-  }
 }
