@@ -78,18 +78,31 @@
             "sandbox": {
                 "name": "sandbox",
                 "name_placeholder": "exe_target_name",
-                "config_files": null,
-                "variables": null,
-                "directories": null,
+                "config_files": {
+                    "dist_filename": "sandbox/config.cmake.dist",
+                    "filename": "sandbox/config.cmake"
+                },
+                "variables": {
+                    "target_cmake_variables_file_path_placeholder": "sandbox_cmake_vars_file_path",
+                    "target_cmake_variables_file_path": "sandbox/sandbox_vars.txt"
+                },
+                "directories": {
+                    "include_directory_placeholder": "sandbox_include_dir",
+                    "include_directory": "\"${BeastEngine_SOURCE_DIR}/apps\"",
+                    "source_directory_placeholder": "sandbox_src_dir",
+                    "source_directory": "\"${BeastEngine_SOURCE_DIR}/apps\""
+                },
                 "headers": {
-                    "base_dir": "",
-                    "files_list_placeholder": "",
+                    "base_dir": "${SANDBOX_INCLUDE_DIR}",
+                    "files_list_placeholder": "sandbox_headers",
                     "files": []
                 },
                 "sources": {
-                    "base_dir": "",
-                    "files_list_placeholder": "",
-                    "files": []
+                    "base_dir": "${SANDBOX_SRC_DIR}",
+                    "files_list_placeholder": "sandbox_sources",
+                    "files": [
+                        "sandbox.cpp"
+                    ]
                 }
             },
             "lab": {
