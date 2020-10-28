@@ -46,7 +46,6 @@ files under the 'baseDirectory/subDir' path.{white}
             self.target_config_manager.get_headers_base_directory(target_config, cmake_config),
             namespace
         )
-
         self.target_config_manager.add_file_to_headers_list(header_name, target_config)
 
     def create_source(self, class_name, target_config, cmake_config, namespace):
