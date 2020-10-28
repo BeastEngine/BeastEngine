@@ -1,5 +1,4 @@
 from src.files.file_opener import FileOpener
-from src.config.config import Config
 from src.functions import get_target_cmake_variables_full_file_path
 
 
@@ -13,8 +12,8 @@ class TargetCMakeVarsFileOpener:
     def __init__(self, file_opener: FileOpener):
         self.file_opener = file_opener
 
-    def open(self, config, target):
-        file_path = get_target_cmake_variables_full_file_path(config['directory_name'], target['variables'])
+    def open(self, config, target_config):
+        file_path = get_target_cmake_variables_full_file_path(config['directory_name'], target_config['variables'])
         file = self.file_opener.open(file_path)
 
         content_lines = file.get_content().split(self.FILE_NEW_LINE_SEPARATOR)

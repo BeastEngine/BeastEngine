@@ -1,5 +1,5 @@
 from src.commandrunners.command_runner import CommandRunner
-from src.config.config_names import ConfigNames
+from src.config.config_names import BuildConfigNames
 
 
 class Conan:
@@ -9,6 +9,6 @@ class Conan:
         self.command_runner = command_runner
         self.build_dir = build_dir
 
-    def install(self, verbose):
-        for name, member in ConfigNames.__members__.items():
-            self.command_runner.run_command(Conan.COMMAND_INSTALL + member.value, self.build_dir, verbose)
+    def install(self):
+        for name, member in BuildConfigNames.__members__.items():
+            self.command_runner.run_command(Conan.COMMAND_INSTALL + member.value, self.build_dir)

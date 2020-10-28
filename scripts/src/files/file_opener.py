@@ -1,3 +1,6 @@
+from pathlib import Path
+
+
 class FileOpener:
     class File:
         def __init__(self, file_path: str):
@@ -17,3 +20,6 @@ class FileOpener:
 
     def open(self, file_path: str) -> File:
         return self.File(file_path)
+
+    def create(self, file_path):
+        Path(file_path).touch()

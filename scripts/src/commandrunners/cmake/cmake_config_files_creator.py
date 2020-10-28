@@ -7,19 +7,19 @@ class CMakeConfigFilesCreator:
         self.command_runner = command_runner
         self.file_opener = file_opener
 
-    def generate_main_config(self, cmake_config, cmake_config_dir: str, verbose: bool):
+    def generate_main_config(self, cmake_config, cmake_config_dir: str):
         config_files = self.__get_config_files_full_paths(cmake_config_dir, cmake_config['config_files'])
-        self.__copy_config(config_files, cmake_config_dir, verbose)
+        self.__copy_config(config_files, cmake_config_dir)
 
         config_file = self.file_opener.open(config_files['filename'])
         config_file.replace_content(self.__prepare_main_config_content(cmake_config, config_file))
 
-    def generate_target_config(self, target_config, cmake_config_dir: str, verbose: bool):
+    def generate_target_config(self, target_config, cmake_config_dir: str):
         if target_config['config_files'] is None or target_config['directories'] is None or target_config['variables'] is None:
             return
 
         config_files = self.__get_config_files_full_paths(cmake_config_dir, target_config['config_files'])
-        self.__copy_config(config_files, cmake_config_dir, verbose)
+        self.__copy_config(config_files, cmake_config_dir)
 
         # Create mappings: cmake_config_variable_content_placeholder -> actual_value_that_should_be_set
         variables = target_config['variables']
@@ -47,9 +47,9 @@ class CMakeConfigFilesCreator:
 
         return full_path_files
 
-    def __copy_config(self, config_files, cmake_config_dir: str, verbose: bool):
+    def __copy_config(self, config_files, cmake_config_dir: str):
         copy_command = self.__get_copy_command(config_files['dist_filename'], config_files['filename'])
-        self.command_runner.run_command(copy_command, cmake_config_dir, verbose)
+        self.command_runner.run_command(copy_command, cmake_config_dir)
 
     def __get_target_variables_full_file_path(self, config_dir: str, variables):
         return f'"{config_dir}/{variables["target_cmake_variables_file_path"]}"'

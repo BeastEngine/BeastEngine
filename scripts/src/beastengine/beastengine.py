@@ -1,6 +1,8 @@
 import sys
 import argparse
 
+from src.functions import create_arguments_parser
+from src.config.config_names import BuildConfigNames
 from src.beastengine.commands.class_commands.class_files_helper import ClassFilesHelper
 from src.config.target_config_manager import TargetConfigManager
 from src.commandrunners.command_runner import CommandRunner
@@ -30,6 +32,7 @@ You can also use it for building the project with desired configuration.{reset}
 {purple}Development commands{white}
  {green}{build}{white}         Builds BeastEngine project based on given parameters
  {green}{class}{white}         Performs operations on classes
+ {green}{config}{white}        Performs operations on config
 
 {yellow}Type "beast <command> --help" for more information on a specific command{white}
 '''
@@ -69,14 +72,53 @@ You can also use it for building the project with desired configuration.{reset}
 
         parser.add_argument('command', help='command to execute', metavar='<command>')
         command_line_args = parser.parse_args(sys.argv[1:2])
-
-        if command_line_args.command == BeastCommandHelper.COMMAND_NAME_INIT:
-            Init(self.project_dir, self.command_runner, self.conan, self.cmake)
-        elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_CONFIGURE:
+        command = command_line_args.command
+        if command == BeastCommandHelper.COMMAND_NAME_INIT:
+            Init(self.project_dir, self.conan, self.cmake)
+        elif command == BeastCommandHelper.COMMAND_NAME_CONFIGURE:
             Configure(self.cmake)
-        elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_BUILD:
-            Build(self.config, self.cmake).execute()
-        elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_CLASS:
+        elif command == BeastCommandHelper.COMMAND_NAME_BUILD:
+            self.build()
+        elif command == BeastCommandHelper.COMMAND_NAME_CLASS:
             ClassCommand(self.config, self.cmake, self.target_config_manager, self.class_files_helper)
-        elif command_line_args.command == BeastCommandHelper.COMMAND_NAME_INSTALL_DEPENDENCIES:
-            self.conan.install(True)
+        elif command == BeastCommandHelper.COMMAND_NAME_INSTALL_DEPENDENCIES:
+            self.conan.install()
+        elif command == BeastCommandHelper.COMMAND_NAME_CONFIG:
+            self.config_command()
+
+    def build(self):
+        usage = '''{green}beast build [-c|--config CONFIG <args>]
+
+{purple}Available arguments{white}
+{green}-c --config{white}   Defines the configuration in which the project will be built.
+              The available configurations are: {configs}.
+              If no config is specified, the build is performed for all configurations at once.
+'''
+        substitution_map = {'configs': BuildConfigNames.available_names()}
+
+        parser = create_arguments_parser(usage=BeastCommandHelper.format_text(usage, substitution_map))
+        parser.add_argument(
+            '-c',
+            '--config',
+            help='what configuration should the project be built for. Leave empty for all at once build '
+        )
+
+        command_line_args = parser.parse_args(sys.argv[2:])
+        config = None
+        if command_line_args.config:
+            config = command_line_args.config
+
+        Build(self.cmake, config)
+
+    def config_command(self):
+        usage = '''{green}beast config [<args>]
+
+{purple}Available arguments{white}
+{green}--list-targets{white}   Shows a list of project's targets. Those targets can be used by {class} commands 
+'''
+        parser = create_arguments_parser(usage=BeastCommandHelper.format_text(usage))
+        parser.add_argument('--list-targets', help='show available config targets', action='store_true')
+
+        command_line_args = parser.parse_args(sys.argv[2:])
+        if command_line_args.list_targets:
+            print(self.config.list_targets_names())
