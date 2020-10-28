@@ -49,7 +49,7 @@ relative to the 'config.cmake.target.[headers|sources.base_dir]' parameter.
             choices=[
                 BeastCommandHelper.COMMAND_NAME_CLASS_ADD,
                 BeastCommandHelper.COMMAND_NAME_CLASS_REMOVE,
-                BeastCommandHelper.COMMAND_NAME_CLASS_PATH_SHOW
+                BeastCommandHelper.COMMAND_NAME_CLASS_PATH_SHOW,
             ]
         )
 

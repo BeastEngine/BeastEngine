@@ -211,8 +211,8 @@ def test_add_file_to_headers_list_file_will_add_given_header_file_to_the_list_of
 
 
 def test_add_file_to_headers_list_will_add_given_header_file_to_the_list_of_target_headers_without_affecting_already_defined_files():
-    header_before1 = 'header_before1.h',
-    header_before2 = 'header_before2.h',
+    header_before1 = 'header_before1.h'
+    header_before2 = 'header_before2.h'
 
     expected_header_name = 'Header.h'
     expected_target_headers = [header_before1, header_before2, expected_header_name]
@@ -240,8 +240,8 @@ def test_add_file_to_sources_list_will_add_given_source_file_to_the_list_of_targ
 
 
 def test_add_file_to_sources_list_will_add_given_source_file_to_the_list_of_target_sources_without_affecting_already_defined_files():
-    source_before1 = 'source_before1.cpp',
-    source_before2 = 'source_before2.cpp',
+    source_before1 = 'source_before1.cpp'
+    source_before2 = 'source_before2.cpp'
 
     expected_source_name = 'Source.cpp'
     expected_target_sources = [source_before1, source_before2, expected_source_name]
@@ -269,8 +269,8 @@ def test_remove_file_from_headers_list_will_remove_given_header_file_from_the_li
 
 
 def test_remove_file_from_headers_list_will_remove_given_header_file_from_the_list_of_target_headers_without_affecting_already_defined_files():
-    header_before1 = 'header_before1.h',
-    header_before2 = 'header_before2.h',
+    header_before1 = 'header_before1.h'
+    header_before2 = 'header_before2.h'
 
     expected_header_name = 'Header.h'
     expected_target_headers = [header_before1, header_before2]
@@ -298,8 +298,8 @@ def test_remove_file_from_sources_list_will_remove_given_source_file_from_the_li
 
 
 def test_remove_file_from_sources_list_will_remove_given_source_file_from_the_list_of_target_sources_without_affecting_already_defined_files():
-    source_before1 = 'source_before1.cpp',
-    source_before2 = 'source_before2.cpp',
+    source_before1 = 'source_before1.cpp'
+    source_before2 = 'source_before2.cpp'
 
     expected_source_name = 'Source.cpp'
     expected_target_sources = [source_before1, source_before2]
