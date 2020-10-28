@@ -1,0 +1,18 @@
+set(SANDBOX_INCLUDE_DIR {sandbox_include_dir})
+set(SANDBOX_SRC_DIR {sandbox_src_dir})
+
+set(
+	SANDBOX_HEADERS_LIST
+	{sandbox_headers}
+)
+set(
+	SANDBOX_SRC_LIST
+	{sandbox_sources}
+)
+
+file(
+	WRITE
+	{sandbox_cmake_vars_file_path}
+	"\$\{{SANDBOX_INCLUDE_DIR\}}=${{SANDBOX_INCLUDE_DIR}}\n"
+	"\$\{{SANDBOX_SRC_DIR\}}=${{SANDBOX_SRC_DIR}}"
+)

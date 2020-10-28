@@ -1,0 +1,2 @@
+${SANDBOX_INCLUDE_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/apps
+${SANDBOX_SRC_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/apps
