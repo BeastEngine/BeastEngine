@@ -1,23 +1,23 @@
 #pragma once
 #include "BeastEngine/Core/Types.h"
 #include "BeastEngine/Core/Helpers.h"
+#include "BeastEngine/Core/Loggers/Logger.h"
 
 namespace be::internals
 {
+    using LoggerPtr = SharedPtr<Logger>;
     class StaticLogger final
     {
         friend class BeastEngine;
-
     public:
-        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger)
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
 
         template<typename... Args>
         static void LogInfo(const std::string& message, const Args&... args) noexcept
         {
             try
             {
-                m_logger->info(message, args...);
-                m_logger->flush();
+                Get()->LogInfo(message, args...);
             }
             catch (const std::exception&)
             {
@@ -29,8 +29,7 @@ namespace be::internals
         {
             try
             {
-                m_logger->warn(message, args...);
-                m_logger->flush();
+                Get()->LogWarning(message, args...);
             }
             catch (const std::exception&)
             {
@@ -42,8 +41,7 @@ namespace be::internals
         {
             try
             {
-                m_logger->error(message, args...);
-                m_logger->flush();
+                Get()->LogError(message, args...);
             }
             catch (const std::exception&)
             {
@@ -55,8 +53,7 @@ namespace be::internals
         {
             try
             {
-                m_logger->critical(message, args...);
-                m_logger->flush();
+                Get()->LogFatalError(message, args...);
             }
             catch (const std::exception&)
             {
@@ -64,12 +61,22 @@ namespace be::internals
         }
 
     private:
-        static void SetLogger(ILogger logger)
+        static void SetLogger(LoggerPtr logger)
         {
             StaticLogger::m_logger = std::move(logger);
         }
 
+        static LoggerPtr Get()
+        {
+            if (m_logger == nullptr)
+            {
+                throw std::runtime_error("");
+            }
+
+            return m_logger;
+        }
+
     private:
-        inline static ILogger m_logger = nullptr;
+        inline static LoggerPtr m_logger = nullptr;
     };
-} // namespace be::internals
+} // namespace be

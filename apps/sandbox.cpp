@@ -1,5 +1,5 @@
 #include <BeastEngine/EntryPoint.h>
-#include <BeastEngine/Core/Loggers/StaticLogger.h>
+#include <BeastEngine/Core/Logging.h>
 
 #include <iostream>
 
@@ -7,7 +7,7 @@ class BasicApplication final : public be::AApplication
 {
 public:
     BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor)
-        : be::AApplication(std::move(engineConfig), windowDescriptor)
+        : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger"))
     {
         m_window->SetWindowClosedEventHandler(OnWindowClosed());
         m_mouse->SetWheelScrolledListener(OnWheelScrolled());
@@ -20,59 +20,58 @@ public:
 
         while (m_isRunning)
         {
-            system("CLS");
             const auto& coords = m_mouse->GetCoordinates();
 
             m_window->ProcessInput();
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_LEFT))
             {
-                std::cout << "Left button pressed\n";
-                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+                m_logger->LogInfo("Left  button pressed");
+                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_MIDDLE))
             {
-                std::cout << "Middle button pressed\n";
-                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+                m_logger->LogInfo("Middle button pressed");
+                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_RIGHT))
             {
-                std::cout << "Right button pressed\n";
-                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+                m_logger->LogInfo("Right button pressed");
+                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_LEFT))
             {
-                std::cout << "Left button held down\n";
-                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+                m_logger->LogInfo("Left button held down");
+                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_MIDDLE))
             {
-                std::cout << "Middle button held down\n";
-                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+                m_logger->LogInfo("Middle button held down");
+                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_RIGHT))
             {
-                std::cout << "Right button held down\n";
-                std::cout << "Mouse coords: [" << coords.x << ", " << coords.y << "]\n";
+                m_logger->LogInfo("Right button held down");
+                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_keyboard->IsKeyPressed(be::KeyCode::LeftShift))
             {
-                std::cout << "Right arrow pressed\n";
+                m_logger->LogInfo("Right arrow pressed\n");
             }
 
             if (m_keyboard->IsKeyHeldDown(be::KeyCode::LeftShift))
             {
-                std::cout << "Right arrow held down!\n";
+                m_logger->LogInfo("Right arrow held down!\n");
             }
 
             if (m_keyboard->IsKeyDown(be::KeyCode::LeftShift))
             {
-                std::cout << "Right arrow is down!\n";
+                m_logger->LogInfo("Right arrow is down!\n");
             }
 
             if (m_keyboard->IsKeyPressed(be::KeyCode::Escape))
@@ -99,13 +98,13 @@ private:
 
 private:
     bool m_isRunning = true;
+    const be::UniquePtr<be::Logger> m_logger = nullptr;
 };
 
 be::UniquePtr<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
 {
     // Configure engine
     auto config = be::EngineConfig();
-    config.staticLogger.type = be::LoggerType::LOGGER_CONSOLE;
 
     // Configure window
     auto windowDescriptor = be::WindowDescriptor(std::move(windowHandleInstance));
