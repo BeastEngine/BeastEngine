@@ -181,7 +181,12 @@ namespace be::internals
     WindowsWindow::~WindowsWindow()
     {
         BE_ASSERT(DestroyWindow(m_hwnd));
-        BE_ASSERT(UnregisterClass(WINDOW_CLASS_NAME, m_hInstance));
+
+        WNDCLASS windowClass = {0};
+        if (GetClassInfo(m_hInstance, WINDOW_CLASS_NAME, &windowClass))
+        {
+            BE_ASSERT(UnregisterClass(WINDOW_CLASS_NAME, m_hInstance));
+        }
     }
 
     void WindowsWindow::ProcessInput()

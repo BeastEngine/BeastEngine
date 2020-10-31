@@ -1,8 +1,7 @@
 #pragma once
 #include "BeastEngine/Core/Types.h"
 #include "BeastEngine/Core/Helpers.h"
-#include "BeastEngine/Core/Loggers/LoggersFactory.h"
-#include "BeastEngine/Core/Loggers/LoggersTypes.h"
+#include "BeastEngine/Core/Loggers/Logger.h"
 #include "BeastEngine/Core/Events/Events.h"
 #include "BeastEngine/Core/Windows/IWindow.h"
 #include "BeastEngine/Core/Windows/IWindowFactory.h"
@@ -15,16 +14,10 @@ namespace be
     struct EngineConfig
     {
         /**
-         * Type of logger that will be used by engine subsystems.
-         * Additional logger parameters.
-         * 
-         * @example Use the additionalParams parameter to define file logger's output filename
+         * Logger that will be used by engine subsystems.
+         * If set to nullptr, engine will create ConsoleLogger by default
          */
-        struct
-        {
-            LoggerType type = LoggerType::LOGGER_CONSOLE;
-            std::string additionalParams;
-        } staticLogger;
+        SharedPtr<Logger> logger = nullptr;
         
         /**
          * IWindowFactory implementation that will be used to create windows by the engine.
