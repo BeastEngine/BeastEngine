@@ -137,6 +137,9 @@ _TeamCity*
 .axoCover/*
 !.axoCover/settings.json
 
+# VSCode project folder
+.vsCode/
+
 # Visual Studio code coverage results
 *.coverage
 *.coveragexml
@@ -366,7 +369,6 @@ build/
 
 ## Others
 scripts/src/config/temp.json
-cmake/config/*/config.cmake
+cmake/config/**/config.cmake
 cmake/config/config.cmake
-cmake/config/beastengine/beast_vars.txt
-cmake/config/lab/lab_vars.txt
+cmake/config/**/*_vars.txt

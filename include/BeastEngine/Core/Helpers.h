@@ -4,9 +4,9 @@ namespace be::internals
 {
 #ifndef BE_CLASS_ADDITIONAL_CONSTRUCTORS_IMPLEMENTATION
     #define BE_CLASS_ADDITIONAL_CONSTRUCTORS_IMPLEMENTATION(ClassName, definition) \
-        ClassName(const ClassName&) = definition;                       \
-        ClassName(ClassName&&) = definition;                            \
-        ClassName& operator=(const ClassName&) noexcept = definition;   \
+        ClassName(const ClassName&) = definition;                                  \
+        ClassName(ClassName&&) = definition;                                       \
+        ClassName& operator=(const ClassName&) noexcept = definition;              \
         ClassName& operator=(ClassName&&) noexcept = definition;
 #endif
 
