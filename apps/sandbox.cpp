@@ -13,7 +13,7 @@ public:
         m_mouse->SetWheelScrolledListener(OnWheelScrolled());
     }
 
-    virtual void Run() override
+    void Run() override
     {
         m_engine->PrintInfo();
 

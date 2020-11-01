@@ -1,19 +1,20 @@
 #pragma once
 #include "Logger.h"
+#include "BeastEngine/Core/Helpers.h"
 
 namespace be
 {
-	class ConsoleLogger final : public Logger
+	class ConsoleLogger final
     {
     public:
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(ConsoleLogger);
         static UniquePtr<Logger> Create(const std::string& name);
-        ConsoleLogger(LoggerImpl logger);
     };
 
-    class FileLogger final : public Logger
+    class FileLogger final
     {
     public:
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(FileLogger);
         static UniquePtr<Logger> Create(const std::string& name, const std::string& filePath);
-        FileLogger(LoggerImpl logger);
     };
 } // namespace be

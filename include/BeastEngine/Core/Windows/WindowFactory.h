@@ -9,12 +9,12 @@ namespace be::internals
         friend class BeastEngine;
 
     public:
-        BE_IMPLEMENT_CONSTRUCTORS_DELETED(WindowFactory)
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(WindowFactory)
 
         WindowFactory() = default;
         ~WindowFactory() = default;
 
     private:
-        virtual UniquePtr<IWindow> Create(const WindowDescriptor& descriptor) override;
+        UniquePtr<IWindow> Create(const WindowDescriptor& descriptor) override;
     };
 } // namespace be::internals

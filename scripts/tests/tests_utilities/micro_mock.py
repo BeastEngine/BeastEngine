@@ -1,1 +1,2 @@
-def MicroMock(**kwargs): return type('Object', (), kwargs)()
+def MicroMock(**kwargs):
+	return type('Object', (), kwargs)()
