@@ -17,7 +17,6 @@ public:
     {
         m_engine->PrintInfo();
 
-
         while (m_isRunning)
         {
             const auto& coords = m_mouse->GetCoordinates();
