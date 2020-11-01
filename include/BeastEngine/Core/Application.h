@@ -110,7 +110,7 @@ namespace be
     class AApplication
     {
     public:
-        BE_IMPLEMENT_CONSTRUCTORS_DEFAULT(AApplication)
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DEFAULT(AApplication)
 
         /**
          * Creates instance of the AApplication class initializing engine instance with passed be::EngineConfig.

@@ -15,12 +15,7 @@ namespace be
         LoggerImpl logger = spdlog::get(loggerName);
         logger = (logger == nullptr ? spdlog::stdout_color_mt(loggerName) : logger);
         
-        return CreateUniquePtr<ConsoleLogger>(logger);
-    }
-    
-    ConsoleLogger::ConsoleLogger(LoggerImpl logger)
-        : Logger(logger)
-    {
+        return CreateUniquePtr<Logger>(logger);
     }
 
     UniquePtr<Logger> FileLogger::Create(const std::string& name, const std::string& filePath)
@@ -29,11 +24,6 @@ namespace be
         LoggerImpl logger = spdlog::get(loggerName);
         logger = (logger == nullptr ? spdlog::basic_logger_mt(loggerName, filePath) : logger);
 
-        return CreateUniquePtr<FileLogger>(logger);
-    }
-
-    FileLogger::FileLogger(LoggerImpl logger)
-        : Logger(logger)
-    {
+        return CreateUniquePtr<Logger>(logger);
     }
 } // namespace be

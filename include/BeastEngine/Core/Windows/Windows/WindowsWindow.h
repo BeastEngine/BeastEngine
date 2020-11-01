@@ -10,7 +10,7 @@ namespace be::internals
     class WindowsWindow final : public AWindow
     {
     public:
-        BE_IMPLEMENT_CONSTRUCTORS_DELETED(WindowsWindow);
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(WindowsWindow);
 
         /**
          * Creates WinAPI's window using given descriptor.
@@ -29,7 +29,7 @@ namespace be::internals
         /**
          * @see IWindow::ProcessInput
          */
-        virtual void ProcessInput() override;
+        void ProcessInput() override;
 
         /**
          * Returns WinAPI's window handle.

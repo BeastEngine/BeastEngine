@@ -10,7 +10,9 @@ namespace be
     class Logger
     {
     public:
-        BE_IMPLEMENT_CONSTRUCTORS_DEFAULT(Logger);
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DEFAULT(Logger);
+
+        Logger(LoggerImpl logger);
         virtual ~Logger() = default;
 
         template<typename... Args>
@@ -64,9 +66,6 @@ namespace be
             {
             }
         }
-
-    protected:
-        Logger(LoggerImpl logger);
 
     private:
         LoggerImpl m_logger = nullptr;

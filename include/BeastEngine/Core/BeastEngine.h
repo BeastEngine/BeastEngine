@@ -29,7 +29,7 @@ namespace be
     class BeastEngine final
     {
     public:
-        BE_IMPLEMENT_CONSTRUCTORS_DELETED(BeastEngine)
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(BeastEngine)
         
         /**
          * Initializes all engine subsystems using passed configuration.
