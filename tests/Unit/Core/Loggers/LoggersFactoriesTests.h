@@ -4,7 +4,7 @@
 
 namespace be::tests::unit
 {
-	class ConsoleLoggerTest : public ::testing::Test
+    class ConsoleLoggerTest : public ::testing::Test
     {
     protected:
     };

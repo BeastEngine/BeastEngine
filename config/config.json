@@ -116,7 +116,7 @@
                 },
                 "variables": {
                     "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
-                    "target_cmake_variables_file_path": "lab/lab_vars.txt"
+                    "target_cmake_variables_file_path": "lab/lab_unit_vars.txt"
                 },
                 "directories": {
                     "include_directory_placeholder": "lab_unit_include_dir",
@@ -161,7 +161,7 @@
                 },
                 "variables": {
                     "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
-                    "target_cmake_variables_file_path": "lab/lab_vars.txt"
+                    "target_cmake_variables_file_path": "lab/lab_integration_vars.txt"
                 },
                 "directories": {
                     "include_directory_placeholder": "lab_integration_include_dir",

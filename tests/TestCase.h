@@ -7,7 +7,7 @@
 
 namespace be::tests
 {
-	class TestCase : public ::testing::Test
+    class TestCase : public ::testing::Test
     {
     public:
         inline static std::string TempFilePath()

@@ -28,12 +28,12 @@ namespace be::internals
 
 #ifndef BE_ASSERT
     #ifdef BE_ASSERTIONS_ENABLED
-        #define BE_ASSERT(expression)                                                                                   \
-            if (expression)                                                                                             \
-            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */                              \
-            }                                                                                                           \
-            else                                                                                                        \
-            {                                                                                                           \
+        #define BE_ASSERT(expression)                                                                          \
+            if (expression)                                                                                    \
+            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */                     \
+            }                                                                                                  \
+            else                                                                                               \
+            {                                                                                                  \
                 BE_DEBUG_LOG_ERROR("The '{}' assertion failed! It evaluated to: {}", #expression, expression); \
             }
     #else

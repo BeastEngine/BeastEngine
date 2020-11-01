@@ -19,7 +19,7 @@ namespace be::tests::unit
     {
     public:
         SinkMock() = default;
-        
+
         MOCK_METHOD(void, log, (const spdlog::details::log_msg& msg), (override));
         MOCK_METHOD(void, flush, (), (override));
         MOCK_METHOD(void, set_pattern, (const std::string& pattern), (override));
