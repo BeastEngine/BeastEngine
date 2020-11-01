@@ -1,0 +1,18 @@
+set(LAB_INTEGRATION_INCLUDE_DIR {lab_integration_include_dir})
+set(LAB_INTEGRATION_SRC_DIR {lab_integration_src_dir})
+
+set(
+	LAB_INTEGRATION_HEADERS_LIST
+	{lab_integration_headers}
+)
+set(
+	LAB_INTEGRATION_SRC_LIST
+	{lab_integration_sources}
+)
+
+file(
+	WRITE
+	{lab_cmake_vars_file_path}
+	"\$\{{LAB_INTEGRATION_INCLUDE_DIR\}}=${{LAB_INTEGRATION_INCLUDE_DIR}}\n"
+	"\$\{{LAB_INTEGRATION_SRC_DIR\}}=${{LAB_INTEGRATION_SRC_DIR}}"
+)

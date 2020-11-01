@@ -1,5 +1,6 @@
-#include "WinTestSetup.h"
-#if LAB_CAN_BUILD_WINAPI_TESTS
+#ifdef BE_ENABLE_WINDOWS_TESTS
+    #include "WinTestSetup.h"
+
     #include <BeastEngine/Core/Types.h>
     #include <BeastEngine/Core/Events/Events.h>
 
@@ -17,5 +18,5 @@ namespace be::tests::integration
     {
     protected:
     };
-} // namespace be::tests::functional
+} // namespace be::tests::integration
 #endif

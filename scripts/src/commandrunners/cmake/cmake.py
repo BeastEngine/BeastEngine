@@ -44,9 +44,8 @@ class CMake:
         self.config_files_creator.generate_main_config(self.config, self.config_dir)
 
     def generate_targets_configs(self):
-        self.generate_target_config(self.targets_config['beastengine'])
-        self.generate_target_config(self.targets_config['sandbox'])
-        self.generate_target_config(self.targets_config['lab'])
+        for target in self.targets_config:
+            self.generate_target_config(self.targets_config[target])
 
     def generate_target_config(self, target):
         self.config_files_creator.generate_target_config(target, self.config_dir)

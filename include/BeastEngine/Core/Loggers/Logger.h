@@ -2,7 +2,6 @@
 #include "BeastEngine/Core/Types.h"
 #include "BeastEngine/Core/Helpers.h"
 
-#include <string> // Delete
 #include <spdlog/logger.h>
 
 namespace be
