@@ -15,7 +15,7 @@ namespace be::tests::unit
     class WindowFactoryMock : public IWindowFactory
     {
     public:
-        virtual UniquePtr<IWindow> Create(const WindowDescriptor& descriptor) override
+        UniquePtr<IWindow> Create(const WindowDescriptor& descriptor) override
         {
             return UniquePtr<IWindow>(CreateProxy());
         }
