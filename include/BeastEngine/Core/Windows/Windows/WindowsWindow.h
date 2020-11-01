@@ -7,6 +7,7 @@
 
 namespace be::internals
 {
+    using MessageHandler = std::function<LRESULT(UINT, WPARAM, LPARAM)>;
     class WindowsWindow final : public AWindow
     {
     public:
@@ -78,7 +79,7 @@ namespace be::internals
          * Turns on the fullscreen mode.
          */
         void ToggleToFullscreen() const;
-        
+
         /**
          * These window procedure functions are used to setup the actual window procedure.
          *  These additional steps are required if we want the window procedure to be a member function.
@@ -109,8 +110,26 @@ namespace be::internals
         static LRESULT CALLBACK WindowProcThunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
         /**
-         * Handles all window's messages and events.
-         *  Dispatches them via AWindow::DispatchEvent(...) set of methods.
+         * Creates mappings between WinAPI messages and methods responsible for handling them.
+         *  Those handlers are later used to handle actual messages posted by OS.
+         */
+        void SetUpMessageHandlers();
+
+        /**
+         * Maps WM_*MOUSEBUTTON* messages to appropriate handlers.
+         */
+        void SetUpMouseMessagesHandlers();
+
+        /**
+         * Maps WM_*KEY* messages to appropriate handlers.
+         */
+        void SetUpKeyboardMessagesHandlers();
+
+        /**
+         * Handles all window's messages.
+         *  If there is a message handler defined for given message, event is processed to that handler.
+         *  Otherwise, it call default handler provided by the WinAPI
+         * 
          *  It gets called automatically by the OS.
          * 
          * @param hWnd
@@ -120,6 +139,42 @@ namespace be::internals
          * @return 
          */
         LRESULT HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const;
+
+        /**
+         * Handles WM_*MOUSEBUTTONDOWN WinAPI messages.
+         *  Captures mouse cursor.
+         *  Retrieves pressed button code and dispatches mouse button events.
+         * 
+         * @param uMsg - WinAPI mouse button code associated with this event for basic mouse buttons.
+         * @param wParam - WinAPI mouse button code associated with this event for additional mouse buttons.
+         * @param lParam - Cursor coordinates
+         * @return Result of message handling
+         */
+        LRESULT HandleMouseButtonDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
+
+        /**
+         * Handles WM_*MOUSEBUTTONUP WinAPI messages.
+         *  Captures mouse cursor.
+         *  Retrieves pressed button code and dispatches mouse button events.
+         * 
+         * @param uMsg - WinAPI mouse button code associated with this event for basic mouse buttons.
+         * @param wParam - WinAPI mouse button code associated with this event for additional mouse buttons.
+         * @param lParam - Cursor coordinates
+         * @return Result of message handling
+         */
+        LRESULT HandleMouseButtonUpMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
+
+        /**
+         * Handles WM_KEYDOWN WinAPI messages.
+         *  Retrieves pressed button code.
+         *  Dispatches KeyPressedEvent if given key was pressed in this frame and KeyHeldDownEvent otherwise.
+         * 
+         * @param uMsg - unused.
+         * @param wParam - WinAPI key code associated with this event.
+         * @param lParam - Information about associated key state
+         * @return Result of message handling
+         */
+        LRESULT HandleKeyDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
 
         /**
          * Checks if mouse buttons are held down.
@@ -218,6 +273,7 @@ namespace be::internals
         HWND m_hwnd;
         HINSTANCE m_hInstance;
         WindowDescriptor m_descriptor;
+        std::unordered_map<UINT, MessageHandler> m_messageHandlers;
     };
 } // namespace be::internals
 
