@@ -107,34 +107,31 @@
                     ]
                 }
             },
-            "lab": {
-                "name": "lab",
-                "name_placeholder": "tests_target_name",
+            "lab_unit": {
+                "name": "labunit",
+                "name_placeholder": "unit_tests_target_name",
                 "config_files": {
-                    "dist_filename": "lab/config.cmake.dist",
-                    "filename": "lab/config.cmake"
+                    "dist_filename": "lab/unit/config.cmake.dist",
+                    "filename": "lab/unit/config.cmake"
                 },
                 "variables": {
                     "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
                     "target_cmake_variables_file_path": "lab/lab_vars.txt"
                 },
                 "directories": {
-                    "include_directory_placeholder": "lab_include_dir",
+                    "include_directory_placeholder": "lab_unit_include_dir",
                     "include_directory": "\"${BeastEngine_SOURCE_DIR}/tests\"",
-                    "source_directory_placeholder": "lab_src_dir",
+                    "source_directory_placeholder": "lab_unit_src_dir",
                     "source_directory": "\"${BeastEngine_SOURCE_DIR}/tests\""
                 },
                 "headers": {
-                    "base_dir": "${LAB_INCLUDE_DIR}",
-                    "files_list_placeholder": "lab_headers",
+                    "base_dir": "${LAB_UNIT_INCLUDE_DIR}",
+                    "files_list_placeholder": "lab_unit_headers",
                     "files": [
                         "Unit/Core/Events/KeyboardEventsTest.h",
                         "Unit/Core/Events/MouseEventsTest.h",
                         "Unit/Core/BeastEngineTest.h",
                         "Unit/Core/DataStructuresTests.h",
-                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.h",
-                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.h",
-                        "Integration/Core/Windows/Windows/WinTestSetup.h",
                         "TestSetup.h",
                         "Unit/Core/Loggers/LoggerTest.h",
                         "Unit/Core/Loggers/LoggersFactoriesTests.h",
@@ -142,18 +139,54 @@
                     ]
                 },
                 "sources": {
-                    "base_dir": "${LAB_SRC_DIR}",
-                    "files_list_placeholder": "lab_sources",
+                    "base_dir": "${LAB_UNIT_SRC_DIR}",
+                    "files_list_placeholder": "lab_unit_sources",
                     "files": [
-                        "lab.cpp",
+                        "lab_unit.cpp",
                         "Unit/Core/Events/KeyboardEventsTest.cpp",
                         "Unit/Core/Events/MouseEventsTest.cpp",
                         "Unit/Core/BeastEngineTest.cpp",
                         "Unit/Core/DataStructuresTests.cpp",
-                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.cpp",
-                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.cpp",
                         "Unit/Core/Loggers/LoggerTest.cpp",
                         "Unit/Core/Loggers/LoggersFactoriesTests.cpp"
+                    ]
+                }
+            },
+            "lab_integration": {
+                "name": "labintegration",
+                "name_placeholder": "integration_tests_target_name",
+                "config_files": {
+                    "dist_filename": "lab/integration/config.cmake.dist",
+                    "filename": "lab/integration/config.cmake"
+                },
+                "variables": {
+                    "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
+                    "target_cmake_variables_file_path": "lab/lab_vars.txt"
+                },
+                "directories": {
+                    "include_directory_placeholder": "lab_integration_include_dir",
+                    "include_directory": "\"${BeastEngine_SOURCE_DIR}/tests\"",
+                    "source_directory_placeholder": "lab_integration_src_dir",
+                    "source_directory": "\"${BeastEngine_SOURCE_DIR}/tests\""
+                },
+                "headers": {
+                    "base_dir": "${LAB_INTEGRATION_INCLUDE_DIR}",
+                    "files_list_placeholder": "lab_integration_headers",
+                    "files": [
+                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.h",
+                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.h",
+                        "Integration/Core/Windows/Windows/WinTestSetup.h",
+                        "TestSetup.h",
+                        "TestCase.h"
+                    ]
+                },
+                "sources": {
+                    "base_dir": "${LAB_INTEGRATION_SRC_DIR}",
+                    "files_list_placeholder": "lab_integration_sources",
+                    "files": [
+                        "lab_integration.cpp",
+                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.cpp",
+                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.cpp"
                     ]
                 }
             }

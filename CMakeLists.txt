@@ -29,6 +29,8 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 	option(BUILD_TESTS "Build the tests" ON)
+	option(BUILD_UNIT_TESTS "Build unit tests" ON)
+	option(BUILD_INTEGRATION_TESTS "Build integration tests" ON)
 endif()
 
 add_subdirectory(src) # Library
