@@ -5,4 +5,5 @@ SET(BEAST_VERSION_PATCH {project_version_patch})
 
 SET(BEAST_LIB_TARGET_NAME {lib_target_name})
 SET(BEAST_EXE_TARGET_NAME {exe_target_name})
-SET(BEAST_TESTS_TARGET_NAME {tests_target_name})
+SET(BEAST_UNIT_TESTS_TARGET_NAME {unit_tests_target_name})
+SET(BEAST_INTEGRATION_TESTS_TARGET_NAME {integration_tests_target_name})

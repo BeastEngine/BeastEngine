@@ -3,11 +3,15 @@
 #include "BeastEngine/Core/Assertions.h"
 #include "BeastEngine/Core/Versions.h"
 #include "BeastEngine/Core/Windows/WindowFactory.h"
+#include "BeastEngine/Core/Loggers/LoggersFactories.h"
+#include "BeastEngine/Core/Loggers/StaticLogger.h"
 
 #include <fmt/color.h>
 
 namespace be
 {
+    static const std::string DEFAULT_LOGGER_NAME = "beast_engine_default_logger";
+
     BeastEngine::BeastEngine(EngineConfig config)
         : m_config(std::move(config))
     {
@@ -29,13 +33,15 @@ namespace be
 
     void BeastEngine::SetLogger() const
     {
-        internals::StaticLogger::SetLogger(
-            std::move(
-                internals::LoggersFactory::Create(m_config.staticLogger.type, m_config.staticLogger.additionalParams)
-            )
-        );
+        SharedPtr<Logger> logger = m_config.logger;
+        if (logger == nullptr)
+        {
+            logger = ConsoleLogger::Create(DEFAULT_LOGGER_NAME);
+        }
+
+        internals::StaticLogger::SetLogger(std::move(logger));
     }
-    
+
     void BeastEngine::SetWindowFactory()
     {
         if (m_config.windowFactory == nullptr)

@@ -57,17 +57,20 @@ class CMakeConfigFilesCreator:
     def __prepare_main_config_content(self, cmake_config, config_file: FileOpener.File):
         project_config = cmake_config['project']
         targets = cmake_config['targets']
-        target_names_map = {
+
+        project_config_map = {
             project_config['name_placeholder']: project_config['name'],
             project_config['version_major_placeholder']: project_config['version_major'],
             project_config['version_minor_placeholder']: project_config['version_minor'],
             project_config['version_patch_placeholder']: project_config['version_patch'],
-            targets['beastengine']['name_placeholder']: targets['beastengine']['name'],
-            targets['sandbox']['name_placeholder']: targets['sandbox']['name'],
-            targets['lab']['name_placeholder']: targets['lab']['name'],
         }
 
-        return config_file.get_content().format_map(target_names_map)
+        target_names_map = {}
+        for target in targets:
+            key = targets[target]['name_placeholder']
+            target_names_map[key] = targets[target]['name']
+
+        return config_file.get_content().format_map({**project_config_map, **target_names_map})
 
     @staticmethod
     def __get_copy_command(source, destination):

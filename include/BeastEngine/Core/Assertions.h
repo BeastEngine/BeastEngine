@@ -1,5 +1,6 @@
 #pragma once
 #include "BeastEngine/Core/Logging.h"
+#include "BeastEngine/Core/Debugging.h"
 
 namespace be::internals
 {
@@ -11,12 +12,14 @@ namespace be::internals
 
 #ifndef BE_CRITICAL_ASSERT
     #ifdef BE_ASSERTIONS_ENABLED
-        #define BE_CRITICAL_ASSERT(expression)                                                \
-            if (expression) {}                                                                \
-            else                                                                              \
-            {                                                                                 \
-                BE_DEBUG_LOG_FATAL_ERROR("The critical '{}' assertion failed!", #expression); \
-                BE_DEBUG_BREAK();                                                             \
+        #define BE_CRITICAL_ASSERT(expression)                                                                                \
+            if (expression)                                                                                                   \
+            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */                                    \
+            }                                                                                                                 \
+            else                                                                                                              \
+            {                                                                                                                 \
+                BE_DEBUG_LOG_FATAL_ERROR("The critical '{}' assertion failed! It evaluated to: {}", #expression, expression); \
+                BE_DEBUG_BREAK();                                                                                             \
             }
     #else
         #define BE_CRITICAL_ASSERT(expression)
@@ -25,11 +28,13 @@ namespace be::internals
 
 #ifndef BE_ASSERT
     #ifdef BE_ASSERTIONS_ENABLED
-        #define BE_ASSERT(expression)                                          \
-            if (expression) {}                                                 \
-            else                                                               \
-            {                                                                  \
-                BE_DEBUG_LOG_ERROR("The '{}' assertion failed!", #expression); \
+        #define BE_ASSERT(expression)                                                                          \
+            if (expression)                                                                                    \
+            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */                     \
+            }                                                                                                  \
+            else                                                                                               \
+            {                                                                                                  \
+                BE_DEBUG_LOG_ERROR("The '{}' assertion failed! It evaluated to: {}", #expression, expression); \
             }
     #else
         #define BE_ASSERT(expression)

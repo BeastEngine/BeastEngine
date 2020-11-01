@@ -41,8 +41,6 @@
                         "Core/BeastEngine.h",
                         "Core/Loggers/StaticLogger.h",
                         "Core/Types.h",
-                        "Core/Loggers/LoggersTypes.h",
-                        "Core/Loggers/LoggersFactory.h",
                         "Core/Helpers.h",
                         "Core/Logging.h",
                         "Core/Assertions.h",
@@ -60,7 +58,10 @@
                         "Core/PlatformSetup.h",
                         "Core/Application.h",
                         "Core/Windows/Windows/WindowsWindow.h",
-                        "Core/DataStructures.h"
+                        "Core/DataStructures.h",
+                        "Core/Loggers/Logger.h",
+                        "Core/Loggers/LoggersFactories.h",
+                        "Core/Debugging.h"
                     ]
                 },
                 "sources": {
@@ -68,10 +69,11 @@
                     "files_list_placeholder": "beast_sources",
                     "files": [
                         "Core/BeastEngine.cpp",
-                        "Core/Loggers/LoggersFactory.cpp",
                         "Core/Windows/WindowFactory.cpp",
                         "Core/Windows/Windows/WindowsWindow.cpp",
-                        "Core/Application.cpp"
+                        "Core/Application.cpp",
+                        "Core/Loggers/Logger.cpp",
+                        "Core/Loggers/LoggersFactories.cpp"
                     ]
                 }
             },
@@ -105,48 +107,84 @@
                     ]
                 }
             },
-            "lab": {
-                "name": "lab",
-                "name_placeholder": "tests_target_name",
+            "lab_unit": {
+                "name": "labunit",
+                "name_placeholder": "unit_tests_target_name",
                 "config_files": {
-                    "dist_filename": "lab/config.cmake.dist",
-                    "filename": "lab/config.cmake"
+                    "dist_filename": "lab/unit/config.cmake.dist",
+                    "filename": "lab/unit/config.cmake"
                 },
                 "variables": {
                     "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
-                    "target_cmake_variables_file_path": "lab/lab_vars.txt"
+                    "target_cmake_variables_file_path": "lab/lab_unit_vars.txt"
                 },
                 "directories": {
-                    "include_directory_placeholder": "lab_include_dir",
+                    "include_directory_placeholder": "lab_unit_include_dir",
                     "include_directory": "\"${BeastEngine_SOURCE_DIR}/tests\"",
-                    "source_directory_placeholder": "lab_src_dir",
+                    "source_directory_placeholder": "lab_unit_src_dir",
                     "source_directory": "\"${BeastEngine_SOURCE_DIR}/tests\""
                 },
                 "headers": {
-                    "base_dir": "${LAB_INCLUDE_DIR}",
-                    "files_list_placeholder": "lab_headers",
+                    "base_dir": "${LAB_UNIT_INCLUDE_DIR}",
+                    "files_list_placeholder": "lab_unit_headers",
                     "files": [
-                        "Integration/Core/Loggers/LoggersFactoryTest.h",
                         "Unit/Core/Events/KeyboardEventsTest.h",
                         "Unit/Core/Events/MouseEventsTest.h",
                         "Unit/Core/BeastEngineTest.h",
                         "Unit/Core/DataStructuresTests.h",
-                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.h",
-                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.h",
-                        "Integration/Core/Windows/Windows/WinTestSetup.h",
-                        "TestSetup.h"
+                        "TestSetup.h",
+                        "Unit/Core/Loggers/LoggerTest.h",
+                        "Unit/Core/Loggers/LoggersFactoriesTests.h",
+                        "TestCase.h"
                     ]
                 },
                 "sources": {
-                    "base_dir": "${LAB_SRC_DIR}",
-                    "files_list_placeholder": "lab_sources",
+                    "base_dir": "${LAB_UNIT_SRC_DIR}",
+                    "files_list_placeholder": "lab_unit_sources",
                     "files": [
-                        "lab.cpp",
-                        "Integration/Core/Loggers/LoggersFactoryTest.cpp",
+                        "lab_unit.cpp",
                         "Unit/Core/Events/KeyboardEventsTest.cpp",
                         "Unit/Core/Events/MouseEventsTest.cpp",
                         "Unit/Core/BeastEngineTest.cpp",
                         "Unit/Core/DataStructuresTests.cpp",
+                        "Unit/Core/Loggers/LoggerTest.cpp",
+                        "Unit/Core/Loggers/LoggersFactoriesTests.cpp"
+                    ]
+                }
+            },
+            "lab_integration": {
+                "name": "labintegration",
+                "name_placeholder": "integration_tests_target_name",
+                "config_files": {
+                    "dist_filename": "lab/integration/config.cmake.dist",
+                    "filename": "lab/integration/config.cmake"
+                },
+                "variables": {
+                    "target_cmake_variables_file_path_placeholder": "lab_cmake_vars_file_path",
+                    "target_cmake_variables_file_path": "lab/lab_integration_vars.txt"
+                },
+                "directories": {
+                    "include_directory_placeholder": "lab_integration_include_dir",
+                    "include_directory": "\"${BeastEngine_SOURCE_DIR}/tests\"",
+                    "source_directory_placeholder": "lab_integration_src_dir",
+                    "source_directory": "\"${BeastEngine_SOURCE_DIR}/tests\""
+                },
+                "headers": {
+                    "base_dir": "${LAB_INTEGRATION_INCLUDE_DIR}",
+                    "files_list_placeholder": "lab_integration_headers",
+                    "files": [
+                        "Integration/Core/Windows/Windows/WindowsMouseEventsTest.h",
+                        "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.h",
+                        "Integration/Core/Windows/Windows/WinTestSetup.h",
+                        "TestSetup.h",
+                        "TestCase.h"
+                    ]
+                },
+                "sources": {
+                    "base_dir": "${LAB_INTEGRATION_SRC_DIR}",
+                    "files_list_placeholder": "lab_integration_sources",
+                    "files": [
+                        "lab_integration.cpp",
                         "Integration/Core/Windows/Windows/WindowsMouseEventsTest.cpp",
                         "Integration/Core/Windows/Windows/WindowsKeyboardEventsTest.cpp"
                     ]

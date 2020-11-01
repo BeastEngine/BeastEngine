@@ -1,6 +1,6 @@
-#include "WindowsMouseEventsTest.h"
+#ifdef BE_ENABLE_WINDOWS_TESTS
+    #include "WindowsMouseEventsTest.h"
 
-#if LAB_CAN_BUILD_WINAPI_TESTS
     #include <BeastEngine/Core/Windows/Windows/WindowsWindow.h>
     #include <BeastEngine/Core/Events/Events.h>
 

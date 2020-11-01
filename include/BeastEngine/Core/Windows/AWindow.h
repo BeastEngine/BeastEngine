@@ -1,7 +1,7 @@
 #pragma once
 #include "IWindow.h"
 #include "BeastEngine/Core/Types.h"
-#include "BeastEngine/Core/Logging.h"
+#include "BeastEngine/Core/Debugging.h"
 
 namespace be
 {
@@ -9,18 +9,18 @@ namespace be
     {
     public:
         virtual ~AWindow() = default;
-        
-        virtual void SetKeyboardEventsHandler(KeyboardEventHandler handler) override
+
+        void SetKeyboardEventsHandler(KeyboardEventHandler handler) override
         {
             m_keyboardEventsHandler = handler;
         }
-        
-        virtual void SetMouseEventsHandler(MouseEventHandler handler) override
+
+        void SetMouseEventsHandler(MouseEventHandler handler) override
         {
             m_mouseEventsHandler = handler;
         }
 
-        virtual void SetWindowClosedEventHandler(WindowClosedEventHandler handler) override
+        void SetWindowClosedEventHandler(WindowClosedEventHandler handler) override
         {
             m_windowClosedEventHandler = handler;
         }

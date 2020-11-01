@@ -222,4 +222,3 @@ def test_run_command_will_execute_command_from_passed_working_directory():
         encoding='utf-8',
         errors='ignore'
     )
-
