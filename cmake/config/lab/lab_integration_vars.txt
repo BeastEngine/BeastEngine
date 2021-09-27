@@ -1,0 +1,2 @@
+${LAB_INTEGRATION_INCLUDE_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/tests
+${LAB_INTEGRATION_SRC_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/tests

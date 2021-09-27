@@ -1,0 +1,61 @@
+include("${PROJECT_CONFIG_PATH}/beastengine/config.cmake")
+
+SET(BE_TESTS_INTEGRATION_TARGET_NAME BEASTIntegration)
+
+set(BE_TESTS_INTEGRATION_INCLUDE_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}/tests")
+set(BE_TESTS_INTEGRATION_SRC_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}/tests")
+
+set(
+	BE_TESTS_INTEGRATION_HEADERS_LIST
+	"Core/Windows/Windows/WindowsMouseEventsTest.h"
+    "Core/Windows/Windows/WindowsKeyboardEventsTest.h"
+    "Core/Windows/Windows/WinTestSetup.h"
+    "TestSetup.h"
+    "TestCase.h"
+)
+
+set(
+	BE_TESTS_INTEGRATION_SRC_LIST
+    "Core/Windows/Windows/WindowsMouseEventsTest.cpp"
+    "Core/Windows/Windows/WindowsKeyboardEventsTest.cpp"
+	"main.cpp"
+)
+
+set(BE_TESTS_INTEGRATION_HEADERS_PREFIX "${BE_TESTS_INTEGRATION_INCLUDE_DIR}/${BEAST_LIB_TARGET_NAME}/")
+set(BE_TESTS_INTEGRATION_SRC_PREFIX "${BE_TESTS_INTEGRATION_SRC_DIR}/${BEAST_LIB_TARGET_NAME}/")
+
+list(TRANSFORM BE_TESTS_INTEGRATION_HEADERS_LIST PREPEND ${BE_TESTS_INTEGRATION_HEADERS_PREFIX})
+list(TRANSFORM BE_TESTS_INTEGRATION_SRC_LIST PREPEND ${BE_TESTS_INTEGRATION_SRC_PREFIX})
+
+add_executable(${BE_TESTS_INTEGRATION_TARGET_NAME} "${BE_TESTS_INTEGRATION_SRC_LIST}" "${BE_TESTS_INTEGRATION_HEADERS_LIST}")
+target_include_directories(${BE_TESTS_INTEGRATION_TARGET_NAME} PRIVATE "${BE_TESTS_INTEGRATION_INCLUDE_DIR}")
+
+target_link_libraries(
+	${BE_TESTS_INTEGRATION_TARGET_NAME}
+		PRIVATE
+			BE::beast
+			CONAN_PKG::gtest
+			CONAN_PKG::spdlog
+)
+
+if(WIN32)
+	target_compile_definitions(${BE_TESTS_INTEGRATION_TARGET_NAME} PRIVATE BE_ENABLE_WINDOWS_TESTS)
+endif()
+
+target_precompile_headers(
+	${BE_TESTS_INTEGRATION_TARGET_NAME}
+	PRIVATE
+		<string>
+		<vector>
+		<memory>
+		<cstdint>
+		<array>
+)
+
+set_compiler_options(${BE_TESTS_INTEGRATION_TARGET_NAME})
+
+# Group files into proper folders - for IDE
+group_files("${BE_TESTS_INTEGRATION_HEADERS_LIST}" "${BE_TESTS_INTEGRATION_INCLUDE_DIR}")
+group_files("${BE_TESTS_INTEGRATION_SRC_LIST}" "${BE_TESTS_INTEGRATION_SRC_DIR}")
+
+add_test(NAME ${BE_TESTS_INTEGRATION_TARGET_NAME} COMMAND ${BE_TESTS_INTEGRATION_TARGET_NAME})
