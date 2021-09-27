@@ -1,2 +1,0 @@
-${BEAST_INCLUDE_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/include
-${BEAST_SRC_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/src

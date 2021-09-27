@@ -1,2 +1,0 @@
-${LAB_UNIT_INCLUDE_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/tests
-${LAB_UNIT_SRC_DIR}=C:/Users/Tomek/Documents/Projects/C++/BeastEngine/tests
