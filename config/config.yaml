@@ -1,0 +1,48 @@
+conan:
+  file_path: conan/conanfile.py
+  build_dir: conan/build
+targets:
+  beastengine:
+    tests: false
+    namespace: be
+    headers:
+      base_dir: include/BeastEngine
+      cmake_variable_file: src/BeastEngine/CMakeLists.txt
+      cmake_variable_name: BEAST_HEADERS_LIST
+    sources:
+      base_dir: src/BeastEngine
+      cmake_variable_file: src/BeastEngine/CMakeLists.txt
+      cmake_variable_name: BEAST_SRC_LIST
+  sandbox:
+    tests: false
+    namespace: be
+    headers:
+      base_dir: apps
+      cmake_variable_file: apps/CMakeLists.txt
+      cmake_variable_name: SANDBOX_HEADERS_LIST
+    sources:
+      base_dir: apps
+      cmake_variable_file: apps/CMakeLists.txt
+      cmake_variable_name: SANDBOX_SRC_LIST
+  be_units:
+    tests: true
+    namespace: be::tests::unit
+    headers:
+      base_dir: tests/BeastEngine/Unit
+      cmake_variable_file: tests/BeastEngine/Unit/CMakeLists.txt
+      cmake_variable_name: BE_TESTS_UNIT_HEADERS_LIST
+    sources:
+      base_dir: tests/BeastEngine/Unit
+      cmake_variable_file: tests/BeastEngine/Unit/CMakeLists.txt
+      cmake_variable_name: BE_TESTS_UNIT_SRC_LIST
+  be_integration:
+    tests: true
+    namespace: be::tests::integration
+    headers:
+      base_dir: tests/BeastEngine/Integration
+      cmake_variable_file: tests/BeastEngine/Integration/CMakeLists.txt
+      cmake_variable_name: BE_TESTS_INTEGRATION_HEADERS_LIST
+    sources:
+      base_dir: tests/BeastEngine/Integration
+      cmake_variable_file: tests/BeastEngine/Integration/CMakeLists.txt
+      cmake_variable_name: BE_TESTS_INTEGRATION_SRC_LIST

@@ -1,0 +1,6 @@
+[submodule "scripts"]
+	path = scripts
+	url = https://github.com/ComaszTyrulik/BasicCppSetupScripts
+[submodule "vendor/ComaszTyrulik/CommonUtilities"]
+	path = vendor/ComaszTyrulik/CommonUtilities
+	url = https://github.com/ComaszTyrulik/CommonUtilities.git
