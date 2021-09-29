@@ -53,13 +53,20 @@ target_link_libraries(
 		BE::math
 )
 
-# TODO: Transform it into an option. If BE_ENABLE_DEBUGGING is ON
-set(BEAST_DEBUGGING_DEFINES BE_DEBUGGING_INFO_ENABLED BE_ASSERTIONS_ENABLED)
+
+set(BEAST_DEBUGGING_DEFINES)
+if (${BE_ENABLE_DEBUG_INFO})
+	list(APPEND BEAST_DEBUGGING_DEFINES BE_DEBUGGING_INFO_ENABLED)
+endif()
+
+if (${BE_ENABLE_ASSERTIONS})
+	list(APPEND BEAST_DEBUGGING_DEFINES BE_ASSERTIONS_ENABLED)
+endif()
+
 target_compile_definitions(
 	${BEAST_LIB_TARGET_NAME}
 	PRIVATE
-		# Set debugging and assertions macros when bulding with debug info
-		$<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:${BEAST_DEBUGGING_DEFINES}>
+		${BEAST_DEBUGGING_DEFINES}
 )
 
 if(WIN32)

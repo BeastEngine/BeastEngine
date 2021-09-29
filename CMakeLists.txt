@@ -35,8 +35,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	option(BUILD_INTEGRATION_TESTS "Build integration tests" ON)
 	option(GROUP_FILES_SEPARATE "Group source and header files into different sub-categories inside the IDE" OFF)
 
-	# Convert to option
-	set(CT_COMMON_ENABLE_DEBUG TRUE)
+	option(BE_ENABLE_DEBUG_INFO "Should debugging functionalities be enabled" ON)
+	option(BE_ENABLE_ASSERTIONS "Should assertions be enabled" ON)
+
+	if (BE_ENABLE_DEBUG_INFO)
+		set(CT_COMMON_ENABLE_DEBUG TRUE)
+	endif()
 endif()
 
 add_subdirectory(vendor) # Vendors' code
