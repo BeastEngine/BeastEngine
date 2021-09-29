@@ -1,7 +1,9 @@
 #pragma once
 #include "BeastEngine/Core/PlatformSetup.h"
 #include "BeastEngine/Core/Events/Events.h"
-#include "BeastEngine/Core/Types.h"
+
+#include <Common/Types.h>
+#include <Common/Helpers.h>
 
 namespace be
 {
@@ -9,8 +11,8 @@ namespace be
     /******************** WINDOW STYLE ********************/
     enum class WindowStyle
     {
-        WINDOW_FULLSCREEN, // Window is taking the whole screen and is the topmost windoww
-        WINDOW_BORDERLESS, // Maximized normal window taking the whole screen area
+        WINDOW_FULLSCREEN, // Window is taking the whole screen and is the topmost window
+        WINDOW_BORDERLESS, // Maximized, normal window taking the whole screen area
         WINDOW_DEFUALT, // Default, normal window with title and sizing buttons
     };
     /******************************************************/
@@ -18,11 +20,15 @@ namespace be
 
     /******************************************************/
     /******************* WINDOW PARAMS ********************/
+
+    /**
+     * @brief Wrapper for platform specific window handle.
+     */
     class WindowHandleInstance final
     {
     public:
         /**
-         * Initializes WindowHandleInstance class with platform specific instance.
+         * @brief Initializes WindowHandleInstance class with platform specific instance.
          * 
          * @param instance
          */
@@ -30,10 +36,9 @@ namespace be
             : m_instance(instance)
         {
         }
-        ~WindowHandleInstance() = default;
 
         /**
-         * Returns platform specific instance.
+         * @brief Returns platform specific instance.
          * 
          * @return 
          */
@@ -46,6 +51,9 @@ namespace be
         WindowHandleInstanceType m_instance;
     };
 
+    /**
+     * @brief Contains configuration options for windows.
+     */
     struct WindowDescriptor
     {
         WindowDescriptor(WindowHandleInstance wHInstance)
@@ -55,23 +63,27 @@ namespace be
 
         std::string title = "BeastEngine";
         IntVec2 dimensions = {800, 600};
-        IntVec2 position = {0.0, 0.0};
+        IntVec2 position = {0, 0};
         WindowStyle style = {WindowStyle::WINDOW_DEFUALT};
-        WindowHandleInstance handleInstance;
+        const WindowHandleInstance handleInstance;
     };
     /******************************************************/
     /******************************************************/
 
     /******************************************************/
     /**************** INTERFACE DEFINITION ****************/
+    /**
+     * @brief Basic interface for engine's windows.
+     */
     class IWindow
     {
     public:
+        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IWindow);
+        IWindow() = default;
         virtual ~IWindow() = default;
 
         /**
-         * Saves passed handler to be used whenever any type of the KeyboardEvent occurs.
-         * 
+         * @brief Saves passed handler to be used whenever any type of the KeyboardEvent occurs.
          * @see KeyboardEvent
          * 
          * @param handler
@@ -79,8 +91,7 @@ namespace be
         virtual void SetKeyboardEventsHandler(KeyboardEventHandler handler) = 0;
 
         /**
-         * Saves passed handler to be used whenever any type of the MouseEvent occurs.
-         * 
+         * @brief Saves passed handler to be used whenever any type of the MouseEvent occurs.
          * @see MouseEvent
          * 
          * @param handler
@@ -88,17 +99,17 @@ namespace be
         virtual void SetMouseEventsHandler(MouseEventHandler handler) = 0;
 
         /**
-         * Saves passed handler to be used whenever WindowClosed event occurs.
+         * @brief Saves passed handler to be used whenever WindowClosed event occurs.
          * 
          * @param handler
          */
         virtual void SetWindowClosedEventHandler(WindowClosedEventHandler handler) = 0;
 
         /**
-         * Processes messages received from the operating system and converts them into the engine's events.
+         * @brief Processes messages received from the operating system and converts them into the engine's events.
          * Those events are then being dispatched to the defined handlers.
          * 
-         * @see Set*EventsHandler(...) for reference
+         * @see Set*EventsHandler() for reference
          */
         virtual void ProcessInput() = 0;
     };

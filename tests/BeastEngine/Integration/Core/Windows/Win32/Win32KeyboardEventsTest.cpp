@@ -1,7 +1,7 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
-    #include "WindowsKeyboardEventsTest.h"
+    #include "Win32KeyboardEventsTest.h"
 
-    #include <BeastEngine/Core/Windows/Windows/WindowsWindow.h>
+    #include <BeastEngine/Core/Windows/Win32/Win32Window.h>
     #include <BeastEngine/Core/Events/Events.h>
 
 namespace be::tests::integration
@@ -202,7 +202,7 @@ namespace be::tests::integration
         sut->SetKeyboardEventsHandler(expectedHandler);
 
         // Send WM_KEYDOWN WinAPI message
-        LPARAM keyDownRepeated = (1 << 30); // Bit 30 set to 1 defines that the key was previously pressed
+        LPARAM keyDownRepeated = (static_cast<LPARAM>(1) << 30); // Bit 30 set to 1 defines that the key was previously pressed
         PostMessage(sut->GetNativeHandle(), WM_KEYDOWN, testParams.virtualKeyCode, keyDownRepeated);
 
         sut->ProcessInput();

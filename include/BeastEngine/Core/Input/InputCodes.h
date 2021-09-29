@@ -1,5 +1,5 @@
 #pragma once
-#include "BeastEngine/Core/Types.h"
+#include <Common/Types.h>
 
 namespace be
 {

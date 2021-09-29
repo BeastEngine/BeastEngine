@@ -10,15 +10,22 @@ set(BE_TESTS_INTEGRATION_SRC_PREFIX "${BE_TESTS_INTEGRATION_SRC_DIR}/${BEAST_LIB
 
 set(
 	BE_TESTS_INTEGRATION_HEADERS_LIST
-	"Core/Windows/Windows/WindowsMouseEventsTest.h"
-    "Core/Windows/Windows/WindowsKeyboardEventsTest.h"
-    "Core/Windows/Windows/WinTestSetup.h"
+	"Core/BeastEngineTest.h"
+	"Core/Loggers/FileLoggerTest.h"
+	"Core/Windows/Win32/Win32KeyboardEventsTest.h"
+	"Core/Windows/Win32/Win32MouseEventsTest.h"
+	"Core/Windows/Win32/Win32TestSetup.h"
+	"Core/Windows/Win32/Win32WindowTest.h"
+	"FilesystemTestCase.h"
 )
 
 set(
 	BE_TESTS_INTEGRATION_SRC_LIST
-    "Core/Windows/Windows/WindowsMouseEventsTest.cpp"
-    "Core/Windows/Windows/WindowsKeyboardEventsTest.cpp"
+	"Core/BeastEngineTest.cpp"
+	"Core/Loggers/FileLoggerTest.cpp"
+	"Core/Windows/Win32/Win32KeyboardEventsTest.cpp"
+	"Core/Windows/Win32/Win32MouseEventsTest.cpp"
+	"Core/Windows/Win32/Win32WindowTest.cpp"
 	"main.cpp"
 )
 
@@ -36,6 +43,7 @@ target_link_libraries(
 			BE::beast
 			CONAN_PKG::gtest
 			CONAN_PKG::spdlog
+			CT::common_utils
 )
 
 if(WIN32)
@@ -52,7 +60,7 @@ target_precompile_headers(
 		<array>
 )
 
-set_compiler_options(${BE_TESTS_INTEGRATION_TARGET_NAME})
+be_set_compiler_options(${BE_TESTS_INTEGRATION_TARGET_NAME})
 
 # Group files into proper folders - for IDE
 group_files("${BE_TESTS_INTEGRATION_HEADERS_LIST}" "${BE_TESTS_INTEGRATION_INCLUDE_DIR}")

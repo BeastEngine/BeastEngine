@@ -15,16 +15,22 @@ namespace be::tests::unit
     class WindowFactoryMock : public IWindowFactory
     {
     public:
-        UniquePtr<IWindow> Create(const WindowDescriptor& descriptor) override
-        {
-            return UniquePtr<IWindow>(CreateProxy());
-        }
-
-        MOCK_METHOD(IWindow*, CreateProxy, ());
+        MOCK_METHOD(Unique<IWindow>, Create, (const WindowDescriptor&), (override));
     };
 
-    class BeastEngineTest : public ::testing::Test
+    class BeastEngineTest : public testing::Test
     {
+    protected:
+        auto CreateWindowFactoryMock()
+        {
+            return CreateUnique<WindowFactoryMock>();
+        }
+
+        auto CreateWindowMock()
+        {
+            return CreateUnique<WindowMock>();
+        }
+
     protected:
         const be::WindowHandleInstanceType m_wHInstance = nullptr;
     };

@@ -12,7 +12,8 @@ namespace be::tests
     public:
         inline static std::string TempFilePath()
         {
-            return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(std::filesystem::temp_directory_path().c_str());
+            //return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(std::filesystem::temp_directory_path().c_str());
+            return "Temp";
         }
     };
 } // namespace be::tests

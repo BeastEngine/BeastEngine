@@ -1,20 +1,22 @@
 #pragma once
-#include "BeastEngine/Core/Types.h"
-#include "BeastEngine/Core/Helpers.h"
 #include "BeastEngine/Core/Loggers/Logger.h"
+
+#include <Common/Types.h>
+#include <Common/Helpers.h>
 
 namespace be::internals
 {
-    using LoggerPtr = SharedPtr<Logger>;
+    using LoggerPtr = Shared<Logger>;
     class StaticLogger final
     {
         friend class BeastEngine;
     public:
-        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
+        CT_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
 
         template<typename... Args>
         static void LogInfo(const std::string& message, const Args&... args) noexcept
         {
+            // TODO: Try to get rid of the try-catch
             try
             {
                 Get()->LogInfo(message, args...);
@@ -70,7 +72,7 @@ namespace be::internals
         {
             if (m_logger == nullptr)
             {
-                throw std::runtime_error("");
+                throw std::exception();
             }
 
             return m_logger;

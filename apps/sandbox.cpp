@@ -1,5 +1,5 @@
 #include <BeastEngine/EntryPoint.h>
-#include <BeastEngine/Core/Logging.h>
+#include <BeastEngine/BeastEngine.h>
 
 #include <iostream>
 
@@ -15,11 +15,11 @@ public:
 
     void Run() override
     {
-        m_engine->PrintInfo();
+        GetEngine().PrintInfo();
 
         while (m_isRunning)
         {
-            const auto& coords = m_mouse->GetCoordinates();
+            const auto& coords = m_mouse->GetMousePosition();
 
             m_window->ProcessInput();
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_LEFT))
@@ -38,6 +38,16 @@ public:
             {
                 m_logger->LogInfo("Right button pressed");
                 m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
+            }
+
+            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON4))
+            {
+                m_logger->LogInfo("Button 4 pressed");
+            }
+
+            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON5))
+            {
+                m_logger->LogInfo("Button 5 pressed");
             }
 
             if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_LEFT))
@@ -97,10 +107,10 @@ private:
 
 private:
     bool m_isRunning = true;
-    const be::UniquePtr<be::Logger> m_logger = nullptr;
+    const be::Shared<be::Logger> m_logger = nullptr;
 };
 
-be::UniquePtr<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
+be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
 {
     // Configure engine
     auto config = be::EngineConfig();
@@ -109,5 +119,5 @@ be::UniquePtr<be::AApplication> be::CreateApplication(WindowHandleInstance windo
     auto windowDescriptor = be::WindowDescriptor(std::move(windowHandleInstance));
     windowDescriptor.style = WindowStyle::WINDOW_DEFUALT;
 
-    return be::CreateUniquePtr<BasicApplication>(std::move(config), windowDescriptor);
+    return be::CreateUnique<BasicApplication>(std::move(config), windowDescriptor);
 }

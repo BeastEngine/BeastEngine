@@ -1,10 +1,15 @@
 #pragma once
 #include "IWindow.h"
-#include "BeastEngine/Core/Types.h"
 #include "BeastEngine/Core/Debugging.h"
+
+#include <Common/Types.h>
 
 namespace be
 {
+    /**
+     * @brief Abstract, base class for all windows.
+     * It provides its children with basic functionality for setting events handlers, and dispatching those events.
+     */
     class AWindow : public IWindow
     {
     public:
@@ -27,7 +32,7 @@ namespace be
 
     protected:
         /**
-         * Dispatches provided KeyboardEvent if event handler is defined.
+         * @brief Dispatches provided KeyboardEvent if event handler is defined.
          * Leaves event unhandled otherwise.
          * 
          * @param event to dispatch
@@ -44,7 +49,7 @@ namespace be
         }
 
         /**
-         * Dispatches provided MouseEvent if event handler is defined.
+         * @brief Dispatches provided MouseEvent if event handler is defined.
          * Leaves event unhandled otherwise.
          * 
          * @param event to dispatch
@@ -61,7 +66,7 @@ namespace be
         }
 
         /**
-         * Dispatches WindowClosedEvent if event handler is defined.
+         * @brief Dispatches WindowClosedEvent if event handler is defined.
          * Leaves event unhandled otherwise.
          */
         void DispatchWindowClosedEvent() const

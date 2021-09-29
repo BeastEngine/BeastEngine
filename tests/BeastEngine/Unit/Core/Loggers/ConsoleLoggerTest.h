@@ -8,9 +8,4 @@ namespace be::tests::unit
     {
     protected:
     };
-
-    class FileLoggerTest : public TestCase
-    {
-    protected:
-    };
 } // namespace be::tests::unit

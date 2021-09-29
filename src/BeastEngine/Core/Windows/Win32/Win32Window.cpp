@@ -1,8 +1,10 @@
 #ifdef BE_PLATFORM_WINDOWS
-    #include "BeastEngine/Core/Windows/Windows/WindowsWindow.h"
+    #include "BeastEngine/Core/Windows/Win32/Win32Window.h"
     #include "BeastEngine/Core/Assertions.h"
+    #include "BeastEngine/Core/Events/Events.h"
 
-    #include <iostream>
+    #include <Common/Exceptions.h>
+    #include <unordered_map>
 
 namespace be::internals
 {
@@ -16,11 +18,15 @@ namespace be::internals
                 {                                                                                                       \
                     const std::string errorMessage =                                                                    \
                         "An error occurred when calling the WinApi function. Error code: " + std::to_string(lastError); \
-                    throw std::runtime_error(errorMessage);                                                             \
+                    CT_THROW(errorMessage);                                                                             \
                 }                                                                                                       \
             }
     #endif
 
+    // Mappings between Win32 key codes and Engine's KeyCodes
+    // It's an unordered_map instead of the constexpr map, because of its size.
+    // Unordered_map is better for a bigger data set frequent lookups.
+    // Measure performance if needed.
     static const std::unordered_map<WPARAM, KeyCode> KEY_CODES_MAP{
         {0x41, KeyCode::A},
         {0x42, KeyCode::B},
@@ -144,7 +150,51 @@ namespace be::internals
         {VK_OEM_8, KeyCode::OEMSpecific},
     };
 
-    WindowsWindow::WindowsWindow(const WindowDescriptor& windowDescriptor, const wchar_t* windowClassName)
+    // Mappings between Engine's WindowStyles and Win32 window styles.
+    // Used to choose valid Win32 style based on the provided Engine's WindowStyle.
+    using WindowFlagsMap = ConstexprMap<WindowStyle, uint32, 3>;
+    static constexpr WindowFlagsMap WINDOW_STYLES_MAP{
+        WindowFlagsMap::StorageType{
+            {
+                {WindowStyle::WINDOW_DEFUALT, WS_OVERLAPPEDWINDOW},
+                {WindowStyle::WINDOW_BORDERLESS, WS_OVERLAPPED},
+                {WindowStyle::WINDOW_FULLSCREEN, WS_OVERLAPPEDWINDOW},
+            },
+        },
+    };
+
+    // Mappings between Win32 button codes and Engine's mouse button codes.
+    // Used to lookup Engine's code based on the Win32 code from the event.
+    using MouseButtonsMap = ConstexprMap<uint64, MouseButtonCode, 8>;
+    static constexpr MouseButtonsMap MOUSE_BUTTONS_CODES_MAP{
+        MouseButtonsMap::StorageType{
+            {
+                {WM_LBUTTONDOWN, MouseButtonCode::BUTTON1},
+                {WM_LBUTTONUP, MouseButtonCode::BUTTON1},
+                {WM_RBUTTONDOWN, MouseButtonCode::BUTTON2},
+                {WM_RBUTTONUP, MouseButtonCode::BUTTON2},
+                {WM_MBUTTONDOWN, MouseButtonCode::BUTTON3},
+                {WM_MBUTTONUP, MouseButtonCode::BUTTON3},
+                {XBUTTON1, MouseButtonCode::BUTTON4},
+                {XBUTTON2, MouseButtonCode::BUTTON5},
+            },
+        },
+    };
+
+    // Mappings between Engine's WindowStyles and Win32 display parameters.
+    // Used to choose Win32 display style based on the provided Engine's WindowStyle.
+    using WindowDisplayParamsMap = ConstexprMap<WindowStyle, uint32, 3>;
+    static constexpr WindowDisplayParamsMap DISPLAY_PARAMS_MAP{
+        WindowDisplayParamsMap::StorageType{
+            {
+                {WindowStyle::WINDOW_DEFUALT, SW_SHOW},
+                {WindowStyle::WINDOW_FULLSCREEN, SW_SHOW},
+                {WindowStyle::WINDOW_BORDERLESS, SW_MAXIMIZE},
+            },
+        },
+    };
+
+    Win32Window::Win32Window(const WindowDescriptor& windowDescriptor, const wchar_t* windowClassName)
         : WINDOW_CLASS_NAME(windowClassName), m_hInstance(windowDescriptor.handleInstance.Get()), m_descriptor(windowDescriptor)
     {
         SetUpMessageHandlers();
@@ -171,13 +221,13 @@ namespace be::internals
 
         if (m_hwnd == NULL)
         {
-            throw std::runtime_error("Could not create window. Reason: " + GetLastError());
+            CT_THROW("Could not create window. Reason: " + GetLastError());
         }
 
         DisplayWindow();
     }
 
-    WindowsWindow::~WindowsWindow()
+    Win32Window::~Win32Window()
     {
         BE_ASSERT(DestroyWindow(m_hwnd));
 
@@ -188,7 +238,7 @@ namespace be::internals
         }
     }
 
-    void WindowsWindow::ProcessInput()
+    void Win32Window::ProcessInput()
     {
         ProcessHeldDownMessages();
 
@@ -200,12 +250,12 @@ namespace be::internals
         }
     }
 
-    HWND WindowsWindow::GetNativeHandle() const noexcept
+    HWND Win32Window::GetNativeHandle() const noexcept
     {
         return m_hwnd;
     }
 
-    std::wstring WindowsWindow::ConvertWindowTitle(const std::string& narrowTitle) const
+    std::wstring Win32Window::ConvertWindowTitle(const std::string& narrowTitle) const
     {
         const auto wcharBufferSize = MultiByteToWideChar(CP_UTF8, 0, narrowTitle.c_str(), -1, nullptr, 0);
         auto wideTitle = std::wstring(wcharBufferSize, 0);
@@ -216,12 +266,12 @@ namespace be::internals
         return wideTitle;
     }
 
-    uint32 WindowsWindow::GetWindowStyle(WindowStyle windowStyle) const
+    uint32 Win32Window::GetWindowStyle(WindowStyle windowStyle) const
     {
-        return m_windowStylesMap.At(windowStyle);
+        return WINDOW_STYLES_MAP.At(windowStyle);
     }
 
-    IntVec2 WindowsWindow::GetWindowDimensions() const
+    IntVec2 Win32Window::GetWindowDimensions() const
     {
         if (m_descriptor.style == WindowStyle::WINDOW_FULLSCREEN)
         {
@@ -231,16 +281,16 @@ namespace be::internals
         return m_descriptor.dimensions;
     }
 
-    void WindowsWindow::DisplayWindow() const
+    void Win32Window::DisplayWindow() const
     {
-        ShowWindow(m_hwnd, m_displayParamsMap.At(m_descriptor.style));
+        ShowWindow(m_hwnd, DISPLAY_PARAMS_MAP.At(m_descriptor.style));
         if (m_descriptor.style == WindowStyle::WINDOW_FULLSCREEN)
         {
             ToggleToFullscreen();
         }
     }
 
-    void WindowsWindow::ToggleToFullscreen() const
+    void Win32Window::ToggleToFullscreen() const
     {
         const auto dimensions = GetWindowDimensions();
 
@@ -248,34 +298,34 @@ namespace be::internals
         SetWindowPos(m_hwnd, HWND_TOP, 0, 0, dimensions.x, dimensions.y, SWP_FRAMECHANGED);
     }
 
-    LRESULT WindowsWindow::WindowProcSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT Win32Window::WindowProcSetup(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         if (uMsg != WM_NCCREATE)
         {
             return DefWindowProc(hWnd, uMsg, wParam, lParam);
         }
 
-        // Get ptr to WindowsWindow instance from winapi window creation data
+        // Get ptr to Win32Window instance from winapi window creation data
         const CREATESTRUCTW* const windowParams = reinterpret_cast<CREATESTRUCTW*>(lParam);
-        const WindowsWindow* const owningWindow = static_cast<WindowsWindow*>(windowParams->lpCreateParams);
+        const Win32Window* const owningWindow = static_cast<Win32Window*>(windowParams->lpCreateParams);
 
-        // Store WindowsWindow instance in the winapi user data
+        // Store Win32Window instance in the winapi user data
         BE_WINAPI_CALL(SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(owningWindow)));
 
-        // Set window proc to normal (non-setup) handler now that setup is finished
-        BE_WINAPI_CALL(SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&WindowsWindow::WindowProcThunk)));
+        // Set window proc to normal (non-setup) handler now that the setup is finished
+        BE_WINAPI_CALL(SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&Win32Window::WindowProcThunk)));
 
-        // Forward message to WindowsWindow instance member function responsible for handling messages
+        // Forward message to Win32Window instance member function responsible for handling messages
         return owningWindow->HandleWindowMessages(hWnd, uMsg, wParam, lParam);
     }
 
-    LRESULT WindowsWindow::WindowProcThunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    LRESULT Win32Window::WindowProcThunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        const WindowsWindow* const window = reinterpret_cast<WindowsWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+        const Win32Window* const window = reinterpret_cast<Win32Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         return window->HandleWindowMessages(hWnd, uMsg, wParam, lParam);
     }
 
-    void WindowsWindow::SetUpMessageHandlers()
+    void Win32Window::SetUpMessageHandlers()
     {
         SetUpMouseMessagesHandlers();
         SetUpKeyboardMessagesHandlers();
@@ -288,46 +338,46 @@ namespace be::internals
         };
     }
 
-    void WindowsWindow::SetUpMouseMessagesHandlers()
+    void Win32Window::SetUpMouseMessagesHandlers()
     {
-        const std::vector<UINT> buttonDownKeys = {WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN, WM_XBUTTONDOWN};
-        for (const auto& key : buttonDownKeys)
+        static constexpr const std::array<UINT, 4> buttonDownKeys = {WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN, WM_XBUTTONDOWN};
+        for (const UINT key : buttonDownKeys)
         {
             m_messageHandlers[key] = [&](auto&&... args) { return HandleMouseButtonDownMessages(args...); };
         }
 
-        const std::vector<UINT> buttonUpKeys = {WM_LBUTTONUP, WM_LBUTTONUP, WM_RBUTTONUP, WM_MBUTTONUP, WM_XBUTTONUP};
-        for (const auto& key : buttonUpKeys)
+        static constexpr const std::array<UINT, 5> buttonUpKeys = {WM_LBUTTONUP, WM_LBUTTONUP, WM_RBUTTONUP, WM_MBUTTONUP, WM_XBUTTONUP};
+        for (const UINT key : buttonUpKeys)
         {
             m_messageHandlers[key] = [&](auto&&... args) { return HandleMouseButtonUpMessages(args...); };
         }
 
         m_messageHandlers[WM_MOUSEMOVE] = [&](UINT, WPARAM, LPARAM lParam) {
-            DispatchEvent(MouseMovedEvent(GetMouseCoordinates(lParam)));
+            DispatchEvent(MouseEvent::Moved(GetMouseCoordinates(lParam)));
             return 0;
         };
 
         m_messageHandlers[WM_MOUSEWHEEL] = [&](UINT, WPARAM wParam, LPARAM lParam) {
-            DispatchEvent(MouseScrolledEvent(GET_WHEEL_DELTA_WPARAM(wParam), GetMouseCoordinates(lParam)));
+            DispatchEvent(MouseEvent::Scrolled(GET_WHEEL_DELTA_WPARAM(wParam), GetMouseCoordinates(lParam)));
             return 0;
         };
     }
 
-    void WindowsWindow::SetUpKeyboardMessagesHandlers()
+    void Win32Window::SetUpKeyboardMessagesHandlers()
     {
         m_messageHandlers[WM_KEYDOWN] = [&](auto&&... args) {
             return HandleKeyDownMessages(args...);
         };
 
         m_messageHandlers[WM_KEYUP] = [&](UINT, WPARAM wParam, LPARAM) {
-            DispatchEvent(KeyReleasedEvent(KEY_CODES_MAP.at(wParam)));
+            DispatchEvent(KeyboardEvent::KeyReleased(KEY_CODES_MAP.at(wParam)));
             return 0;
         };
     }
 
-    LRESULT WindowsWindow::HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const
+    LRESULT Win32Window::HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const
     {
-        // Invoke handler defined for this message, or default one if no defined
+        // Invoke handler defined for this message, or the default one if no defined
         try
         {
             return m_messageHandlers.at(uMsg)(uMsg, wParam, lParam);
@@ -338,73 +388,75 @@ namespace be::internals
         }
     }
 
-    LRESULT WindowsWindow::HandleMouseButtonDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
+    LRESULT Win32Window::HandleMouseButtonDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
     {
         // Capture cursor so even if it goes out of window's border, messages are still received
         SetCapture(m_hwnd);
 
         const auto buttonCode = (uMsg == WM_XBUTTONDOWN) ? GET_XBUTTON_WPARAM(wParam) : uMsg;
-        DispatchEvent(MouseButtonPressedEvent(m_mouseButtonsCodesMap.At(buttonCode), GetMouseCoordinates(lParam)));
+        DispatchEvent(MouseEvent::ButtonPressed(MOUSE_BUTTONS_CODES_MAP.At(buttonCode), GetMouseCoordinates(lParam)));
 
         // Message successfully handled
         return 0;
     }
 
-    LRESULT WindowsWindow::HandleMouseButtonUpMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
+    LRESULT Win32Window::HandleMouseButtonUpMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
     {
         // Release cursor
         ReleaseCapture();
 
         const auto buttonCode = (uMsg == WM_XBUTTONUP) ? GET_XBUTTON_WPARAM(wParam) : uMsg;
-        DispatchEvent(MouseButtonReleasedEvent(m_mouseButtonsCodesMap.At(buttonCode), GetMouseCoordinates(lParam)));
+        DispatchEvent(MouseEvent::ButtonReleased(MOUSE_BUTTONS_CODES_MAP.At(buttonCode), GetMouseCoordinates(lParam)));
 
         // Message successfully handled
         return 0;
     }
 
-    LRESULT WindowsWindow::HandleKeyDownMessages(UINT, WPARAM wParam, LPARAM lParam) const
+    LRESULT Win32Window::HandleKeyDownMessages(UINT, WPARAM wParam, LPARAM lParam) const
     {
         const auto keyCode = KEY_CODES_MAP.at(wParam);
         if (IsKeyHeldDown(lParam))
         {
-            DispatchEvent(KeyHeldDownEvent(keyCode));
+            DispatchEvent(KeyboardEvent::KeyHeldDown(keyCode));
         }
         else
         {
-            DispatchEvent(KeyPressedEvent(keyCode));
+            DispatchEvent(KeyboardEvent::KeyPressed(keyCode));
         }
 
         // Message successfully handled
         return 0;
     }
 
-    void WindowsWindow::ProcessHeldDownMessages() const
+    void Win32Window::ProcessHeldDownMessages() const
     {
+        // All of those events can occurr at the same time
+        // That's why we check for every one individually.
+
         if (IsKeyPressed(VK_LBUTTON))
         {
-            DispatchEvent(MouseButtonHeldDownEvent(MouseButtonCode::BUTTON_LEFT));
+            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_LEFT));
         }
 
         if (IsKeyPressed(VK_MBUTTON))
         {
-            DispatchEvent(MouseButtonHeldDownEvent(MouseButtonCode::BUTTON_MIDDLE));
+            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_MIDDLE));
         }
 
         if (IsKeyPressed(VK_RBUTTON))
         {
-            DispatchEvent(MouseButtonHeldDownEvent(MouseButtonCode::BUTTON_RIGHT));
+            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_RIGHT));
         }
 
         if (IsKeyPressed(VK_XBUTTON1))
         {
-            DispatchEvent(MouseButtonHeldDownEvent(MouseButtonCode::BUTTON4));
+            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON4));
         }
 
         if (IsKeyPressed(VK_XBUTTON2))
         {
-            DispatchEvent(MouseButtonHeldDownEvent(MouseButtonCode::BUTTON5));
+            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON5));
         }
     }
 } // namespace be::internals
-
 #endif

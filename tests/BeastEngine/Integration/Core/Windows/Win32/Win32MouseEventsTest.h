@@ -1,15 +1,15 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
-    #include "WinTestSetup.h"
+    #include "Win32TestSetup.h"
 
-    #include <BeastEngine/Core/Types.h>
     #include <BeastEngine/Core/Events/Events.h>
+    #include <Common/Types.h>
 
 namespace be::tests::integration
 {
     /**
      * Class for general mouse messages/events tests.
      */
-    class WindowsMouseEventsTest : public WinTest
+    class WindowsMouseEventsTest : public Win32Test
     {
     protected:
     };

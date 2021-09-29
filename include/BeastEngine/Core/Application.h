@@ -1,13 +1,18 @@
 #pragma once
-#include "BeastEngine/Core/Helpers.h"
-#include "BeastEngine/Core/BeastEngine.h"
+#include "BeastEngine/Core/Events/Events.h"
+#include "BeastEngine/Core/Input/InputCodes.h"
 #include "BeastEngine/Core/Windows/IWindow.h"
+#include "BeastEngine/Core/BeastEngine.h"
+
+#include <Common/Types.h>
+#include <Common/Helpers.h>
+#include <Math/Types.h>
 
 namespace be
 {
     /******************************************************************************/
     /********** CREATED FOR TESTING PURPOSES. THIS IS SUBJECT TO CHANGE **********/
-    namespace internals
+    namespace
     {
         struct ButtonState
         {
@@ -20,8 +25,15 @@ namespace be
         public:
             Mouse(IWindow& window) noexcept;
 
-            void SetWheelScrollThreshold(uint16 threshold) noexcept;
-            void SetWheelScrolledListener(MouseWheelScrolledListener listener) noexcept;
+            void SetWheelScrollThreshold(uint16 threshold) noexcept
+            {
+                m_scrollThreshold = threshold;
+            }
+            
+            void SetWheelScrolledListener(MouseWheelScrolledListener listener) noexcept
+            {
+                m_mouseScrolledListener = listener;
+            }
 
             bool IsButtonPressed(MouseButtonCode buttonCode) const noexcept
             {
@@ -43,7 +55,7 @@ namespace be
                 return false;
             }
 
-            const auto& GetCoordinates() const noexcept
+            const auto& GetMousePosition() const noexcept
             {
                 return m_coordinates;
             }
@@ -103,36 +115,51 @@ namespace be
         private:
             std::unordered_map<KeyCode, ButtonState> m_buttonsStates;
         };
-    } // namespace internals
+    } // namespace
     /******************************************************************************/
     /******************************************************************************/
 
+    /**
+     * @brief Abstract class representing single instace of the Application.
+     * Its purpose is to initialize and handle the engine.
+     */
     class AApplication
     {
     public:
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DEFAULT(AApplication)
+        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(AApplication)
 
         /**
-         * Creates instance of the AApplication class initializing engine instance with passed be::EngineConfig.
+         * @brief Creates instance of the AApplication class initializing engine instance with passed EngineConfig.
          * 
-         * @param engineConfig Configuration which will be used to create the engine instance
-         * @param mainWindowDescriptor Descriptor which will be used to create the main window
+         * @param engineConfig - Configuration which will be used to create the engine instance
+         * @param mainWindowDescriptor - Descriptor which will be used to create the main window
          */
         AApplication(EngineConfig engineConfig, const WindowDescriptor& mainWindowDescriptor);
         virtual ~AApplication() = default;
 
         /**
-         * Starts the application.
+         * @brief Starts the application.
          * Should contain all the run-time code of the app.
          */
         virtual void Run() = 0;
 
-    protected:
-        UniquePtr<internals::Mouse> m_mouse = nullptr;
-        UniquePtr<internals::Keyboard> m_keyboard = nullptr;
-        UniquePtr<IWindow> m_window = nullptr;
+        /**
+         * @brief Returns engine.
+         * It should be used by children to access the engine's functionalities.
+         * 
+         * @return 
+         */
+        BeastEngine& GetEngine()
+        {
+            return *m_engine;
+        }
 
     protected:
-        UniquePtr<BeastEngine> m_engine;
+        Unique<Mouse> m_mouse = nullptr;
+        Unique<Keyboard> m_keyboard = nullptr;
+        Unique<IWindow> m_window = nullptr;
+
+    private:
+        Unique<BeastEngine> m_engine;
     };
 } // namespace be
