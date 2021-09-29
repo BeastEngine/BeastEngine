@@ -16,49 +16,36 @@ namespace be::internals
         template<typename... Args>
         static void LogInfo(const std::string& message, const Args&... args) noexcept
         {
-            // TODO: Try to get rid of the try-catch
-            try
+            if (IsSet())
             {
-                Get()->LogInfo(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogInfo(message, args...);
             }
         }
 
         template<typename... Args>
         static void LogWarning(const std::string& message, const Args&... args) noexcept
         {
-            try
+            if (IsSet())
             {
-                Get()->LogWarning(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogWarning(message, args...);
             }
         }
 
         template<typename... Args>
         static void LogError(const std::string& message, const Args&... args) noexcept
         {
-            try
+            if (IsSet())
             {
-                Get()->LogError(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogError(message, args...);
             }
         }
 
         template<typename... Args>
         static void LogFatalError(const std::string& message, const Args&... args) noexcept
         {
-            try
+            if (IsSet())
             {
-                Get()->LogFatalError(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogFatalError(message, args...);
             }
         }
 
@@ -68,14 +55,9 @@ namespace be::internals
             StaticLogger::m_logger = std::move(logger);
         }
 
-        static LoggerPtr Get()
+        static bool IsSet()
         {
-            if (m_logger == nullptr)
-            {
-                throw std::exception();
-            }
-
-            return m_logger;
+            return m_logger != nullptr;
         }
 
     private:
