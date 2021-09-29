@@ -1,7 +1,15 @@
 #pragma once
+#include <array>
+#include <stdexcept>
+#include <utility>
 
 namespace be
 {
+    /**
+     * @brief Simple constexpr version of the map.
+     * Inspired by Json Turner's constexpr map shown here: https://www.youtube.com/watch?v=INn3xa4pMfg.
+     * Should be used for very small data sets.
+     */
     template<typename KeyType, typename ValueType, std::size_t MapSize>
     struct ConstexprMap
     {

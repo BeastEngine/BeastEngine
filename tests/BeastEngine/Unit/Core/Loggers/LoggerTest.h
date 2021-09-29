@@ -6,20 +6,9 @@
 
 namespace be::tests::unit
 {
-    class LoggerDummy : public Logger
-    {
-    public:
-        LoggerDummy(LoggerImpl logger)
-            : Logger(logger)
-        {
-        }
-    };
-
     class SinkMock : public spdlog::sinks::sink
     {
     public:
-        SinkMock() = default;
-
         MOCK_METHOD(void, log, (const spdlog::details::log_msg& msg), (override));
         MOCK_METHOD(void, flush, (), (override));
         MOCK_METHOD(void, set_pattern, (const std::string& pattern), (override));
@@ -29,6 +18,14 @@ namespace be::tests::unit
     class LoggerTest : public ::testing::Test
     {
     protected:
-        SharedPtr<spdlog::logger> PrepareLogFunctionTests();
+        auto CreateSinkMock()
+        {
+            return CreateShared<SinkMock>();
+        }
+
+        auto CreateSut(Shared<SinkMock> sink)
+        {
+            return Logger(CreateShared<spdlog::logger>("loggerName", std::move(sink)));
+        }
     };
 } // namespace be::tests::unit

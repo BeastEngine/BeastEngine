@@ -2,6 +2,8 @@
 #include "KeyboardEvents.h"
 #include "MouseEvents.h"
 
+#include <functional>
+
 namespace be
 {
     /********************EVENT HANDLERS DEFINITIONS*************************/

@@ -1,17 +1,19 @@
 #include "BeastEngine/Core/Windows/WindowFactory.h"
 
 #ifdef BE_PLATFORM_WINDOWS
-    #include "BeastEngine/Core/Windows/Windows/WindowsWindow.h"
+    #include "BeastEngine/Core/Windows/Win32/Win32Window.h"
 #endif
+
+#include <Common/Exceptions.h>
 
 namespace be::internals
 {
-    UniquePtr<IWindow> WindowFactory::Create(const WindowDescriptor& descriptor)
+    Unique<IWindow> WindowFactory::Create(const WindowDescriptor& descriptor)
     {
 #ifdef BE_PLATFORM_WINDOWS
-        return CreateUniquePtr<WindowsWindow>(descriptor, L"BeastEngineWindowClassName");
+        return CreateUnique<Win32Window>(descriptor, L"BeastEngineWindowClassName");
 #else
-        return nullptr;
+        CT_THROW("Platform not supported! Could not create a window.");
 #endif
     }
 } // namespace be::internals

@@ -13,6 +13,17 @@ targets:
       base_dir: src/BeastEngine
       cmake_variable_file: src/BeastEngine/CMakeLists.txt
       cmake_variable_name: BEAST_SRC_LIST
+  math:
+    tests: false
+    namespace: be
+    headers:
+      base_dir: include/Math
+      cmake_variable_file: src/Math/CMakeLists.txt
+      cmake_variable_name: BE_MATH_HEADERS_LIST
+    sources:
+      base_dir: src/Math
+      cmake_variable_file: src/Math/CMakeLists.txt
+      cmake_variable_name: BE_MATH_SRC_LIST
   sandbox:
     tests: false
     namespace: be

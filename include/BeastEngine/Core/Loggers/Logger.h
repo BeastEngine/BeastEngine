@@ -1,31 +1,35 @@
 #pragma once
-#include "BeastEngine/Core/Types.h"
-#include "BeastEngine/Core/Helpers.h"
+#include <Common/Types.h>
+#include <Common/Helpers.h>
 
 #include <spdlog/logger.h>
 
 namespace be
 {
-    using LoggerImpl = be::SharedPtr<spdlog::logger>;
-    class Logger
+    using LoggerImpl = be::Shared<spdlog::logger>;
+
+    /**
+     * @brief Defines common interface for logging API, leaving the actual logging
+     * functionality to the logger implementation provided during construction.
+     * It accepts messages in the same format as the `fmt` and `spdlog` libraries, meaning you can use the same messages format.
+     * @see https://fmt.dev/latest/index.html
+     */
+    class Logger final
     {
     public:
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DEFAULT(Logger);
-
         /**
-         * Creates logger object which will use passed LoggerImpl for actual logging.
-         *  If passed implementation is nullptr, throws exception
+         * @brief Creates logger object which will use passed LoggerImpl for actual logging.
+         * If passed implementation is nullptr, throws exception.
          * 
-         * @param logger - implementation to use for actual logging
+         * @param logger - Implementation to use for logging
          */
         Logger(LoggerImpl logger);
-        virtual ~Logger() = default;
 
         /**
-         * Uses its logger implementation to log given message as informational log.
+         * @brief Uses its logger implementation to log given message as an informational log.
          * 
-         * @param message - message to log
-         * @param ...args - arguments to be parsed into the given message if it contains any placeholders ('{}')
+         * @param message - Message to log
+         * @param ...args - Arguments to be parsed into the given message
          * @return 
          */
         template<typename... Args>
@@ -42,11 +46,11 @@ namespace be
         }
 
         /**
-         * Uses its logger implementation to log given message as warning log.
+         * @breif Uses its logger implementation to log given message as a warning log.
          * 
-         * @param message - message to log
-         * @param ...args - arguments to be parsed into the given message if it contains any placeholders ('{}')
-         * @return 
+         * @param message - Message to log
+         * @param ...args - Arguments to be parsed into the given message
+         * @return
          */
         template<typename... Args>
         void LogWarning(const std::string& message, const Args&... args) noexcept
@@ -62,10 +66,10 @@ namespace be
         }
 
         /**
-         * Uses its logger implementation to log given message as error log.
+         * @brief Uses its logger implementation to log given message as an error log.
          * 
-         * @param message - message to log
-         * @param ...args - arguments to be parsed into the given message if it contains any placeholders ('{}')
+         * @param message - Message to log
+         * @param ...args - Arguments to be parsed into the given message
          * @return 
          */
         template<typename... Args>
@@ -82,10 +86,10 @@ namespace be
         }
 
         /**
-         * Uses its logger implementation to log given message as fatal error log.
+         * @brief Uses its logger implementation to log given message as fatal error log.
          * 
-         * @param message - message to log
-         * @param ...args - arguments to be parsed into the given message if it contains any placeholders ('{}')
+         * @param message - Message to log
+         * @param ...args - Arguments to be parsed into the given message
          * @return 
          */
         template<typename... Args>

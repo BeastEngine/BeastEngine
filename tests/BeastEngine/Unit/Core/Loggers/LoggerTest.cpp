@@ -6,54 +6,42 @@ namespace be::tests::unit
 {
     TEST_F(LoggerTest, ConstructorWillThrowExceptionWhenEmptyLoggerImplementationPassed)
     {
-        LoggerImpl emptyImplementation = nullptr;
-        ASSERT_THROW(LoggerDummy{emptyImplementation}, std::invalid_argument);
-    }
-
-    SharedPtr<spdlog::logger> LoggerTest::PrepareLogFunctionTests()
-    {
-        SharedPtr<spdlog::sinks::sink> sink = CreateSharedPtr<SinkMock>();
-        auto loggerImpl = CreateSharedPtr<spdlog::logger>("loggerName", sink);
-
-        auto expectedSink = static_cast<SinkMock*>(&*sink);
-        EXPECT_CALL(*expectedSink, log).Times(1);
-
-        return loggerImpl;
+        ASSERT_THROW(Logger(nullptr), std::invalid_argument);
     }
 
     TEST_F(LoggerTest, LogInfoWillUseLoggerPassedViaConstructor)
-    {
-        const std::string messageToLog = "Info";
-        auto preparedLogger = PrepareLogFunctionTests();
+    {       
+        auto loggerSink = CreateSinkMock();
+        EXPECT_CALL(*loggerSink, log).Times(1);
 
-        auto sut = LoggerDummy(std::move(preparedLogger));
-        sut.LogInfo(messageToLog);
+        auto sut = CreateSut(std::move(loggerSink));
+        sut.LogInfo("Info");
     }
 
     TEST_F(LoggerTest, LogWarningWillUseLoggerPassedViaConstructor)
     {
-        const std::string messageToLog = "Warning";
-        auto preparedLogger = PrepareLogFunctionTests();
+        auto loggerSink = CreateSinkMock();
+        EXPECT_CALL(*loggerSink, log).Times(1);
 
-        auto sut = LoggerDummy(std::move(preparedLogger));
-        sut.LogWarning(messageToLog);
+        auto sut = CreateSut(std::move(loggerSink));
+        sut.LogWarning("Warning");
     }
 
     TEST_F(LoggerTest, LogErrorWillUseLoggerPassedViaConstructor)
     {
-        const std::string messageToLog = "Error";
-        auto preparedLogger = PrepareLogFunctionTests();
+        auto loggerSink = CreateSinkMock();
+        EXPECT_CALL(*loggerSink, log).Times(1);
 
-        auto sut = LoggerDummy(std::move(preparedLogger));
-        sut.LogError(messageToLog);
+        auto sut = CreateSut(std::move(loggerSink));
+        sut.LogError("Error");
     }
 
     TEST_F(LoggerTest, LogFatalErrorWillUseLoggerPassedViaConstructor)
     {
-        const std::string messageToLog = "Fatal Error";
-        auto preparedLogger = PrepareLogFunctionTests();
+        auto loggerSink = CreateSinkMock();
+        EXPECT_CALL(*loggerSink, log).Times(1);
 
-        auto sut = LoggerDummy(std::move(preparedLogger));
-        sut.LogFatalError(messageToLog);
+        auto sut = CreateSut(std::move(loggerSink));
+        sut.LogFatalError("FatalError");
     }
 } // namespace be::tests::unit

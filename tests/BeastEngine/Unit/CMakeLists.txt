@@ -11,21 +11,21 @@ set(BE_TESTS_UNIT_SRC_PREFIX "${BE_TESTS_UNIT_SRC_DIR}/${BEAST_LIB_TARGET_NAME}/
 set(
 	BE_TESTS_UNIT_HEADERS_LIST
 	"Core/Events/KeyboardEventsTest.h"
-    "Core/Events/MouseEventsTest.h"
-    "Core/BeastEngineTest.h"
-    "Core/DataStructuresTests.h"
-    "Core/Loggers/LoggerTest.h"
-    "Core/Loggers/LoggersFactoriesTests.h"
+	"Core/Events/MouseEventsTest.h"
+	"Core/BeastEngineTest.h"
+	"Core/DataStructuresTests.h"
+	"Core/Loggers/ConsoleLoggerTest.h"
+	"Core/Loggers/LoggerTest.h"
 )
 set(
 	BE_TESTS_UNIT_SRC_LIST
+	"Core/BeastEngineTest.cpp"
+	"Core/DataStructuresTests.cpp"
+	"Core/Events/KeyboardEventsTest.cpp"
+	"Core/Events/MouseEventsTest.cpp"
+	"Core/Loggers/ConsoleLoggerTest.cpp"
+	"Core/Loggers/LoggerTest.cpp"
 	"main.cpp"
-    "Core/Events/KeyboardEventsTest.cpp"
-    "Core/Events/MouseEventsTest.cpp"
-    "Core/BeastEngineTest.cpp"
-    "Core/DataStructuresTests.cpp"
-    "Core/Loggers/LoggerTest.cpp"
-    "Core/Loggers/LoggersFactoriesTests.cpp"
 )
 
 list(TRANSFORM BE_TESTS_UNIT_HEADERS_LIST PREPEND ${BE_TESTS_UNIT_HEADERS_PREFIX})
@@ -58,5 +58,5 @@ target_precompile_headers(
 		<array>
 )
 
-set_compiler_options(${BE_TESTS_UNIT_TARGET_NAME})
+be_set_compiler_options(${BE_TESTS_UNIT_TARGET_NAME})
 add_test(NAME ${BE_TESTS_UNIT_TARGET_NAME} COMMAND ${BE_TESTS_UNIT_TARGET_NAME})

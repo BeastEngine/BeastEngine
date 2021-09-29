@@ -1,7 +1,6 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
-    #include "WinTestSetup.h"
+    #include "Win32TestSetup.h"
 
-    #include <BeastEngine/Core/Types.h>
     #include <BeastEngine/Core/Events/Events.h>
 
 namespace be::tests::integration
@@ -13,7 +12,7 @@ namespace be::tests::integration
     };
 
     class KeyboardEventsTest
-        : public WinTest,
+        : public Win32Test,
           public ::testing::WithParamInterface<WindowsKeyboardEventsTestParams>
     {
     protected:

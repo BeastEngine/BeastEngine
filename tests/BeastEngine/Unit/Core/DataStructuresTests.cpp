@@ -1,7 +1,7 @@
 #include "DataStructuresTests.h"
 
-#include <BeastEngine/Core/Types.h>
 #include <BeastEngine/Core/DataStructures.h>
+#include <Common/Types.h>
 
 namespace be::tests::unit
 {
@@ -26,7 +26,7 @@ namespace be::tests::unit
         constexpr std::array<std::pair<uint8, uint8>, mapSize> mapData{{{key, value}}};
         constexpr auto sut = ConstexprMap<uint8, uint8, mapSize>{mapData};
         ASSERT_THROW(
-            const auto value = sut.At(invalidKey),
+            const auto foundValue = sut.At(invalidKey),
             std::range_error
         );
     }

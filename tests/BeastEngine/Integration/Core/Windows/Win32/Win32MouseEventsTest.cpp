@@ -1,12 +1,12 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
-    #include "WindowsMouseEventsTest.h"
+    #include "Win32MouseEventsTest.h"
 
-    #include <BeastEngine/Core/Windows/Windows/WindowsWindow.h>
+    #include <BeastEngine/Core/Windows/Win32/Win32Window.h>
     #include <BeastEngine/Core/Events/Events.h>
 
 namespace be::tests::integration
 {
-    TEST_F(WindowsMouseEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseMoveMessage)
+    TEST_F(WindowsMouseEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseMovedMessage)
     {
         bool wasHandlerCalled = false;
         const auto expectedEventType = MouseEventType::EVENT_MOUSE_MOVED;
@@ -16,7 +16,7 @@ namespace be::tests::integration
             wasHandlerCalled = true;
 
             ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedMouseMovementCoords, event.GetCoordinates());
+            ASSERT_EQ(expectedMouseMovementCoords, event.GetMousePosition());
         };
 
         const auto winApiMessageToSend = WM_MOUSEMOVE;
@@ -34,7 +34,7 @@ namespace be::tests::integration
     /******************************************************/
     /*************** WindowsMouseWheelEventsTest **************/
     INSTANTIATE_TEST_SUITE_P(
-        WindowsWindowTest_MouseWheelMessagesTest,
+        Win32WindowTest_MouseWheelMessagesTest,
         WindowsMouseWheelEventsTest,
         testing::Values(120, 80, 500, -120, -80, 500
         )
@@ -51,7 +51,7 @@ namespace be::tests::integration
             wasHandlerCalled = true;
 
             ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedMouseMovementCoords, event.GetCoordinates());
+            ASSERT_EQ(expectedMouseMovementCoords, event.GetMousePosition());
             ASSERT_EQ(expectedWheelDelta, event.GetScrollValue());
         };
 
@@ -73,7 +73,7 @@ namespace be::tests::integration
     /******************************************************/
     /************ WindowsMouseButtonsDownEventsTest ************/
     INSTANTIATE_TEST_SUITE_P(
-        WindowsWindowTest_MouseButtonsDownMessagesTest,
+        Win32WindowTest_MouseButtonsDownMessagesTest,
         WindowsMouseButtonsDownEventsTest,
         testing::Values(
             WindowsMouseButtonEventsTestParams{WM_LBUTTONDOWN, MouseButtonCode::BUTTON_LEFT},
@@ -98,7 +98,7 @@ namespace be::tests::integration
 
             ASSERT_EQ(expectedEventType, event.GetType());
             ASSERT_EQ(expectedButtonCode, event.GetButton());
-            ASSERT_EQ(expectedMouseClickCoords, event.GetCoordinates());
+            ASSERT_EQ(expectedMouseClickCoords, event.GetMousePosition());
         };
 
         auto sut = GetWindow();
@@ -134,7 +134,7 @@ namespace be::tests::integration
     /******************************************************/
     /************ WindowsMouseButtonsUpEventsTest ************/
     INSTANTIATE_TEST_SUITE_P(
-        WindowsWindowTest_MouseButtonsUpMessagesTest,
+        Win32WindowTest_MouseButtonsUpMessagesTest,
         WindowsMouseButtonsUpEventsTest,
         testing::Values(
             WindowsMouseButtonEventsTestParams{WM_LBUTTONUP, MouseButtonCode::BUTTON_LEFT},
@@ -159,7 +159,7 @@ namespace be::tests::integration
 
             ASSERT_EQ(expectedEventType, event.GetType());
             ASSERT_EQ(expectedButtonCode, event.GetButton());
-            ASSERT_EQ(expectedMouseClickCoords, event.GetCoordinates());
+            ASSERT_EQ(expectedMouseClickCoords, event.GetMousePosition());
         };
 
         auto sut = GetWindow();

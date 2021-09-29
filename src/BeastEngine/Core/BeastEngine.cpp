@@ -1,6 +1,4 @@
 #include "BeastEngine/Core/BeastEngine.h"
-#include "BeastEngine/Core/Logging.h"
-#include "BeastEngine/Core/Assertions.h"
 #include "BeastEngine/Core/Versions.h"
 #include "BeastEngine/Core/Windows/WindowFactory.h"
 #include "BeastEngine/Core/Loggers/LoggersFactories.h"
@@ -13,10 +11,9 @@ namespace be
     static const std::string DEFAULT_LOGGER_NAME = "beast_engine_default_logger";
 
     BeastEngine::BeastEngine(EngineConfig config)
-        : m_config(std::move(config))
     {
-        SetLogger();
-        SetWindowFactory();
+        SetLogger(config);
+        SetWindowFactory(config);
     }
 
     void BeastEngine::PrintInfo() const
@@ -26,14 +23,14 @@ namespace be
         fmt::print("{}Version [{}]", engineNameString, versionString);
     }
 
-    UniquePtr<IWindow> BeastEngine::CreateMainWindow(const WindowDescriptor& descriptor) const
+    Unique<IWindow> BeastEngine::CreateNewWindow(const WindowDescriptor& descriptor) const
     {
-        return m_config.windowFactory->Create(descriptor);
+        return m_windowFactory->Create(descriptor);
     }
 
-    void BeastEngine::SetLogger() const
+    void BeastEngine::SetLogger(EngineConfig& config)
     {
-        SharedPtr<Logger> logger = m_config.logger;
+        internals::LoggerPtr logger = std::move(config.logger);
         if (logger == nullptr)
         {
             logger = ConsoleLogger::Create(DEFAULT_LOGGER_NAME);
@@ -42,11 +39,12 @@ namespace be
         internals::StaticLogger::SetLogger(std::move(logger));
     }
 
-    void BeastEngine::SetWindowFactory()
+    void BeastEngine::SetWindowFactory(EngineConfig& config)
     {
-        if (m_config.windowFactory == nullptr)
+        m_windowFactory = std::move(config.windowFactory);
+        if (m_windowFactory == nullptr)
         {
-            m_config.windowFactory = CreateUniquePtr<internals::WindowFactory>();
+            m_windowFactory = CreateUnique<internals::WindowFactory>();
         }
     }
 } // namespace be
