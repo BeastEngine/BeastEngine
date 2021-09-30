@@ -194,20 +194,20 @@ namespace be::internals
         },
     };
 
-    Win32Window::Win32Window(const WindowDescriptor& windowDescriptor, const wchar_t* windowClassName)
+    Win32Window::Win32Window(const WindowDescriptor& windowDescriptor, const std::wstring_view windowClassName)
         : WINDOW_CLASS_NAME(windowClassName), m_hInstance(windowDescriptor.handleInstance.Get()), m_descriptor(windowDescriptor)
     {
         SetUpMessageHandlers();
+        
         WNDCLASS wc = {0};
-
         wc.lpfnWndProc = WindowProcSetup;
         wc.hInstance = m_hInstance;
-        wc.lpszClassName = WINDOW_CLASS_NAME;
+        wc.lpszClassName = WINDOW_CLASS_NAME.c_str();
         BE_WINAPI_CALL(RegisterClass(&wc));
 
         const auto windowDimensions = GetWindowDimensions();
         m_hwnd = CreateWindowW(
-            WINDOW_CLASS_NAME,
+            WINDOW_CLASS_NAME.c_str(),
             ConvertWindowTitle(m_descriptor.title).c_str(),
             GetWindowStyle(m_descriptor.style),
             m_descriptor.position.x,
@@ -232,9 +232,9 @@ namespace be::internals
         BE_ASSERT(DestroyWindow(m_hwnd));
 
         WNDCLASS windowClass = {0};
-        if (GetClassInfo(m_hInstance, WINDOW_CLASS_NAME, &windowClass))
+        if (GetClassInfo(m_hInstance, WINDOW_CLASS_NAME.c_str(), &windowClass))
         {
-            BE_ASSERT(UnregisterClass(WINDOW_CLASS_NAME, m_hInstance));
+            BE_ASSERT(UnregisterClass(WINDOW_CLASS_NAME.c_str(), m_hInstance));
         }
     }
 
@@ -431,7 +431,7 @@ namespace be::internals
     void Win32Window::ProcessHeldDownMessages() const
     {
         // All of those events can occurr at the same time
-        // That's why we check for every one individually.
+        // That's why we check for each one individually.
 
         if (IsKeyPressed(VK_LBUTTON))
         {

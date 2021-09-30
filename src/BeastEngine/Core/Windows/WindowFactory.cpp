@@ -2,6 +2,8 @@
 
 #ifdef BE_PLATFORM_WINDOWS
     #include "BeastEngine/Core/Windows/Win32/Win32Window.h"
+    #include <Common/IdGenerators/UuId4Generator.h>
+    #include <string>
 #endif
 
 #include <Common/Exceptions.h>
@@ -11,7 +13,8 @@ namespace be::internals
     Unique<IWindow> WindowFactory::Create(const WindowDescriptor& descriptor)
     {
 #ifdef BE_PLATFORM_WINDOWS
-        return CreateUnique<Win32Window>(descriptor, L"BeastEngineWindowClassName");
+        const std::wstring className = std::to_wstring(UuId4Generator().Generate()) + L"_BeastEngineWindowClassName";
+        return CreateUnique<Win32Window>(descriptor, className.c_str());
 #else
         CT_THROW("Platform not supported! Could not create a window.");
 #endif
