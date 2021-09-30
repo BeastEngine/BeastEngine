@@ -1,12 +1,10 @@
-include("${PROJECT_CONFIG_PATH}/beastengine/config.cmake")
-
 SET(BE_TESTS_UNIT_TARGET_NAME BEASTUnits)
 
 set(BE_TESTS_UNIT_INCLUDE_DIR "${BeastEngine_SOURCE_DIR}/tests")
 set(BE_TESTS_UNIT_SRC_DIR "${BeastEngine_SOURCE_DIR}/tests")
 
-set(BE_TESTS_UNIT_HEADERS_PREFIX "${BE_TESTS_UNIT_INCLUDE_DIR}/${BEAST_LIB_TARGET_NAME}/Unit/")
-set(BE_TESTS_UNIT_SRC_PREFIX "${BE_TESTS_UNIT_SRC_DIR}/${BEAST_LIB_TARGET_NAME}/Unit/")
+set(BE_TESTS_UNIT_HEADERS_PREFIX "${BE_TESTS_UNIT_INCLUDE_DIR}/BeastEngine/Unit/")
+set(BE_TESTS_UNIT_SRC_PREFIX "${BE_TESTS_UNIT_SRC_DIR}/BeastEngine/Unit/")
 
 set(
 	BE_TESTS_UNIT_HEADERS_LIST
@@ -45,8 +43,8 @@ target_link_libraries(
 )
 
 # Group files into proper folders - for IDE
-group_files("${BE_TESTS_UNIT_HEADERS_LIST}" "${BE_TESTS_UNIT_INCLUDE_DIR}")
-group_files("${BE_TESTS_UNIT_SRC_LIST}" "${BE_TESTS_UNIT_SRC_DIR}")
+be_group_files("${BE_TESTS_UNIT_HEADERS_LIST}" "${BE_TESTS_UNIT_INCLUDE_DIR}")
+be_group_files("${BE_TESTS_UNIT_SRC_LIST}" "${BE_TESTS_UNIT_SRC_DIR}")
 
 target_precompile_headers(
 	${BE_TESTS_UNIT_TARGET_NAME}

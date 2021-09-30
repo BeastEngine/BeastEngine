@@ -29,7 +29,7 @@ target_link_libraries(
 )
 
 # Group files into proper folders - for IDE
-group_files("${BE_MATH_HEADERS_LIST}" "${BE_MATH_INCLUDE_DIR}")
-group_files("${BE_MATH_SRC_LIST}" "${BE_MATH_SRC_DIR}")
+be_group_files("${BE_MATH_HEADERS_LIST}" "${BE_MATH_INCLUDE_DIR}")
+be_group_files("${BE_MATH_SRC_LIST}" "${BE_MATH_SRC_DIR}")
 
 add_library(BE::math ALIAS ${BE_MATH_LIB_TARGET_NAME})

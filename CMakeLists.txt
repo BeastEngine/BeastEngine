@@ -55,4 +55,4 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 # Set the VS startup project to the executable
-set_startup_project(${PROJECT_IDE_STARTUP_PROJECT})
+be_set_startup_project(${PROJECT_IDE_STARTUP_PROJECT})

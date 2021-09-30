@@ -1,4 +1,11 @@
-include("${PROJECT_CONFIG_PATH}/beastengine/config.cmake")
+SET(BEAST_LIB_TARGET_NAME BeastEngine)
+
+set(BEAST_INCLUDE_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}/include")
+set(BEAST_SRC_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}/src")
+
+set(BEAST_HEADERS_PREFIX "${BEAST_INCLUDE_DIR}/${BEAST_LIB_TARGET_NAME}/")
+set(BEAST_SRC_PREFIX "${BEAST_SRC_DIR}/${BEAST_LIB_TARGET_NAME}/")
+
 
 set(
 	BEAST_HEADERS_LIST
@@ -91,7 +98,7 @@ target_precompile_headers(
 )
 
 # Group files into proper folders - for IDE
-group_files("${BEAST_HEADERS_LIST}" "${BEAST_INCLUDE_DIR}")
-group_files("${BEAST_SRC_LIST}" "${BEAST_SRC_DIR}")
+be_group_files("${BEAST_HEADERS_LIST}" "${BEAST_INCLUDE_DIR}")
+be_group_files("${BEAST_SRC_LIST}" "${BEAST_SRC_DIR}")
 
 add_library(BE::beast ALIAS ${BEAST_LIB_TARGET_NAME})
