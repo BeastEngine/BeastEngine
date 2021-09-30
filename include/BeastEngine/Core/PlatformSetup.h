@@ -7,8 +7,7 @@
     // Make sure to use only required stuff from windows
     #define WIN32_LEAN_AND_MEAN
 
-// The following list contains commented directives
-// in order to keep the list of all possible defines in one place.
+// The following list contains commented directives in order to keep the list of all possible defines in one place.
 // Comment out the elements that are required and #define the macros for unused Windows stuff
 
     #define NOGDICAPMASKS // CC_*, LC_*, PC_*, CP_*, TC_*, RC_

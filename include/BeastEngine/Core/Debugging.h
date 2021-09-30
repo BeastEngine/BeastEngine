@@ -1,9 +1,12 @@
 #pragma once
-#include "BeastEngine/Core/Logging.h"
 #include "BeastEngine/Core/Loggers/StaticLogger.h"
 
 namespace be::internals
 {
+#ifndef BE_DEBUG_MESSAGE
+    #define BE_DEBUG_MESSAGE(message) "[{}:{}] *** " message " ***", __FILE__, __LINE__
+#endif
+
 #ifndef BE_DEBUG_LOG_INFO
     #ifdef BE_DEBUGGING_INFO_ENABLED
         #define BE_DEBUG_LOG_INFO(message, ...) \

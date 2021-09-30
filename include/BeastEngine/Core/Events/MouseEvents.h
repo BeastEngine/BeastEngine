@@ -1,7 +1,7 @@
 #pragma once
-#include "BeastEngine/Core/Types.h"
-#include "BeastEngine/Core/Helpers.h"
 #include "BeastEngine/Core/Input/InputCodes.h"
+
+#include <Math/Types.h>
 
 namespace be
 {
@@ -9,9 +9,9 @@ namespace be
     {
         EVENT_MOUSE_MOVED,
         EVENT_MOUSE_SCROLLED,
-        EVENT_MOUSE_BUTTON_PRESSED,
-        EVENT_MOUSE_BUTTON_HELD_DOWN,
-        EVENT_MOUSE_BUTTON_RELEASED,
+        EVENT_MOUSE_BUTTON_PRESSED, // Pressed once, in the current frame
+        EVENT_MOUSE_BUTTON_HELD_DOWN, // Was pressed and is now held down
+        EVENT_MOUSE_BUTTON_RELEASED, // Released in the current frame
     };
 
     enum class WheelScrollDirection
@@ -20,59 +20,122 @@ namespace be
         SCROLL_DOWN,
     };
 
-    class MouseEvent
+    /**
+     * @brief Stores single mouse event data.
+     */
+    class MouseEvent final
     {
     public:
         constexpr static const IntVec2 DEFAULT_COORDINATES = {0, 0};
         constexpr static const int16 DEFAULT_SCROLL_VALUE = 0;
 
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DEFAULT(MouseEvent)
-
         /**
-         * Initializes MouseEvent.
+         * @brief Initializes MouseEvent with its information.
+         * It accepts multiple values, where every one, except for the event type, can be omitted,
+         * depending on the data associated with the event's occurrence.
          * 
-         * @param eventType - what type of mouse event should be created
-         * @param coordinates - cooridnates of the mouse cursor
-         * @param scrollValue - how much the mouse wheel was scrolled
-         * @param buttonCode - which button (if any) was pressed
+         * @param eventType - Type of this event
+         * @param mousePosition - Position of the mouse cursor when the event was triggered
+         * @param scrollValue - How much the mouse wheel was scrolled (if any)
+         * @param buttonCode - Which button (if any) was pressed
          */
-        MouseEvent(
+        constexpr MouseEvent(
             MouseEventType eventType,
-            IntVec2 coordinates = DEFAULT_COORDINATES,
+            IntVec2 mousePosition = DEFAULT_COORDINATES,
             int16 scrollValues = DEFAULT_SCROLL_VALUE,
-            MouseButtonCode buttonCode = MouseButtonCode::INVALID
-        )
+            MouseButtonCode buttonCode = MouseButtonCode::INVALID) noexcept
             : m_eventType(eventType),
-              m_coordinates(coordinates),
+              m_coordinates(mousePosition),
               m_scrollValue(scrollValues),
               m_buttonCode(buttonCode)
         {
         }
-        virtual ~MouseEvent() = default;
 
         /**
-         * Returns type of the mouse event.
-         * @see MouseEventType
+         * @brief Creates mouse moved event containing new cursor position.
+         * The new event contains default scrollValues and button code equal to MouseButtonCode::INVALID
+         * 
+         * @param mousePosition - New position of the mouse cursor (position after mouse was moved)
+         * @return 
+         */
+        static constexpr auto Moved(IntVec2 mousePosition) noexcept
+        {
+            return MouseEvent(MouseEventType::EVENT_MOUSE_MOVED, std::move(mousePosition));
+        }
+
+        /**
+         * @brief Creates mouse scrolled event containing mouse position and scroll value (how much scrolling occurred).
+         * The new event contains button code equal to MouseButtonCode::INVALID
+         * 
+         * @param scrollValue - How much scrolling occurred
+         * @param mousePosition - Position of the mouse cursor when the event occurred
+         * @return 
+         */
+        static constexpr auto Scrolled(int16 scrollValue, IntVec2 mousePosition)
+        {
+            return MouseEvent(MouseEventType::EVENT_MOUSE_SCROLLED, std::move(mousePosition), std::move(scrollValue));
+        }
+
+        /**
+         * @brief Creates mouse button pressed event containing button code and mouse position.
+         * The new event contains default scroll value.
+         * 
+         * @param button - Code of the mouse button that triggered the event
+         * @param mousePosition - Position of the mouse cursor when the event occurred
+         * @return 
+         */
+        static constexpr auto ButtonPressed(MouseButtonCode button, IntVec2 mousePosition)
+        {
+            return MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_PRESSED, std::move(mousePosition), DEFAULT_SCROLL_VALUE, button);
+        }
+
+        /**
+         * @brief Creates mouse button held down event containing button code.
+         * The new event contains default scroll value and default mouse position.
+         * 
+         * @param button - Code of the mouse button that triggered the event
+         * @return 
+         */
+        static constexpr auto ButtonHeldDown(MouseButtonCode button)
+        {
+            return MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN, DEFAULT_COORDINATES, DEFAULT_SCROLL_VALUE, button);
+        }
+
+        /**
+         * @brief Creates mouse button released event containing button code and mouse position.
+         * The new event contains default scroll value.
+         * 
+         * @param button - Code of the mouse button that triggered the event
+         * @param mousePosition - Position of the mouse cursor when the event occurred
+         * @return 
+         */
+        static constexpr auto ButtonReleased(MouseButtonCode button, IntVec2 mousePosition)
+        {
+            return MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_RELEASED, std::move(mousePosition), DEFAULT_SCROLL_VALUE, button);
+        }
+
+        /**
+         * @brief Returns type of the mouse event.
          * 
          * @return 
          */
-        MouseEventType GetType() const noexcept
+        constexpr MouseEventType GetType() const noexcept
         {
             return m_eventType;
         }
 
         /**
-         * Returns coordinates of the mouse cursor as they were when the event occurred.
+         * @brief Returns position of the mouse cursor associated with this event.
          * 
          * @return
          */
-        const IntVec2& GetCoordinates() const noexcept
+        constexpr const IntVec2& GetMousePosition() const noexcept
         {
             return m_coordinates;
         }
 
         /**
-         * Returns number indicating how much has the mouse wheel been scrolled.
+         * @brief Returns number indicating how much the mouse wheel has been scrolled.
          * If no scrolling occurred, this value is equal to 0
          * 
          * @return 
@@ -83,8 +146,8 @@ namespace be
         }
 
         /**
-         * Returns code of the button which triggered the event.
-         * If no button took place in the event MouseButtonCode::INVALID is returned
+         * @brief Returns code of the button which triggered the event.
+         * If event isn't associated with any button, MouseButtonCode::INVALID is returned
          * 
          * @return 
          */
@@ -98,82 +161,5 @@ namespace be
         IntVec2 m_coordinates = DEFAULT_COORDINATES;
         int16 m_scrollValue = DEFAULT_SCROLL_VALUE;
         MouseButtonCode m_buttonCode;
-    };
-
-    class MouseMovedEvent final : public MouseEvent
-    {
-    public:
-        /**
-         * Initializes MouseEvent with given coordinates of the cursor on the screen and the MouseEventType::EVENT_MOUSE_MOVED type.
-         * Leaves other MouseEvent parameters with default values
-         * 
-         * @param coordinates
-         */
-        MouseMovedEvent(IntVec2 coordinates)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_MOVED, std::move(coordinates))
-        {
-        }
-    };
-
-    class MouseScrolledEvent final : public MouseEvent
-    {
-    public:
-        /**
-         * Initializes MouseEvent with given scroll values containing data about how much has the mouse wheel been scrolled.
-         * Sets event tyep to MouseEventType::EVENT_MOUSE_SCROLLED.
-         * Initializes event with cursor position
-         * 
-         * @param scrollValues
-         * @param coordinates
-         */
-        MouseScrolledEvent(int16 scrollValue, IntVec2 coordinates)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_SCROLLED, std::move(coordinates), std::move(scrollValue))
-        {
-        }
-    };
-
-    class MouseButtonPressedEvent final : public MouseEvent
-    {
-    public:
-        /**
-         * Initializes MouseEvent with pressed button code, cursor coordinates and MouseEventType::EVENT_MOUSE_BUTTON_PRESSED.
-         *
-         * @param button
-         * @param coordinates
-         */
-        MouseButtonPressedEvent(MouseButtonCode button, IntVec2 coordinates)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_PRESSED, coordinates, DEFAULT_SCROLL_VALUE, button)
-        {
-        }
-    };
-
-    class MouseButtonHeldDownEvent final : public MouseEvent
-    {
-    public:
-        /**
-         * Initializes MouseEvent with held down button code, cursor coordinates and MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN.
-         * 
-         * @param button
-         * @param coordinates
-         */
-        MouseButtonHeldDownEvent(MouseButtonCode button)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN, DEFAULT_COORDINATES, DEFAULT_SCROLL_VALUE, button)
-        {
-        }
-    };
-
-    class MouseButtonReleasedEvent final : public MouseEvent
-    {
-    public:
-        /**
-         * Initializes MouseEvent with released button code, cursor coordinates and MouseEventType::EVENT_MOUSE_BUTTON_RELEASED.
-         * 
-         * @param button
-         * @param coordinates
-         */
-        MouseButtonReleasedEvent(MouseButtonCode button, IntVec2 coordinates)
-            : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_RELEASED, coordinates, DEFAULT_SCROLL_VALUE, button)
-        {
-        }
     };
 } // namespace be

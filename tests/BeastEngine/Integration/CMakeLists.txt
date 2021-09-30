@@ -1,0 +1,57 @@
+SET(BE_TESTS_INTEGRATION_TARGET_NAME BEASTIntegration)
+
+set(BE_TESTS_INTEGRATION_INCLUDE_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}/tests")
+set(BE_TESTS_INTEGRATION_SRC_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}/tests")
+
+set(BE_TESTS_INTEGRATION_HEADERS_PREFIX "${BE_TESTS_INTEGRATION_INCLUDE_DIR}/BeastEngine/Integration/")
+set(BE_TESTS_INTEGRATION_SRC_PREFIX "${BE_TESTS_INTEGRATION_SRC_DIR}/BeastEngine/Integration/")
+
+set(
+	BE_TESTS_INTEGRATION_HEADERS_LIST
+	"Core/BeastEngineTest.h"
+	"Core/Loggers/FileLoggerTest.h"
+	"Core/Windows/Win32/Win32KeyboardEventsTest.h"
+	"Core/Windows/Win32/Win32MouseEventsTest.h"
+	"Core/Windows/Win32/Win32TestSetup.h"
+	"Core/Windows/Win32/Win32WindowTest.h"
+	"FilesystemTestCase.h"
+)
+
+set(
+	BE_TESTS_INTEGRATION_SRC_LIST
+	"Core/BeastEngineTest.cpp"
+	"Core/Loggers/FileLoggerTest.cpp"
+	"Core/Windows/Win32/Win32KeyboardEventsTest.cpp"
+	"Core/Windows/Win32/Win32MouseEventsTest.cpp"
+	"Core/Windows/Win32/Win32WindowTest.cpp"
+	"main.cpp"
+)
+
+list(TRANSFORM BE_TESTS_INTEGRATION_HEADERS_LIST PREPEND ${BE_TESTS_INTEGRATION_HEADERS_PREFIX})
+list(TRANSFORM BE_TESTS_INTEGRATION_SRC_LIST PREPEND ${BE_TESTS_INTEGRATION_SRC_PREFIX})
+
+list(APPEND BE_TESTS_INTEGRATION_HEADERS_LIST "${BE_TESTS_INTEGRATION_INCLUDE_DIR}/TestSetup.h")
+
+add_executable(${BE_TESTS_INTEGRATION_TARGET_NAME} "${BE_TESTS_INTEGRATION_SRC_LIST}" "${BE_TESTS_INTEGRATION_HEADERS_LIST}")
+target_include_directories(${BE_TESTS_INTEGRATION_TARGET_NAME} PRIVATE "${BE_TESTS_INTEGRATION_INCLUDE_DIR}")
+
+target_link_libraries(
+	${BE_TESTS_INTEGRATION_TARGET_NAME}
+		PRIVATE
+			BE::beast
+			CONAN_PKG::gtest
+			CONAN_PKG::spdlog
+			CT::common_utils
+)
+
+if(WIN32)
+	target_compile_definitions(${BE_TESTS_INTEGRATION_TARGET_NAME} PRIVATE BE_ENABLE_WINDOWS_TESTS)
+endif()
+
+be_set_compiler_options(${BE_TESTS_INTEGRATION_TARGET_NAME})
+
+# Group files into proper folders - for IDE
+be_group_files("${BE_TESTS_INTEGRATION_HEADERS_LIST}" "${BE_TESTS_INTEGRATION_INCLUDE_DIR}")
+be_group_files("${BE_TESTS_INTEGRATION_SRC_LIST}" "${BE_TESTS_INTEGRATION_SRC_DIR}")
+
+add_test(NAME ${BE_TESTS_INTEGRATION_TARGET_NAME} COMMAND ${BE_TESTS_INTEGRATION_TARGET_NAME})

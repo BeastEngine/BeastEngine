@@ -1,5 +1,4 @@
 #pragma once
-#include "BeastEngine/Core/Logging.h"
 #include "BeastEngine/Core/Debugging.h"
 
 namespace be::internals
@@ -7,6 +6,8 @@ namespace be::internals
 #ifndef BE_DEBUG_BREAK
     #ifdef _MSC_VER
         #define BE_DEBUG_BREAK() DebugBreak()
+    #else
+        #define BE_DEBUG_BREAK()
     #endif
 #endif
 

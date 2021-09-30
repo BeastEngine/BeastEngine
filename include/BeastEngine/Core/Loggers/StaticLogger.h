@@ -1,62 +1,51 @@
 #pragma once
-#include "BeastEngine/Core/Types.h"
-#include "BeastEngine/Core/Helpers.h"
 #include "BeastEngine/Core/Loggers/Logger.h"
+
+#include <Common/Types.h>
+#include <Common/Helpers.h>
 
 namespace be::internals
 {
-    using LoggerPtr = SharedPtr<Logger>;
+    using LoggerPtr = Shared<Logger>;
     class StaticLogger final
     {
         friend class BeastEngine;
     public:
-        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
+        CT_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
 
         template<typename... Args>
         static void LogInfo(const std::string& message, const Args&... args) noexcept
         {
-            try
+            if (IsSet())
             {
-                Get()->LogInfo(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogInfo(message, args...);
             }
         }
 
         template<typename... Args>
         static void LogWarning(const std::string& message, const Args&... args) noexcept
         {
-            try
+            if (IsSet())
             {
-                Get()->LogWarning(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogWarning(message, args...);
             }
         }
 
         template<typename... Args>
         static void LogError(const std::string& message, const Args&... args) noexcept
         {
-            try
+            if (IsSet())
             {
-                Get()->LogError(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogError(message, args...);
             }
         }
 
         template<typename... Args>
         static void LogFatalError(const std::string& message, const Args&... args) noexcept
         {
-            try
+            if (IsSet())
             {
-                Get()->LogFatalError(message, args...);
-            }
-            catch (const std::exception&)
-            {
+                m_logger->LogFatalError(message, args...);
             }
         }
 
@@ -66,14 +55,9 @@ namespace be::internals
             StaticLogger::m_logger = std::move(logger);
         }
 
-        static LoggerPtr Get()
+        static bool IsSet()
         {
-            if (m_logger == nullptr)
-            {
-                throw std::runtime_error("");
-            }
-
-            return m_logger;
+            return m_logger != nullptr;
         }
 
     private:
