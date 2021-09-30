@@ -18,7 +18,7 @@ set(
 add_executable(${SANDBOX_TARGET_NAME} "${SANDBOX_SRC_LIST}" "${SANDBOX_HEADERS_LIST}")
 target_link_libraries(${SANDBOX_TARGET_NAME} PRIVATE BE::beast)
 
-set_compiler_options(${SANDBOX_TARGET_NAME})
+be_set_compiler_options(${SANDBOX_TARGET_NAME})
 
 if (WIN32)
 	# Create WinApi application while using the system console
@@ -30,5 +30,5 @@ if (WIN32)
 endif()
 
 # Group files into proper folders - for IDE
-GROUP_FILES("${SANDBOX_HEADERS_LIST}" "${SANDBOX_INCLUDE_DIR}")
-GROUP_FILES("${SANDBOX_SRC_LIST}" "${SANDBOX_SRC_DIR}")
+be_group_files("${SANDBOX_HEADERS_LIST}" "${SANDBOX_INCLUDE_DIR}")
+be_group_files("${SANDBOX_SRC_LIST}" "${SANDBOX_SRC_DIR}")
