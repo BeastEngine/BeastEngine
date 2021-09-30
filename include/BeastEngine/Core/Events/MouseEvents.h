@@ -9,9 +9,9 @@ namespace be
     {
         EVENT_MOUSE_MOVED,
         EVENT_MOUSE_SCROLLED,
-        EVENT_MOUSE_BUTTON_PRESSED, // Single press
-        EVENT_MOUSE_BUTTON_HELD_DOWN, // Is held down
-        EVENT_MOUSE_BUTTON_RELEASED,
+        EVENT_MOUSE_BUTTON_PRESSED, // Pressed once, in the current frame
+        EVENT_MOUSE_BUTTON_HELD_DOWN, // Was pressed and is now held down
+        EVENT_MOUSE_BUTTON_RELEASED, // Released in the current frame
     };
 
     enum class WheelScrollDirection
@@ -162,81 +162,4 @@ namespace be
         int16 m_scrollValue = DEFAULT_SCROLL_VALUE;
         MouseButtonCode m_buttonCode;
     };
-
-    //class MouseMovedEvent final : public MouseEvent
-    //{
-    //public:
-    //    /**
-    //     * Initializes MouseEvent with given mousePosition of the cursor on the screen and the MouseEventType::EVENT_MOUSE_MOVED type.
-    //     * Leaves other MouseEvent parameters with default values
-    //     * 
-    //     * @param mousePosition
-    //     */
-    //    MouseMovedEvent(IntVec2 coordinates)
-    //        : MouseEvent(MouseEventType::EVENT_MOUSE_MOVED, std::move(coordinates))
-    //    {
-    //    }
-    //};
-
-    //class Scrolled final : public MouseEvent
-    //{
-    //public:
-    //    /**
-    //     * Initializes MouseEvent with given scroll values containing data about how much has the mouse wheel been scrolled.
-    //     * Sets event tyep to MouseEventType::EVENT_MOUSE_SCROLLED.
-    //     * Initializes event with cursor position
-    //     * 
-    //     * @param scrollValues
-    //     * @param mousePosition
-    //     */
-    //    Scrolled(int16 scrollValue, IntVec2 coordinates)
-    //        : MouseEvent(MouseEventType::EVENT_MOUSE_SCROLLED, std::move(coordinates), std::move(scrollValue))
-    //    {
-    //    }
-    //};
-
-    //class MouseButtonPressedEvent final : public MouseEvent
-    //{
-    //public:
-    //    /**
-    //     * Initializes MouseEvent with pressed button code, cursor mousePosition and MouseEventType::EVENT_MOUSE_BUTTON_PRESSED.
-    //     *
-    //     * @param button
-    //     * @param mousePosition
-    //     */
-    //    MouseButtonPressedEvent(MouseButtonCode button, IntVec2 coordinates)
-    //        : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_PRESSED, coordinates, DEFAULT_SCROLL_VALUE, button)
-    //    {
-    //    }
-    //};
-
-    //class MouseButtonHeldDownEvent final : public MouseEvent
-    //{
-    //public:
-    //    /**
-    //     * Initializes MouseEvent with held down button code, cursor mousePosition and MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN.
-    //     * 
-    //     * @param button
-    //     * @param mousePosition
-    //     */
-    //    MouseButtonHeldDownEvent(MouseButtonCode button)
-    //        : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_HELD_DOWN, DEFAULT_COORDINATES, DEFAULT_SCROLL_VALUE, button)
-    //    {
-    //    }
-    //};
-
-    //class MouseButtonReleasedEvent final : public MouseEvent
-    //{
-    //public:
-    //    /**
-    //     * Initializes MouseEvent with released button code, cursor mousePosition and MouseEventType::EVENT_MOUSE_BUTTON_RELEASED.
-    //     * 
-    //     * @param button
-    //     * @param mousePosition
-    //     */
-    //    MouseButtonReleasedEvent(MouseButtonCode button, IntVec2 coordinates)
-    //        : MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_RELEASED, coordinates, DEFAULT_SCROLL_VALUE, button)
-    //    {
-    //    }
-    //};
 } // namespace be

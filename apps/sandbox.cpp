@@ -16,28 +16,32 @@ public:
     void Run() override
     {
         GetEngine().PrintInfo();
-
+        
+        be::uint16 timer = 0;
         while (m_isRunning)
         {
             const auto& coords = m_mouse->GetMousePosition();
+
+            if (++timer == 10000)
+            {
+                m_logger->LogInfo("Mouse coords: [{}, {}]\n", coords.x, coords.y);
+                timer = 0;
+            }
 
             m_window->ProcessInput();
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_LEFT))
             {
                 m_logger->LogInfo("Left  button pressed");
-                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_MIDDLE))
             {
                 m_logger->LogInfo("Middle button pressed");
-                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_RIGHT))
             {
                 m_logger->LogInfo("Right button pressed");
-                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON4))
@@ -53,32 +57,29 @@ public:
             if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_LEFT))
             {
                 m_logger->LogInfo("Left button held down");
-                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_MIDDLE))
             {
                 m_logger->LogInfo("Middle button held down");
-                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
             if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_RIGHT))
             {
                 m_logger->LogInfo("Right button held down");
-                m_logger->LogInfo("Mouse coords: [" + std::to_string(coords.x) + ", " + std::to_string(coords.y) + "]\n");
             }
 
-            if (m_keyboard->IsKeyPressed(be::KeyCode::LeftShift))
+            if (m_keyboard->IsKeyPressed(be::KeyCode::Right))
             {
                 m_logger->LogInfo("Right arrow pressed\n");
             }
 
-            if (m_keyboard->IsKeyHeldDown(be::KeyCode::LeftShift))
+            if (m_keyboard->IsKeyHeldDown(be::KeyCode::Right))
             {
                 m_logger->LogInfo("Right arrow held down!\n");
             }
 
-            if (m_keyboard->IsKeyDown(be::KeyCode::LeftShift))
+            if (m_keyboard->IsKeyDown(be::KeyCode::Right))
             {
                 m_logger->LogInfo("Right arrow is down!\n");
             }

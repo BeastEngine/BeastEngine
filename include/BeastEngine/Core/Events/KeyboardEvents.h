@@ -6,7 +6,7 @@ namespace be
     enum class KeyboardEventType
     {
         EVENT_KEY_PRESSED, // Pressed once, in the current frame
-        EVENT_KEY_HELD_DOWN, // Is pressed and is held down
+        EVENT_KEY_HELD_DOWN, // Was pressed and is now held down
         EVENT_KEY_RELEASED, // Released in the current frame
     };
 
@@ -85,49 +85,4 @@ namespace be
         KeyCode m_keyCode;
         KeyboardEventType m_type;
     };
-
-    //class KeyPressedEvent final : public KeyboardEvent
-    //{
-    //public:
-    //    /**
-    //     * @brief Initializes KeyPressedEvent with its key code.
-    //     * Creates KeyboardEvent with the same key code and with KeyboardEventType::EVENT_KEY_PRESSED event type
-    //     *
-    //     * @param keyCode - Code of the key that triggered this event
-    //     */
-    //    KeyPressedEvent(KeyCode keyCode)
-    //        : KeyboardEvent(keyCode, KeyboardEventType::EVENT_KEY_PRESSED)
-    //    {
-    //    }
-    //};
-
-    //class KeyHeldDownEvent final : public KeyboardEvent
-    //{
-    //public:
-    //    /**
-    //     * @brief Initializes KeyHeldDownEvent with its key code.
-    //     * Creates KeyboardEvent with the same key code and with KeyboardEventType::EVENT_KEY_PRESSED event type
-    //     *
-    //     * @param keyCode - Code of the key that triggered this event
-    //     */
-    //    KeyHeldDownEvent(KeyCode keyCode)
-    //        : KeyboardEvent(keyCode, KeyboardEventType::EVENT_KEY_HELD_DOWN)
-    //    {
-    //    }
-    //};
-
-    //class KeyReleasedEvent final : public KeyboardEvent
-    //{
-    //public:
-    //    /**
-    //     * @brief Initializes KeyReleasedEvent with its key code.
-    //     * Creates KeyboardEvent with the same key code and with KeyboardEventType::EVENT_KEY_PRESSED event type
-    //     *
-    //     * @param keyCode - Code of the key that triggered this event
-    //     */
-    //    KeyReleasedEvent(KeyCode keyCode)
-    //        : KeyboardEvent(keyCode, KeyboardEventType::EVENT_KEY_RELEASED)
-    //    {
-    //    }
-    //};
 } // namespace be

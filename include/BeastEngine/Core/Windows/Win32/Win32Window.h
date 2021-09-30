@@ -7,6 +7,7 @@
     #include <Common/Helpers.h>
     #include <functional>
     #include <unordered_map>
+    #include <string>
 
 namespace be::internals
 {
@@ -29,7 +30,7 @@ namespace be::internals
          * @param windowDescriptor - Struct containing details about window
          * @param windowClassName - Unique name of the WinAPI class to register for this window
          */
-        Win32Window(const WindowDescriptor& windowDescriptor, const wchar_t* windowClassName);
+        Win32Window(const WindowDescriptor& windowDescriptor, const std::wstring_view windowClassName);
 
         /**
          * @brief Destroys WinAPI's window and unregisters its class. Deletes HWND.
@@ -232,7 +233,7 @@ namespace be::internals
         }
 
     private:
-        const wchar_t* WINDOW_CLASS_NAME = L"";
+        const std::wstring WINDOW_CLASS_NAME = L"";
         static constexpr const uint16 KEY_STATE_IS_PRESSED = 0x8000;
         static constexpr const LPARAM KEY_STATE_IS_PRESSED_AND_REPEATED = 0x40000000;
 

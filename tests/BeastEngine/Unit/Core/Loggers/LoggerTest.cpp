@@ -1,7 +1,5 @@
 #include "LoggerTest.h"
 
-#include "spdlog/details/null_mutex.h"
-
 namespace be::tests::unit
 {
     TEST_F(LoggerTest, ConstructorWillThrowExceptionWhenEmptyLoggerImplementationPassed)

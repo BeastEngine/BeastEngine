@@ -29,7 +29,7 @@ set(
 list(TRANSFORM BE_TESTS_UNIT_HEADERS_LIST PREPEND ${BE_TESTS_UNIT_HEADERS_PREFIX})
 list(TRANSFORM BE_TESTS_UNIT_SRC_LIST PREPEND ${BE_TESTS_UNIT_SRC_PREFIX})
 
-list(APPEND BE_TESTS_UNIT_HEADERS_LIST "${BE_TESTS_UNIT_INCLUDE_DIR}/TestSetup.h" "${BE_TESTS_UNIT_INCLUDE_DIR}/TestCase.h")
+list(APPEND BE_TESTS_UNIT_HEADERS_LIST "${BE_TESTS_UNIT_INCLUDE_DIR}/TestSetup.h")
 
 add_executable(${BE_TESTS_UNIT_TARGET_NAME} "${BE_TESTS_UNIT_SRC_LIST}" "${BE_TESTS_UNIT_HEADERS_LIST}")
 target_include_directories(${BE_TESTS_UNIT_TARGET_NAME} PRIVATE "${BE_TESTS_UNIT_INCLUDE_DIR}")
@@ -45,16 +45,6 @@ target_link_libraries(
 # Group files into proper folders - for IDE
 be_group_files("${BE_TESTS_UNIT_HEADERS_LIST}" "${BE_TESTS_UNIT_INCLUDE_DIR}")
 be_group_files("${BE_TESTS_UNIT_SRC_LIST}" "${BE_TESTS_UNIT_SRC_DIR}")
-
-target_precompile_headers(
-	${BE_TESTS_UNIT_TARGET_NAME}
-	PRIVATE
-		<string>
-		<vector>
-		<memory>
-		<cstdint>
-		<array>
-)
 
 be_set_compiler_options(${BE_TESTS_UNIT_TARGET_NAME})
 add_test(NAME ${BE_TESTS_UNIT_TARGET_NAME} COMMAND ${BE_TESTS_UNIT_TARGET_NAME})

@@ -70,11 +70,7 @@ if (${BE_ENABLE_ASSERTIONS})
 	list(APPEND BEAST_DEBUGGING_DEFINES BE_ASSERTIONS_ENABLED)
 endif()
 
-target_compile_definitions(
-	${BEAST_LIB_TARGET_NAME}
-	PRIVATE
-		${BEAST_DEBUGGING_DEFINES}
-)
+target_compile_definitions(${BEAST_LIB_TARGET_NAME} PRIVATE ${BEAST_DEBUGGING_DEFINES})
 
 if(WIN32)
 	target_compile_definitions(${BEAST_LIB_TARGET_NAME} PUBLIC BE_PLATFORM_WINDOWS)
@@ -85,16 +81,6 @@ be_set_compiler_options(${BEAST_LIB_TARGET_NAME})
 configure_file(
 	"${BEAST_HEADERS_PREFIX}/Core/Versions.h.in"
 	"${BEAST_HEADERS_PREFIX}/Core/Versions.h"
-)
-
-target_precompile_headers(
-	${BEAST_LIB_TARGET_NAME}
-	PRIVATE
-		<string>
-		<vector>
-		<memory>
-		<cstdint>
-		<array>
 )
 
 # Group files into proper folders - for IDE
