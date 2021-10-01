@@ -44,7 +44,7 @@ target_link_libraries(
 			CT::common_utils
 )
 
-if(WIN32)
+if(WIN32 AND BUILD_WIN32_TESTS)
 	target_compile_definitions(${BE_TESTS_INTEGRATION_TARGET_NAME} PRIVATE BE_ENABLE_WINDOWS_TESTS)
 endif()
 

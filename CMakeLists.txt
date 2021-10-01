@@ -38,6 +38,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	option(BE_ENABLE_DEBUG_INFO "Should debugging functionalities be enabled" ON)
 	option(BE_ENABLE_ASSERTIONS "Should assertions be enabled" ON)
 
+	set(BUILD_WIN32_TESTS_VALUE OFF)
+	if(WIN32)
+		set(BUILD_WIN32_TESTS_VALUE ON)
+	endif()
+	option(BUILD_WIN32_TESTS "Build integration tests for Win32 components" ${BUILD_WIN32_TESTS_VALUE})
+
 	if (BE_ENABLE_DEBUG_INFO)
 		set(CT_COMMON_ENABLE_DEBUG TRUE)
 	endif()

@@ -17,15 +17,15 @@ public:
     {
         GetEngine().PrintInfo();
         
-        be::uint16 timer = 0;
+        auto previousCords = m_mouse->GetMousePosition();
+        const auto& currentCoords = m_mouse->GetMousePosition();
+
         while (m_isRunning)
         {
-            const auto& coords = m_mouse->GetMousePosition();
-
-            if (++timer == 10000)
+            if (previousCords != currentCoords)
             {
-                m_logger->LogInfo("Mouse coords: [{}, {}]\n", coords.x, coords.y);
-                timer = 0;
+                m_logger->LogInfo("Mouse coords: [{}, {}]\n", currentCoords.x, currentCoords.y);
+                previousCords = currentCoords;
             }
 
             m_window->ProcessInput();

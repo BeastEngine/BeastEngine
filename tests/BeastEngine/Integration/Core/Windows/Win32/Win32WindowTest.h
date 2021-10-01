@@ -1,5 +1,6 @@
 #pragma once
-#include "Win32TestSetup.h"
+#ifdef BE_ENABLE_WINDOWS_TESTS
+    #include "Win32TestSetup.h"
 
 namespace be::tests::integration
 {
@@ -7,3 +8,4 @@ namespace be::tests::integration
     {
     };
 } // namespace be::tests::integration
+#endif
