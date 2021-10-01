@@ -71,7 +71,7 @@ This project is based on the [BasicCppSetup](https://github.com/ComaszTyrulik/Ba
 I haven't created a specific roadmap for the project yet, but I am using [Trello](https://trello.com/) for keeping track of tasks and TODOs. You can find the board [here](https://trello.com/b/Rj73uWjS/beastengine).
 
 ## License
-Distributed under the MIT License. See [`LICENSE`]() for more information.
+Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
 
 ## Acknowledgements
 * [README template](https://github.com/othneildrew/Best-README-Template)
