@@ -1,6 +1,7 @@
-#include "Win32WindowTest.h"
+#ifdef BE_ENABLE_WINDOWS_TESTS
+    #include "Win32WindowTest.h"
 
-#include <BeastEngine/Core/Windows/Win32/Win32Window.h>
+    #include <BeastEngine/Core/Windows/Win32/Win32Window.h>
 
 namespace be::tests::integration
 {
@@ -20,3 +21,4 @@ namespace be::tests::integration
         ASSERT_NO_THROW(internals::Win32Window(GetWindowDescriptor(), windowClassName));
     }
 } // namespace be::tests::integration
+#endif

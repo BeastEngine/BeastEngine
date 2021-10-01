@@ -8,7 +8,7 @@
 
 namespace be
 {
-    static const std::string DEFAULT_LOGGER_NAME = "beast_engine_default_logger";
+    static constexpr const char* DEFAULT_LOGGER_NAME = "beast_engine_default_logger";
 
     BeastEngine::BeastEngine(EngineConfig config)
     {
@@ -20,7 +20,7 @@ namespace be
     {
         const auto engineNameString = fmt::format(fmt::emphasis::bold, "BeastEngine - ");
         const auto versionString = fmt::format(fmt::fg(fmt::color::orange) | fmt::emphasis::bold, BEAST_ENGINE_VERSION);
-        fmt::print("{}Version [{}]", engineNameString, versionString);
+        fmt::print("{}Version [{}]\n", engineNameString, versionString);
     }
 
     Unique<IWindow> BeastEngine::CreateNewWindow(const WindowDescriptor& descriptor) const
