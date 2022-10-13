@@ -15,8 +15,8 @@ project(
 	LANGUAGES CXX
 )
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/conan/build/conanbuildinfo_multi.cmake")
-conan_basic_setup(TARGETS) # Configure Conan, but do not let it override output directories
+#include("${CMAKE_CURRENT_SOURCE_DIR}/conan/build/conanbuildinfo_multi.cmake")
+#conan_basic_setup(TARGETS) # Configure Conan, but do not let it override output directories
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	set(CMAKE_INSTALL_PREFIX "${${PROJECT_MAIN_NAME}_SOURCE_DIR}")
@@ -26,7 +26,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 
 	set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON) # Export all DLL symbols by default
 	set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Export compilation db
-	set(CMAKE_CXX_CLANG_TIDY ON)
+	# set(CMAKE_CXX_CLANG_TIDY ON) TODO: This shuld be set to something like: set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-style=file;-checks=*")
 
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -56,6 +56,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	add_subdirectory(apps) # Add executable
 
 	if (BUILD_TESTS)
+		enable_testing()
 		add_subdirectory(tests) # Add tests
 	endif()
 endif()

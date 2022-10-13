@@ -26,6 +26,7 @@ namespace be::tests::unit
         constexpr std::array<std::pair<uint8, uint8>, mapSize> mapData{{{key, value}}};
         constexpr auto sut = ConstexprMap<uint8, uint8, mapSize>{mapData};
         ASSERT_THROW(
+            [[maybe_unused]]
             const auto foundValue = sut.At(invalidKey),
             std::range_error
         );

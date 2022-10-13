@@ -39,7 +39,7 @@ set(
 	"Core/Loggers/LoggersFactories.cpp"
 	"Core/Windows/Win32/Win32Window.cpp"
 	"Core/Windows/WindowFactory.cpp"
-)
+ )
 
 if(WIN32)
 	list(APPEND BEAST_SRC_LIST "beastengine.dll.manifest")
@@ -52,10 +52,12 @@ add_library(${BEAST_LIB_TARGET_NAME} SHARED "${BEAST_SRC_LIST}" "${BEAST_HEADERS
 target_include_directories(${BEAST_LIB_TARGET_NAME} PUBLIC "${BEAST_INCLUDE_DIR}")
 target_compile_features(${BEAST_LIB_TARGET_NAME} PUBLIC cxx_std_17)
 
+find_package(spdlog REQUIRED)
+
 target_link_libraries(
 	${BEAST_LIB_TARGET_NAME}
 	PUBLIC
-		CONAN_PKG::spdlog
+		spdlog::spdlog
 		CT::common_utils
 		BE::math
 )

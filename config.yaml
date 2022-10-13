@@ -1,0 +1,5 @@
+build_dir: build
+conan:
+  file_path: conanfile.py
+  build_info_dir: build
+targets: []

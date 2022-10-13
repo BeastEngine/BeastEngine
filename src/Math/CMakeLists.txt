@@ -21,10 +21,11 @@ add_library(${BE_MATH_LIB_TARGET_NAME} INTERFACE "${BE_MATH_SRC_LIST}" "${BE_MAT
 target_include_directories(${BE_MATH_LIB_TARGET_NAME} INTERFACE "${BE_MATH_INCLUDE_DIR}")
 target_compile_features(${BE_MATH_LIB_TARGET_NAME} INTERFACE cxx_std_17)
 
+find_package(glm REQUIRED)
 target_link_libraries(
 	${BE_MATH_LIB_TARGET_NAME}
     INTERFACE
-		CONAN_PKG::glm
+		glm::glm
 )
 
 # Group files into proper folders - for IDE
