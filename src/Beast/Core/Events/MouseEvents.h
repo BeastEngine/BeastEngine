@@ -43,7 +43,8 @@ namespace be
             MouseEventType eventType,
             IntVec2 mousePosition = DEFAULT_COORDINATES,
             int16 scrollValues = DEFAULT_SCROLL_VALUE,
-            MouseButtonCode buttonCode = MouseButtonCode::INVALID) noexcept
+            MouseButtonCode buttonCode = MouseButtonCode::INVALID
+        ) noexcept
             : m_eventType(eventType),
               m_coordinates(mousePosition),
               m_scrollValue(scrollValues),

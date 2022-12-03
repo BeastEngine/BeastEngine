@@ -29,7 +29,7 @@ namespace be
             {
                 m_scrollThreshold = threshold;
             }
-            
+
             void SetWheelScrolledListener(MouseWheelScrolledListener listener) noexcept
             {
                 m_mouseScrolledListener = listener;

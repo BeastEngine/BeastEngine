@@ -36,8 +36,7 @@ namespace be::tests::integration
     INSTANTIATE_TEST_SUITE_P(
         Win32WindowTest_MouseWheelMessagesTest,
         WindowsMouseWheelEventsTest,
-        testing::Values(120, 80, 500, -120, -80, 500
-        )
+        testing::Values(120, 80, 500, -120, -80, 500)
     );
 
     TEST_P(WindowsMouseWheelEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseWheelMessageWithPositiveDelta)

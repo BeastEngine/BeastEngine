@@ -20,7 +20,8 @@ namespace be::tests::integration
             const auto secondLogger = CreateLogger(loggerName, filePath);
 
             ASSERT_NE(nullptr, firstLogger);
-            ASSERT_NE(nullptr, secondLogger););
+            ASSERT_NE(nullptr, secondLogger);
+        );
     }
 
     TEST_F(FileLoggerTest, CreateWillCreateLogFileUnderGivenFilePathIfFileDoesNotExist)
@@ -60,7 +61,7 @@ namespace be::tests::integration
 
         const auto logger1 = CreateLogger(loggerName, filePath);
         const auto logger2 = CreateLogger(loggerName, otherFilePath);
-        
+
         bool otherFileExistenceAfter = fs::exists(otherFilePath);
 
         ASSERT_FALSE(otherFileExistenceAfter);

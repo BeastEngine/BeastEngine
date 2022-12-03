@@ -18,7 +18,7 @@ namespace be
          * If set to nullptr, engine will create ConsoleLogger by default.
          */
         Shared<Logger> logger = nullptr;
-        
+
         /**
          * @brief IWindowFactory implementation that will be used to create windows by the engine.
          * If set to nullptr, the default engine's implementation will be used.
@@ -34,7 +34,7 @@ namespace be
     {
     public:
         CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(BeastEngine)
-        
+
         /**
          * @brief Initializes all engine subsystems using passed configuration.
          * 

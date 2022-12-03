@@ -8,7 +8,7 @@ namespace be::tests::unit
     }
 
     TEST_F(LoggerTest, LogInfoWillUseLoggerPassedViaConstructor)
-    {       
+    {
         auto loggerSink = CreateSinkMock();
         EXPECT_CALL(*loggerSink, log).Times(1);
 

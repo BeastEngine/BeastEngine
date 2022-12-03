@@ -10,6 +10,7 @@ namespace be::internals
     class StaticLogger final
     {
         friend class BeastEngine;
+
     public:
         CT_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
 
@@ -63,4 +64,4 @@ namespace be::internals
     private:
         inline static LoggerPtr m_logger = nullptr;
     };
-} // namespace be
+} // namespace be::internals

@@ -1,6 +1,6 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
     #include <TestSetup.h>
-    
+
     #include <Beast/Core/Windows/Win32/Win32Window.h>
     #include <Beast/Common/IdGenerators/UuId4Generator.h>
 
