@@ -1,5 +1,6 @@
-#include <BeastEngine/EntryPoint.h>
-#include <BeastEngine/BeastEngine.h>
+#include <Beast/Core/EntryPoint.h>
+#include <Beast/Core/BeastEngine.h>
+#include <Beast/Core/Loggers/LoggersFactories.h>
 
 #include <iostream>
 
@@ -16,7 +17,7 @@ public:
     void Run() override
     {
         GetEngine().PrintInfo();
-        
+
         auto previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();
 

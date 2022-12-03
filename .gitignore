@@ -368,7 +368,7 @@ build/
 .idea/
 
 ## Others
-conan/build/*
+conan/*
 imgui.ini
 vendor/ImGui/imgui/*
 todo.txt
@@ -379,3 +379,4 @@ include/Common/Resources.h
 docs/api
 tests/DbConfig.h
 temp/
+CMakePresets.json

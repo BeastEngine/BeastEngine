@@ -66,7 +66,7 @@ This project is based on the [BasicCppSetup](https://github.com/ComaszTyrulik/Ba
 |------|--------|-----------|
 |`BE_ENABLE_DEBUG_INFO`|ON|If ON, `BeastEngine` will contain definitions of debugging utilities, such as debug logging. It will also include additional debug information in exceptions. See [`Debugging.h`](https://github.com/BeastEngine/BeastEngine/blob/develop/include/BeastEngine/Core/Debugging.h) for example.|
 |`BE_ENABLE_ASSERTIONS`|ON|If ON, `BeastEngine` will contain definitions of debugging assertions. See [`Assertions.h`](https://github.com/BeastEngine/BeastEngine/blob/develop/include/BeastEngine/Core/Assertions.h) for example.|
-|`BUILD_WIN32_TESTS`|Platform dependent|BEASTIntegration target contains integration tests for BeastEngine. Among those tests there are ones which test [`Win32Window`](https://github.com/BeastEngine/BeastEngine/blob/develop/include/BeastEngine/Core/Windows/Win32/Win32Window.h) class. Those tests can be time consuming so you can exclude them from build. This value is by default set to `ON` on `Windows` and `OFF` on other platforms.|
+|`BUILD_WIN32_TESTS`|Platform dependent|BeastCoreIntegration target contains integration tests for BeastEngine. Among those tests there are ones which test [`Win32Window`](https://github.com/BeastEngine/BeastEngine/blob/develop/include/BeastEngine/Core/Windows/Win32/Win32Window.h) class. Those tests can be time consuming so you can exclude them from build. This value is by default set to `ON` on `Windows` and `OFF` on other platforms.|
 
 ## Roadmap
 I haven't created a specific roadmap for the project yet, but I am using [Trello](https://trello.com/) for keeping track of tasks and TODOs. You can find the board [here](https://trello.com/b/Rj73uWjS/beastengine).
