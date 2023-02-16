@@ -10,7 +10,8 @@ class BeastEngine(ConanFile):
         "glm/0.9.9.8",
         "stduuid/1.2.2",
         "xxhash/0.8.1",
-        "fmt/9.1.0"
+        "fmt/9.1.0",
+        "entt/3.11.0",
     ]
     generators = ["CMakeDeps", "CMakeToolchain"]
 

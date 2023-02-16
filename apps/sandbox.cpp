@@ -4,6 +4,50 @@
 
 #include <iostream>
 
+namespace render
+{
+    class IVertexShader;
+    class IPixelShader;
+    class IBuffer;
+
+    struct RenderPass
+    {
+        IVertexShader* vertexShader;
+        IPixelShader* pixelShader;
+
+        std::vector<IBuffer*> buffers;
+    };
+
+    struct Pipeline
+    {
+        std::vector<RenderPass> passes;
+    };
+
+    enum class BufferType
+    {
+        BE_VERTEX_BUFFER,
+        BE_INDEX_BUFFER,
+    };
+    
+    struct BufferDescriptor
+    {
+        BufferType type;
+    };
+
+    class IContext
+    {
+        virtual be::Unique<IVertexShader> CreateVertexShader() = 0;
+        virtual be::Unique<IBuffer> CreateBuffer(const BufferDescriptor& descriptor) = 0;
+
+        virtual void Render(const Pipeline& pipeline) = 0;
+    };
+
+    class IDevice
+    {
+        virtual be::Unique<IContext> CreateContex() = 0;
+    };
+}
+
 class BasicApplication final : public be::AApplication
 {
 public:
@@ -118,7 +162,7 @@ be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHa
     auto config = be::EngineConfig();
 
     // Configure window
-    auto windowDescriptor = be::WindowDescriptor(std::move(windowHandleInstance));
+    be::WindowDescriptor windowDescriptor(std::move(windowHandleInstance));
     windowDescriptor.style = WindowStyle::WINDOW_DEFUALT;
 
     return be::CreateUnique<BasicApplication>(std::move(config), windowDescriptor);

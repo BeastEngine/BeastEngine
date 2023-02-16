@@ -379,14 +379,12 @@ namespace be::internals
     LRESULT Win32Window::HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const
     {
         // Invoke handler defined for this message, or the default one if no defined
-        try
+        if (m_messageHandlers.contains(uMsg))
         {
             return m_messageHandlers.at(uMsg)(uMsg, wParam, lParam);
         }
-        catch (const std::out_of_range&)
-        {
-            return DefWindowProc(hWnd, uMsg, wParam, lParam);
-        }
+
+        return DefWindowProc(hWnd, uMsg, wParam, lParam);
     }
 
     LRESULT Win32Window::HandleMouseButtonDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
