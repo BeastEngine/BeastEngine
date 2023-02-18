@@ -22,4 +22,6 @@ target_link_libraries(
 		stduuid::stduuid
 )
 
+be_set_compiler_options(BeastCommon)
+
 add_library(BE::common ALIAS BeastCommon)

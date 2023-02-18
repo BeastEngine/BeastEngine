@@ -379,4 +379,4 @@ include/Common/Resources.h
 docs/api
 tests/DbConfig.h
 temp/
-CMakePresets.json
+CMakeUserPresets.json

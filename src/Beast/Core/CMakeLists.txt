@@ -53,6 +53,7 @@ be_set_compiler_options(BeastCore)
 
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
+find_package(entt REQUIRED)
 target_link_libraries(
     BeastCore
     PUBLIC
@@ -60,6 +61,7 @@ target_link_libraries(
         BE::math
         BE::common
         fmt::fmt
+        EnTT::EnTT
 )
 
 set(BEAST_DEBUGGING_DEFINES)
