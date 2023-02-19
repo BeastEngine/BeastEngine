@@ -1,6 +1,10 @@
-#include <Beast/Core/EntryPoint.h>
-#include <Beast/Core/BeastEngine.h>
-#include <Beast/Core/Loggers/LoggersFactories.h>
+#include <Beast/EntryPoint.h>
+#include <Beast/BeastEngine.h>
+#include <Beast/Loggers/LoggersFactories.h>
+
+#include <Beast/Ecs/Types.h>
+#include <Beast/Ecs/AccessList.h>
+#include <Beast/Ecs/View.h>
 
 #include <entt/entt.hpp>
 
@@ -8,65 +12,26 @@
 #include <vector>
 #include <unordered_map>
 #include <typeindex>
-#include <tuple>
-#include <type_traits>
 #include <spdlog/spdlog.h>
 
 /*
-* This would create two scheduling groups, that would we executed sequentialy, but the functions inside each groups, would be executed in parallel.
-* Wouldn't it be easier to actually do it automatically?
+* ECS DESIGN
+* In entt, the single source of truth is the register.
+* I want to have something similar, which will hide a dependency on that register internally. This will be called a world.
+* class World{};
 * 
-* Something like this. We would create the ViewDescriptor which would contain list of components that can be Get, Update, Assign, Remove.
-* Those would affect the scheduling.
-* In particular:
-* We could go through all functions and:
-* Take all functions that assign specific components. Those should definitelly be placed in a first scheduling group.
-* So, we now go through all of them and see which components we assign.
+* This class will act exactly like the entt's registry. It will hold all entities and all their components. It will also be used to create
+* views with specific access lists.
 * 
-* Well, with manual scheduling all we have to do is know what data we need. So we can still use ViewDescriptor to filter components when creating views.
-* Because I don't want to have to specify it manually as part of the function declariation.
-* The problem with manual scheduling though, is that we can't hide anything inside the cpp file. Everything has to be available.
-* Unless we will schedule by systems, instead of functions. In that case, each system would be responsible for a single functionality.
-* This would mean a lot of systems, but it would also make it easier to schedule. Because we would know exactly what is needed by that system.
-* So I think what's what im gonna do. Each system will be responsible for a single thing. It will also define it's access list
-* which will be both hint for me which components are used, but also for the supplied view, on which components can be access and so on.
+* So, basically, I don't want my systems to use anthing from the entt directly.
+* Also, when I will be creating new entities before doing any scheduling, I will use world.
+* I think, the View then can either accept the world, or maybe just the view implementation which will be the entt view?
+* View has to accepts the entt view. I'm not sure how to pass it there correctly (meaning, so that we know its type, but we can figure this out).
+* Unless we can just pass the registry there. Actually I can't see why it would be worse than passing the view? Maybe because it's then easier to
+* modify the registry outside of where it should actually be modified (the world). So if I can find a way to pass just a view, that will be better.
 * 
-* So, something like this:
-* class MySystem : public be::System
-* {
-* public:
-*   struct AccessList : be::AccessList
-*   {
-*       using Get = be::Components<Transform, Controller>;
-*       using Update = be::Components<...>
-*       ...
-*   }
-* 
-*   void Update(const be::View<AccessList>& view) override;
-* }
-* 
-* Then, somewhere in the view
-* template<typename AccessList>
-* class View
-* {
-* private:
-*   using AL = AccessList;
-
-* public:
-*   template<typename Component>
-*   const auto&& GetComponent(Entity entity)
-*   {
-*       // Seems very slow
-*       if (!m_accesses[ToId<Component>()] == AccessType::GET)
-*       {
-*           throw;
-*       }
-* 
-*   }
-* 
-* private:
-*   std::unordered_map<type_info, AccessType> m_accesses;
-* }
+* Ok, so I decided that View will accept reference to the registry to make it simpler to implement. It's a wrapper around entt.
+* That's my goal after all. I'm not creating my own ecs library, but rather create wrappers to hide it from my systems.
 */
 
 struct ComponentA
@@ -79,138 +44,22 @@ struct ComponentB
     unsigned int data = 0;
 };
 
-template<typename... Args>
-struct TypeList
-{
-};
-
-template<typename... Args1, typename... Args2, typename... Args3, typename... Args4>
-constexpr static auto CombineTypes(TypeList<Args1...>, TypeList<Args2...>, TypeList<Args3...>, TypeList<Args4...>)
-{
-    return TypeList<Args1..., Args2..., Args3..., Args4...>{};
-}
-
-template<typename... ComponentTypes>
-struct Components : public TypeList<ComponentTypes...>
-{
-    template<typename Component>
-    struct Contains
-    {
-        static constexpr auto Value = (std::is_same_v<Component, ComponentTypes> || ...);
-    };
-};
-
-template<typename... ComponentsList>
-class ViewImpl
-{
-private:
-    entt::basic_view<ComponentsList...> m_view;
-};
-
-/**
-* What I need is a way to combine multiple typelists into one.
-* It should be simple I think.
-* Then, I will be able to combine all access list attributes into a single TypeList which will give me a list of all Types.
-* something like this
-* template<typename Arg, typename ...Args2>
-* struct TypeList : TypeList<Arg, Args2...>
-* {};
-*/
-
-template<typename AccessList>
-class View
-{
-private:
-    using AL = AccessList;
-
-    template<typename... ViewComponents>
-    constexpr static auto init(TypeList<ViewComponents...>, entt::registry& reg)
-    {
-        return reg.view<ViewComponents...>();
-    }
-
-    using ViewType =
-        decltype(init(
-            AL::template All<AL>(),
-            std::declval<entt::registry&>()
-        ));
-
-public:
-    constexpr View(entt::registry& reg)
-        : m_view(init(
-              AL::template All<AL>(),
-              reg
-          ))
-    {
-    }
-
-    constexpr auto begin() const
-    {
-        return m_view.begin();
-    }
-
-    constexpr auto end() const
-    {
-        return m_view.end();
-    }
-
-    template<typename Component>
-    constexpr const Component& Get(entt::entity ent) const
-    {
-        static_assert(AccessList::Get::Contains<Component>::Value);
-        return m_view.get<const Component>(ent);
-    }
-
-    template<typename Component>
-    constexpr Component& Update(entt::entity ent) const
-    {
-        static_assert(AccessList::Update::Contains<Component>::Value);
-        return m_view.get<Component>(ent);
-    }
-
-private:
-    ViewType m_view;
-};
-
 class ISystem
 {
 public:
     virtual ~ISystem() = default;
 };
 
-struct BaseAccessList
-{
-    using Get = Components<>;
-    using Update = Components<>;
-    using Add = Components<>;
-    using Remove = Components<>;
-
-    /*template<typename AL>
-    constexpr static auto All()
-    {
-        return GetCombined(AL::Get(), AL::Update(), AL::Add(), AL::Remove());
-    }*/
-
-    template<typename... GetArgs, typename... UpdateArgs, typename... AddArgs, typename... RemoveArgs>
-    constexpr static auto GetCombined(TypeList<GetArgs...>, TypeList<UpdateArgs...>, TypeList<AddArgs...>, TypeList<RemoveArgs...>)
-    {
-        return TypeList<GetArgs..., UpdateArgs..., AddArgs..., RemoveArgs...>{};
-    }
-
-    template<typename AL>
-    using All = decltype(GetCombined(AL::Get(), AL::Update(), AL::Add(), AL::Remove()));
-};
-
 class MySystem : public ISystem
 {
 public:
-    struct AccessList : public BaseAccessList
+    struct AccessList : public be::AccessList
     {
-        using Get = Components<ComponentA>;
-        using Update = Components<ComponentB>;
+        using Get = be::Components<ComponentA>;
+        using Update = be::Components<ComponentB>;
     };
 
-    void Update(const View<AccessList>& view)
+    void Run(const be::View<AccessList>& view)
     {
         for (auto ent : view)
         {
@@ -257,8 +106,9 @@ public:
         auto* instance = m_sysReg->Get<System>();
         auto task = [system = instance](be::uint32, void* data, auto, auto) {
             entt::registry* reg = reinterpret_cast<entt::registry*>(data);
-            View<System::AccessList> view(*reg);
-            system->Update(view);
+            // m_world->CreateView<System::AccessList>(); It should look like this instead
+            be::View<System::AccessList> view(*reg);
+            system->Run(view);
         };
         m_scheduler.attach(std::move(task));
         //m_tasks.push_back(std::move(task));
