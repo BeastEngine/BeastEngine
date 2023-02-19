@@ -84,33 +84,45 @@ struct TypeList
 {
 };
 
-template<typename T1, typename... Ts>
-struct HasType
+template<typename... Args1, typename... Args2, typename... Args3, typename... Args4>
+constexpr static auto CombineTypes(TypeList<Args1...>, TypeList<Args2...>, TypeList<Args3...>, TypeList<Args4...>)
 {
-    static constexpr auto Value = (std::is_same_v<T1, Ts> || ...);
-};
+    return TypeList<Args1..., Args2..., Args3..., Args4...>{};
+}
 
 template<typename... ComponentTypes>
-struct Components
+struct Components : public TypeList<ComponentTypes...>
 {
     template<typename Component>
-    struct Contains : public HasType<Component, ComponentTypes...>
+    struct Contains
     {
+        static constexpr auto Value = (std::is_same_v<Component, ComponentTypes> || ...);
     };
-
-    using Type = typename TypeList<ComponentTypes...>;
 };
 
-//template<typename Component, typename ...ComponentTypes>
-//struct Components
-//{
-//    using Types = Components<ComponentTypes...>::Types;
-//};
+template<typename... ComponentsList>
+class ViewImpl
+{
+private:
+    entt::basic_view<ComponentsList...> m_view;
+};
+
+/**
+* What I need is a way to combine multiple typelists into one.
+* It should be simple I think.
+* Then, I will be able to combine all access list attributes into a single TypeList which will give me a list of all Types.
+* something like this
+* template<typename Arg, typename ...Args2>
+* struct TypeList : TypeList<Arg, Args2...>
+* {};
+*/
 
 template<typename AccessList>
 class View
 {
 private:
+    using AL = AccessList;
+
     template<typename... ViewComponents>
     constexpr static auto init(TypeList<ViewComponents...>, entt::registry& reg)
     {
@@ -118,11 +130,17 @@ private:
     }
 
     using ViewType =
-        decltype(init(AccessList::Get::Type(), std::declval<entt::registry&>()) | init(AccessList::Update::Type(), std::declval<entt::registry&>()));
+        decltype(init(
+            AL::template All<AL>(),
+            std::declval<entt::registry&>()
+        ));
 
 public:
     constexpr View(entt::registry& reg)
-        : m_view(init(AccessList::Get::Type(), reg) | init(AccessList::Update::Type(), reg))
+        : m_view(init(
+              AL::template All<AL>(),
+              reg
+          ))
     {
     }
 
@@ -160,10 +178,33 @@ public:
     virtual ~ISystem() = default;
 };
 
+struct BaseAccessList
+{
+    using Get = Components<>;
+    using Update = Components<>;
+    using Add = Components<>;
+    using Remove = Components<>;
+
+    /*template<typename AL>
+    constexpr static auto All()
+    {
+        return GetCombined(AL::Get(), AL::Update(), AL::Add(), AL::Remove());
+    }*/
+
+    template<typename... GetArgs, typename... UpdateArgs, typename... AddArgs, typename... RemoveArgs>
+    constexpr static auto GetCombined(TypeList<GetArgs...>, TypeList<UpdateArgs...>, TypeList<AddArgs...>, TypeList<RemoveArgs...>)
+    {
+        return TypeList<GetArgs..., UpdateArgs..., AddArgs..., RemoveArgs...>{};
+    }
+
+    template<typename AL>
+    using All = decltype(GetCombined(AL::Get(), AL::Update(), AL::Add(), AL::Remove()));
+};
+
 class MySystem : public ISystem
 {
 public:
-    struct AccessList
+    struct AccessList : public BaseAccessList
     {
         using Get = Components<ComponentA>;
         using Update = Components<ComponentB>;
@@ -354,7 +395,7 @@ public:
                 scheduler.Abort();
                 break;
             }
-            
+
             scheduler.Update();
         }
     }
