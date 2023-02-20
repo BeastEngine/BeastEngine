@@ -21,7 +21,7 @@ set(
     "Windows/IWindowFactory.h"
     "EntryPoint.h"
     "Math/Types.h"
-  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h")
+  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h" "Ecs/World.h")
 
 set(
     BEAST_SOURCES
@@ -33,7 +33,7 @@ set(
     "Windows/Win32/Win32Window.h"
     "Windows/WindowFactory.cpp"
     "Windows/WindowFactory.h"
-)
+ "Ecs/World.cpp")
 
 if(WIN32)
     list(APPEND BEAST_SOURCES "beastengine.dll.manifest")

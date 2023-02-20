@@ -6,7 +6,7 @@ set(
     "Windows/Win32/Win32MouseEventsTest.h"
     "Windows/Win32/Win32TestSetup.h"
     "Windows/Win32/Win32WindowTest.h"
-)
+ "Ecs/WorldTest.h")
 
 set(
     BE_SRC_LIST
@@ -16,6 +16,7 @@ set(
     "Windows/Win32/Win32MouseEventsTest.cpp"
     "Windows/Win32/Win32WindowTest.cpp"
     "main.cpp"
+    "Ecs/WorldTest.cpp"
 )
 
 add_executable(BeastCoreIntegration "${BE_SRC_LIST}" "${BE_HEADERS_LIST}")

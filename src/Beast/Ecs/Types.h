@@ -1,5 +1,6 @@
 #pragma once
 #include <entt/entity/fwd.hpp>
+#include <entt/entity/entity.hpp>
 
 #include <type_traits>
 
@@ -7,6 +8,8 @@ namespace be
 {
     using Entity = entt::entity;
     using Registry = entt::registry;
+
+    inline constexpr Entity NULL_ENTITY = entt::null;
 
     template<typename... Args>
     struct TypeList

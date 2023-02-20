@@ -2,6 +2,7 @@
 #include <Beast/Ecs/Types.h>
 
 #include <entt/entity/registry.hpp>
+
 #include <iostream>
 #include <typeinfo>
 
@@ -11,6 +12,8 @@ namespace be
     class View
     {
     private:
+        using AL = AccessList;
+
         using Get = AL::Get;
         using Update = AL::Update;
         using Add = AL::Add;
@@ -19,7 +22,7 @@ namespace be
         using All = JoinComponentsT<Get, Update, Add, Remove>;
 
         template<typename... ViewComponents>
-        constexpr static auto init(Components<ViewComponents...>, Registy& reg)
+        constexpr static auto init(Components<ViewComponents...>, Registry& reg)
         {
             return reg.view<ViewComponents...>();
         }
