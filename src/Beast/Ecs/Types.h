@@ -23,9 +23,22 @@ namespace be
         };
     };
 
-    template<typename... Args1, typename... Args2, typename... Args3, typename... Args4>
-    constexpr static auto JoinTypes(Components<Args1...>, Components<Args2...>, Components<Args3...>, Components<Args4...>)
+    template<typename... T>
+    struct JoinComponents;
+
+    template<typename... A, typename... B>
+    struct JoinComponents<Components<A...>, Components<B...>>
     {
-        return Components<Args1..., Args2..., Args3..., Args4...>{};
-    }
-}
+        using type = Components<A..., B...>;
+    };
+
+    template<typename... A, typename... B, typename... C>
+    struct JoinComponents<Components<A...>, Components<B...>, C...>
+    {
+        using type =
+            typename JoinComponents<typename JoinComponents<Components<A...>, Components<B...>>::type, C...>::type;
+    };
+
+    template<typename... T>
+    using JoinComponentsT = typename JoinComponents<T...>::type;
+} // namespace be

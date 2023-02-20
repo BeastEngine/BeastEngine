@@ -14,6 +14,13 @@ namespace be
         using AL = AccessList;
         using Reg = Registry&;
 
+        using Get = AL::Get;
+        using Update = AL::Update;
+        using Add = AL::Add;
+        using Remove = AL::Remove;
+
+        using All = JoinComponentsT<Get, Update, Add, Remove>;
+
         template<typename... ViewComponents>
         constexpr static auto init(Components<ViewComponents...>, Reg reg)
         {
@@ -22,7 +29,7 @@ namespace be
 
         using ViewType =
             decltype(init(
-                AL::template All<AL>(),
+                All(),
                 std::declval<Reg>()
             ));
 
@@ -34,7 +41,7 @@ namespace be
 
         constexpr View(Reg reg)
             : m_view(init(
-                  AL::template All<AL>(),
+                  All(),
                   reg
               ))
         {
@@ -51,14 +58,14 @@ namespace be
         }
 
         template<typename Component>
-        constexpr const Component& Get(be::Entity ent) const
+        constexpr const Component& GetComponent(be::Entity ent) const
         {
             static_assert(AccessList::Get::Contains<Component>::value);
             return m_view.get<const Component>(ent);
         }
 
         template<typename Component>
-        constexpr Component& Update(be::Entity ent) const
+        constexpr Component& UpdateComponent(be::Entity ent) const
         {
             static_assert(AccessList::Update::Contains<Component>::value);
             return m_view.get<Component>(ent);

@@ -63,8 +63,8 @@ public:
     {
         for (auto ent : view)
         {
-            spdlog::info("Component {} for entity {} = {}", typeid(ComponentA).name(), static_cast<be::uint32>(ent), view.Get<ComponentA>(ent).data);
-            spdlog::info("Component {} for entity {} = {}", typeid(ComponentB).name(), static_cast<be::uint32>(ent), ++view.Update<ComponentB>(ent).data);
+            spdlog::info("Component {} for entity {} = {}", typeid(ComponentA).name(), static_cast<be::uint32>(ent), view.GetComponent<ComponentA>(ent).data);
+            spdlog::info("Component {} for entity {} = {}", typeid(ComponentB).name(), static_cast<be::uint32>(ent), ++view.UpdateComponent<ComponentB>(ent).data);
             //std::cout << comp.data++ << "\n";
         }
         /*std::cout << view.Get<ComponentA>() << "\n";
