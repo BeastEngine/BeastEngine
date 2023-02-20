@@ -72,7 +72,7 @@ public:
     }
 };
 
-class SystemRegister
+class SystemsManager
 {
 public:
     template<typename System>
@@ -95,7 +95,7 @@ private:
 class Scheduler
 {
 public:
-    Scheduler(SystemRegister* reg, entt::registry& entreg)
+    Scheduler(SystemsManager* reg, entt::registry& entreg)
         : m_sysReg(reg), m_entreg(entreg)
     {
     }
@@ -129,7 +129,7 @@ public:
     }
 
 private:
-    SystemRegister* m_sysReg;
+    SystemsManager* m_sysReg;
     entt::registry& m_entreg;
     //std::vector<std::function<void(entt::registry&)>> m_tasks;
     entt::scheduler<be::uint32> m_scheduler;
@@ -231,7 +231,7 @@ public:
         reg.emplace_or_replace<ComponentA>(ent);
         reg.emplace_or_replace<ComponentB>(ent);
 
-        SystemRegister sysRegister;
+        SystemsManager sysRegister;
         sysRegister.Add<MySystem>();
 
         Scheduler scheduler(&sysRegister, reg);

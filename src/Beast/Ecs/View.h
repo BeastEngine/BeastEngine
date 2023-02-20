@@ -11,9 +11,6 @@ namespace be
     class View
     {
     private:
-        using AL = AccessList;
-        using Reg = Registry&;
-
         using Get = AL::Get;
         using Update = AL::Update;
         using Add = AL::Add;
@@ -22,7 +19,7 @@ namespace be
         using All = JoinComponentsT<Get, Update, Add, Remove>;
 
         template<typename... ViewComponents>
-        constexpr static auto init(Components<ViewComponents...>, Reg reg)
+        constexpr static auto init(Components<ViewComponents...>, Registy& reg)
         {
             return reg.view<ViewComponents...>();
         }
@@ -30,7 +27,7 @@ namespace be
         using ViewType =
             decltype(init(
                 All(),
-                std::declval<Reg>()
+                std::declval<Registry&>()
             ));
 
     public:
@@ -39,7 +36,7 @@ namespace be
         {
         }*/
 
-        constexpr View(Reg reg)
+        constexpr View(Registry& reg)
             : m_view(init(
                   All(),
                   reg
