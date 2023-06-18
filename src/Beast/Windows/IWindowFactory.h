@@ -14,7 +14,7 @@ namespace be
     class IWindowFactory
     {
     public:
-        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IWindowFactory);
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IWindowFactory);
         IWindowFactory() = default;
         virtual ~IWindowFactory() = default;
 

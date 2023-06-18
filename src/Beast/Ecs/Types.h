@@ -1,7 +1,7 @@
 #pragma once
-#include <entt/entity/fwd.hpp>
-#include <entt/entity/entity.hpp>
+#include <entt/entt.hpp>
 
+#include <tuple>
 #include <type_traits>
 
 namespace be
@@ -11,37 +11,17 @@ namespace be
 
     inline constexpr Entity NULL_ENTITY = entt::null;
 
-    template<typename... Args>
-    struct TypeList
+    constexpr auto ToIntegral(Entity entity)
     {
-    };
+        return entt::to_integral(entity);
+    }
 
     template<typename... ComponentTypes>
-    struct Components : public TypeList<ComponentTypes...>
-    {
-        template<typename Component>
-        struct Contains
-        {
-            static constexpr auto value = (std::is_same_v<Component, ComponentTypes> || ...);
-        };
-    };
+    using Components = entt::type_list<ComponentTypes...>;
+
+    template<typename Components, typename Component>
+    inline constexpr bool ComponentsHave = entt::type_list_contains_v<Components, Component>;
 
     template<typename... T>
-    struct JoinComponents;
-
-    template<typename... A, typename... B>
-    struct JoinComponents<Components<A...>, Components<B...>>
-    {
-        using type = Components<A..., B...>;
-    };
-
-    template<typename... A, typename... B, typename... C>
-    struct JoinComponents<Components<A...>, Components<B...>, C...>
-    {
-        using type =
-            typename JoinComponents<typename JoinComponents<Components<A...>, Components<B...>>::type, C...>::type;
-    };
-
-    template<typename... T>
-    using JoinComponentsT = typename JoinComponents<T...>::type;
+    using JoinComponentsT = typename entt::type_list_unique_t<typename entt::type_list_cat_t<T...>>;
 } // namespace be

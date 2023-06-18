@@ -78,7 +78,7 @@ namespace be
     class IWindow
     {
     public:
-        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IWindow);
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IWindow);
         IWindow() = default;
         virtual ~IWindow() = default;
 

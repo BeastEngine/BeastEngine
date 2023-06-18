@@ -12,7 +12,7 @@ namespace be::internals
         friend class BeastEngine;
 
     public:
-        CT_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);
 
         template<typename... Args>
         static constexpr void LogInfo(fmt::format_string<Args...> format, Args&&... args) noexcept

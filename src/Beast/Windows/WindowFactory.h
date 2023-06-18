@@ -15,7 +15,7 @@ namespace be::internals
         friend class BeastEngine;
 
     public:
-        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(WindowFactory)
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(WindowFactory)
 
         WindowFactory() = default;
         ~WindowFactory() = default;

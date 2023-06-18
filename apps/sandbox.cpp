@@ -104,11 +104,11 @@ public:
     void Attach()
     {
         auto* instance = m_sysReg->Get<System>();
-        auto task = [system = instance](be::uint32, void* data, auto, auto) {
-            entt::registry* reg = reinterpret_cast<entt::registry*>(data);
-            // m_world->CreateView<System::AccessList>(); It should look like this instead
-            be::View<System::AccessList> view(*reg);
-            system->Run(view);
+        auto task = [system = instance](be::uint32, void*, auto, auto) {
+            //entt::registry* reg = reinterpret_cast<entt::registry*>(data);
+            //// m_world->CreateView<System::AccessList>(); It should look like this instead
+            //be::View<System::AccessList> view(*reg);
+            //system->Run(view);
         };
         m_scheduler.attach(std::move(task));
         //m_tasks.push_back(std::move(task));

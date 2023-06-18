@@ -12,7 +12,7 @@ namespace be
     class ConsoleLogger final
     {
     public:
-        CT_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(ConsoleLogger);
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(ConsoleLogger);
 
         /**
          * @brief Creates Logger instance with appropriate console logger implementation.
@@ -31,7 +31,7 @@ namespace be
     class FileLogger final
     {
     public:
-        CT_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(FileLogger);
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(FileLogger);
 
         /**
          * @brief Creates Logger instance with appropriate file logger implementation.

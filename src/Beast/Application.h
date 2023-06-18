@@ -126,7 +126,7 @@ namespace be
     class AApplication
     {
     public:
-        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(AApplication)
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(AApplication)
 
         /**
          * @brief Creates instance of the AApplication class initializing engine instance with passed EngineConfig.

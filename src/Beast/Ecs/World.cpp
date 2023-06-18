@@ -2,13 +2,13 @@
 
 namespace be
 {
-    Entity World::CreateEntity() const
+    Entity World::CreateEntity()
     {
-        return NULL_ENTITY;
+        return m_registry.create();
     }
 
-    bool World::IsValid(Entity) const
+    bool World::IsValid(Entity entity) const
     {
-        return false;
+        return m_registry.valid(entity);
     }
 }

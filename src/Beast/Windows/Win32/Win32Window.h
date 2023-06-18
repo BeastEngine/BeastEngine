@@ -19,7 +19,7 @@ namespace be::internals
     class Win32Window final : public AWindow
     {
     public:
-        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(Win32Window);
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(Win32Window);
 
         /**
          * @brief Creates WinAPI's window using given descriptor.

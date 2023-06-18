@@ -1,5 +1,6 @@
 #pragma once
 #include <Beast/Ecs/Types.h>
+#include <Beast/Common/Helpers.h>
 
 #include <entt/entity/registry.hpp>
 
@@ -9,8 +10,10 @@
 namespace be
 {
     template<typename AccessList>
-    class View
+    class View final
     {
+        friend class World;
+
     private:
         using AL = AccessList;
 
@@ -22,31 +25,18 @@ namespace be
         using All = JoinComponentsT<Get, Update, Add, Remove>;
 
         template<typename... ViewComponents>
-        constexpr static auto init(Components<ViewComponents...>, Registry& reg)
+        constexpr static auto Init(Components<ViewComponents...>, Registry& reg)
         {
             return reg.view<ViewComponents...>();
         }
 
         using ViewType =
-            decltype(init(
+            decltype(Init(
                 All(),
                 std::declval<Registry&>()
             ));
 
     public:
-        /*constexpr View(ViewType view)
-            : m_view(view)
-        {
-        }*/
-
-        constexpr View(Registry& reg)
-            : m_view(init(
-                  All(),
-                  reg
-              ))
-        {
-        }
-
         constexpr auto begin() const
         {
             return m_view.begin();
@@ -58,20 +48,49 @@ namespace be
         }
 
         template<typename Component>
-        constexpr const Component& GetComponent(be::Entity ent) const
+        constexpr const Component& GetComponent(be::Entity entity) const
         {
-            static_assert(AccessList::Get::Contains<Component>::value);
-            return m_view.get<const Component>(ent);
+            static_assert(ComponentsHave<AccessList::Get, Component>);
+            return m_view.get<const Component>(entity);
         }
 
         template<typename Component>
-        constexpr Component& UpdateComponent(be::Entity ent) const
+        constexpr Component& UpdateComponent(be::Entity entity) const
         {
-            static_assert(AccessList::Update::Contains<Component>::value);
-            return m_view.get<Component>(ent);
+            static_assert(ComponentsHave<AccessList::Update, Component>);
+            return m_view.get<Component>(entity);
+        }
+
+        template<typename Component>
+        constexpr void AddComponent(be::Entity entity, Component&& component) const
+        {
+            static_assert(ComponentsHave<AccessList::Add, Component>);
+            m_registry.emplace<Component>(entity, std::move(component));
+        }
+
+        template<typename Component>
+        constexpr void RemoveComponent(be::Entity entity) const
+        {
+            static_assert(ComponentsHave<AccessList::Remove, Component>);
+            m_registry.remove<Component>(entity);
+        }
+
+        template<typename Component>
+        constexpr bool HasComponent(be::Entity entity) const
+        {
+            return m_registry.try_get<Component>(entity) != nullptr;
         }
 
     private:
+        constexpr explicit View(ViewType view, Registry& registry)
+            : m_view(view), m_registry(registry)
+        {
+        }
+
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(View<AccessList>);
+
+    private:
         ViewType m_view;
+        Registry& m_registry;
     };
 } // namespace be
