@@ -40,9 +40,10 @@ namespace be::tests::unit
         World world;
         SystemsScheduler sut(world);
         auto group = sut.CreateGroup();
-
         group.AttachSystem<MySystem1>(wasCalled);
-        sut.Prepare({group});
+
+        std::vector<SystemsScheduler::Group> groups{group};
+        sut.Prepare(groups);
         sut.Update();
 
         ASSERT_TRUE(wasCalled);

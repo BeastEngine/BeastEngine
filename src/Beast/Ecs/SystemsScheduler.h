@@ -8,38 +8,21 @@
 
 #include <typeindex>
 #include <initializer_list>
+#include <span>
 #include <vector>
 
 namespace be
-{
-    class Task : public entt::process<Task, uint32>
-    {
-    public:
-        using Callback = std::function<void(World&)>;
-
-    public:
-        Task(Callback callback)
-            : m_callback(std::move(callback))
-        {}
-
-        void update(delta_type, void* data)
-        {
-            auto* world = reinterpret_cast<World*>(data);
-            m_callback(*world);
-        }
-
-    private:
-        Callback m_callback;
-    };
-
+{    
     class SystemsScheduler final
     {
+        using TaskRunner = entt::scheduler<uint32>;
         using SystemsRegistry = std::unordered_map<std::type_index, Unique<ISystem>>;
 
     public:
         class Group
         {
             friend class SystemsScheduler;
+            using PrepareSystemFunc = std::function<void(Group&, TaskRunner&)>;
 
         public:
             Group(SystemsRegistry& systemsRegistry)
@@ -50,36 +33,45 @@ namespace be
             void AttachSystem(Args&&... args)
             {
                 auto newSystem = MakeUnique<System>(std::forward<Args>(args)...);
-                auto* systemInstance = newSystem.get();
-
                 m_systemsRegistry[std::type_index(typeid(System))] = std::move(newSystem);
-                Task::Callback taskCallback = [system = systemInstance](World& world) {
-                    const auto view = world.CreateView<System::AccessList>();
-                    system->Run(view);
-                };
 
-                m_callback.push_back(std::move(taskCallback));
+                m_prepareFunctions.emplace_back(&PrepareSystem<System>);
             }
 
         private:
-            void Prepare(entt::scheduler<uint32>& runner) const
+            void Prepare(TaskRunner& runner)
             {
-                for (const auto& callback : m_callback)
+                for (const auto& task : m_prepareFunctions)
                 {
-                    runner.attach<Task>(callback);
+                    task(*this, runner);
                 }
+            }
+
+            template<ecs_system System>
+            static void PrepareSystem(Group& group, TaskRunner& runner)
+            {
+                Unique<ISystem>& baseSystem = group.m_systemsRegistry.at(std::type_index(typeid(System)));
+                auto* system = static_cast<System*>(baseSystem.get());
+
+                auto task = [system = system](uint32, void* data, auto, auto) {
+                    auto* world = reinterpret_cast<World*>(data);
+                    const auto view = world->CreateView<System::AccessList>();
+
+                    system->Run(view);
+                };
+                runner.attach(std::move(task));
             }
 
         private:
             SystemsRegistry& m_systemsRegistry;
-            std::vector<Task::Callback> m_callback;
+            std::vector<PrepareSystemFunc> m_prepareFunctions;
         };
 
     public:
         SystemsScheduler(World& world);
 
         Group CreateGroup();
-        void Prepare(std::initializer_list<Group> groups);
+        void Prepare(std::vector<Group>& groups);
         void Update();
 
     private:

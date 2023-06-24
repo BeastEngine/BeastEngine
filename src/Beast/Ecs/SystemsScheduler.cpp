@@ -12,10 +12,10 @@ namespace be
         return Group(m_systems);
     }
 
-    void SystemsScheduler::Prepare(std::initializer_list<Group> groups)
+    void SystemsScheduler::Prepare(std::vector<Group>& groups)
     {
         m_runners.reserve(groups.size());
-        for (const auto& group : groups)
+        for (auto& group : groups)
         {
             m_runners.emplace_back();
             group.Prepare(m_runners.back());
