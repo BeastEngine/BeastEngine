@@ -3,7 +3,7 @@
 
 namespace be
 {
-    struct AccessList
+    struct BaseAccessList
     {
         using Get = Components<>;
         using Update = Components<>;

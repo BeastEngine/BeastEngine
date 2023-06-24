@@ -17,7 +17,7 @@ namespace be::tests::integration
 
     TEST_F(ViewTest, IterationWillIncludeAllEntitiesFromGetAccessList)
     {
-        struct AL : AccessList
+        struct AL : BaseAccessList
         {
             using Get = Components<TestComponent1>;
         };
@@ -49,7 +49,7 @@ namespace be::tests::integration
 
     TEST_F(ViewTest, IterationWillIncludeConjuctionOfAllEntitiesFromGetAccessList)
     {
-        struct AL : AccessList
+        struct AL : BaseAccessList
         {
             using Get = Components<TestComponent1, TestComponent2>;
         };

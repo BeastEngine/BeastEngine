@@ -18,11 +18,13 @@ namespace be
             m_registry.emplace<Component>(entity, std::move(component));
         }
 
-        template<typename AL> requires std::derived_from<AL, be::AccessList>
+        template<typename AL> requires std::derived_from<AL, be::BaseAccessList>
         constexpr auto CreateView()
         {
-            using VType = View<AL>;
-            return VType(VType::Init(VType::All(), m_registry), m_registry);
+            using ViewType = View<AL>;
+            using ViewComponents = ViewType::All;
+
+            return ViewType(ViewType::Init(ViewComponents(), m_registry), m_registry);
         }
 
     private:

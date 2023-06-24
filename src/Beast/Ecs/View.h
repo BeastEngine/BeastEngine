@@ -9,13 +9,13 @@
 
 namespace be
 {
-    template<typename AccessList>
+    template<typename BaseAccessList>
     class View final
     {
         friend class World;
 
     private:
-        using AL = AccessList;
+        using AL = BaseAccessList;
 
         using Get = AL::Get;
         using Update = AL::Update;
@@ -50,28 +50,28 @@ namespace be
         template<typename Component>
         constexpr const Component& GetComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<AccessList::Get, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Get, Component>);
             return m_view.get<const Component>(entity);
         }
 
         template<typename Component>
         constexpr Component& UpdateComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<AccessList::Update, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Update, Component>);
             return m_view.get<Component>(entity);
         }
 
         template<typename Component>
         constexpr void AddComponent(be::Entity entity, Component&& component) const
         {
-            static_assert(ComponentsHave<AccessList::Add, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Add, Component>);
             m_registry.emplace<Component>(entity, std::move(component));
         }
 
         template<typename Component>
         constexpr void RemoveComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<AccessList::Remove, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Remove, Component>);
             m_registry.remove<Component>(entity);
         }
 
@@ -87,7 +87,7 @@ namespace be
         {
         }
 
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(View<AccessList>);
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(View<BaseAccessList>);
 
     private:
         ViewType m_view;

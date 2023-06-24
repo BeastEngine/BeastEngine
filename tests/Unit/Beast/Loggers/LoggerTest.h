@@ -21,12 +21,12 @@ namespace be::tests::unit
     protected:
         auto CreateSinkMock()
         {
-            return CreateShared<SinkMock>();
+            return MakeShared<SinkMock>();
         }
 
         auto CreateSut(Shared<SinkMock> sink)
         {
-            return Logger(CreateShared<spdlog::logger>("loggerName", std::move(sink)));
+            return Logger(MakeShared<spdlog::logger>("loggerName", std::move(sink)));
         }
     };
 } // namespace be::tests::unit

@@ -44,7 +44,7 @@ namespace be
         m_windowFactory = std::move(config.windowFactory);
         if (m_windowFactory == nullptr)
         {
-            m_windowFactory = CreateUnique<internals::WindowFactory>();
+            m_windowFactory = MakeUnique<internals::WindowFactory>();
         }
     }
 } // namespace be

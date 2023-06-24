@@ -15,7 +15,7 @@ namespace be
         LoggerImpl logger = spdlog::get(loggerName);
         logger = (logger == nullptr ? spdlog::stdout_color_mt(loggerName) : logger);
 
-        return CreateShared<Logger>(logger);
+        return MakeShared<Logger>(logger);
     }
 
     Shared<Logger> FileLogger::Create(const std::string& name, const FilesystemPath& filePath)
@@ -24,7 +24,7 @@ namespace be
         LoggerImpl logger = spdlog::get(loggerName);
         logger = (logger == nullptr ? spdlog::basic_logger_mt(loggerName, filePath.string()) : logger);
 
-        return CreateShared<Logger>(std::move(logger));
+        return MakeShared<Logger>(std::move(logger));
     }
 
     void FileLogger::Destroy(const std::string& name)

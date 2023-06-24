@@ -6,7 +6,9 @@ set(
     "Windows/Win32/Win32MouseEventsTest.h"
     "Windows/Win32/Win32TestSetup.h"
     "Windows/Win32/Win32WindowTest.h"
- "Ecs/WorldTest.h" "Ecs/ViewTest.h")
+    "Ecs/WorldTest.h"
+    "Ecs/ViewTest.h"
+)
 
 set(
     BE_SRC_LIST
@@ -17,7 +19,8 @@ set(
     "Windows/Win32/Win32WindowTest.cpp"
     "main.cpp"
     "Ecs/WorldTest.cpp"
- "Ecs/ViewTest.cpp")
+    "Ecs/ViewTest.cpp"
+)
 
 add_executable(BeastCoreIntegration "${BE_SRC_LIST}" "${BE_HEADERS_LIST}")
 target_include_directories(BeastCoreIntegration PRIVATE "${BeastEngine_SOURCE_DIR}/tests")

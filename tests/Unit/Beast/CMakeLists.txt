@@ -12,7 +12,8 @@ set(
 	"DataStructuresTests.h"
 	"Loggers/ConsoleLoggerTest.h"
 	"Loggers/LoggerTest.h"
-)
+	
+ "Ecs/SystemsSchedulerTest.cpp")
 set(
 	BE_SRC_LIST
 	"BeastEngineTest.cpp"
@@ -22,7 +23,8 @@ set(
 	"Loggers/ConsoleLoggerTest.cpp"
 	"Loggers/LoggerTest.cpp"
 	"main.cpp"
-)
+	
+ "Ecs/SystemsSchedulerTest.h")
 
 add_executable(BeastCoreUnits "${BE_SRC_LIST}" "${BE_HEADERS_LIST}")
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")

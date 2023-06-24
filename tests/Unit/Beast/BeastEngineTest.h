@@ -23,12 +23,12 @@ namespace be::tests::unit
     protected:
         auto CreateWindowFactoryMock()
         {
-            return CreateUnique<WindowFactoryMock>();
+            return MakeUnique<WindowFactoryMock>();
         }
 
         auto CreateWindowMock()
         {
-            return CreateUnique<WindowMock>();
+            return MakeUnique<WindowMock>();
         }
 
     protected:

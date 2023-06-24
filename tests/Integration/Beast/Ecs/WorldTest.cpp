@@ -27,7 +27,7 @@ namespace be::tests::integration
             int data = 10;
         };
 
-        struct AL : AccessList
+        struct AL : BaseAccessList
         {
             using Get = Components<TestComponent>;
         };
@@ -50,7 +50,7 @@ namespace be::tests::integration
             int data = 10;
         };
 
-        struct AL : AccessList
+        struct AL : BaseAccessList
         {
             using Update = Components<TestComponent>;
         };
@@ -75,7 +75,7 @@ namespace be::tests::integration
             int data = 10;
         };
 
-        struct TestedAL : AccessList
+        struct TestedAL : BaseAccessList
         {
             using Add = Components<TestComponent>;
         };
@@ -88,7 +88,7 @@ namespace be::tests::integration
         const auto view = sut.CreateView<TestedAL>();
         view.AddComponent<TestComponent>(entity, {.data=expectedData});
 
-        struct AL : AccessList
+        struct AL : BaseAccessList
         {
             using Get = Components<TestComponent>;
         };
@@ -105,7 +105,7 @@ namespace be::tests::integration
             int data = 10;
         };
 
-        struct AL : AccessList
+        struct AL : BaseAccessList
         {
             using Remove = Components<TestComponent>;
         };

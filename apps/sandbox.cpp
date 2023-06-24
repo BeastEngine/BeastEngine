@@ -53,13 +53,13 @@ public:
 class MySystem : public ISystem
 {
 public:
-    struct AccessList : public be::AccessList
+    struct BaseAccessList : public be::BaseAccessList
     {
         using Get = be::Components<ComponentA>;
         using Update = be::Components<ComponentB>;
     };
 
-    void Run(const be::View<AccessList>& view)
+    void Run(const be::View<BaseAccessList>& view)
     {
         for (auto ent : view)
         {
@@ -78,7 +78,7 @@ public:
     template<typename System>
     void Add()
     {
-        m_systems[std::type_index(typeid(System))] = be::CreateUnique<System>();
+        m_systems[std::type_index(typeid(System))] = be::MakeUnique<System>();
     }
 
     template<typename System>
@@ -106,8 +106,8 @@ public:
         auto* instance = m_sysReg->Get<System>();
         auto task = [system = instance](be::uint32, void*, auto, auto) {
             //entt::registry* reg = reinterpret_cast<entt::registry*>(data);
-            //// m_world->CreateView<System::AccessList>(); It should look like this instead
-            //be::View<System::AccessList> view(*reg);
+            //// m_world->CreateView<System::BaseAccessList>(); It should look like this instead
+            //be::View<System::BaseAccessList> view(*reg);
             //system->Run(view);
         };
         m_scheduler.attach(std::move(task));
@@ -234,6 +234,15 @@ public:
         SystemsManager sysRegister;
         sysRegister.Add<MySystem>();
 
+        /*Scheduler scheduler(&sysRegister, reg);
+        auto& group = scheduler.CreateGroup();
+        group.Attach<MySystem>();
+
+        auto& group1 = scheduler.CreateGroup();
+        group1.Attach<MySecondSystem>();
+
+        scheduler.Prepare(group1, group2);*/
+
         Scheduler scheduler(&sysRegister, reg);
         scheduler.Attach<MySystem>();
 
@@ -279,5 +288,5 @@ be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHa
     be::WindowDescriptor windowDescriptor(std::move(windowHandleInstance));
     windowDescriptor.style = WindowStyle::WINDOW_DEFUALT;
 
-    return be::CreateUnique<BasicApplication>(std::move(config), windowDescriptor);
+    return be::MakeUnique<BasicApplication>(std::move(config), windowDescriptor);
 }

@@ -102,9 +102,9 @@ namespace be
 
     AApplication::AApplication(EngineConfig engineConfig, const WindowDescriptor& mainWindowDescriptor)
     {
-        m_engine = CreateUnique<BeastEngine>(std::move(engineConfig));
+        m_engine = MakeUnique<BeastEngine>(std::move(engineConfig));
         m_window = m_engine->CreateNewWindow(mainWindowDescriptor);
-        m_mouse = CreateUnique<Mouse>(*m_window);
-        m_keyboard = CreateUnique<Keyboard>(*m_window);
+        m_mouse = MakeUnique<Mouse>(*m_window);
+        m_keyboard = MakeUnique<Keyboard>(*m_window);
     }
 } // namespace be
