@@ -6,54 +6,59 @@
 
 #include <entt/process/scheduler.hpp>
 
+#include <typeinfo>
 #include <typeindex>
-#include <initializer_list>
-#include <span>
 #include <vector>
+#include <format>
 
 namespace be
-{    
+{
     class SystemsScheduler final
     {
         using TaskRunner = entt::scheduler<uint32>;
-        using SystemsRegistry = std::unordered_map<std::type_index, Unique<ISystem>>;
+        using SystemsRegistry = std::unordered_set<std::type_index>;
 
     public:
         class Group
         {
             friend class SystemsScheduler;
-            using PrepareSystemFunc = std::function<void(Group&, TaskRunner&)>;
+            using PrepareSystemFunc = std::function<void(TaskRunner&)>;
 
         public:
+            template<ecs_system System, typename... Args>
+            void AttachSystem(Args&&... args)
+            {
+                const auto& id = typeid(System);
+                if (m_systemsRegistry.contains(id))
+                {
+                    throw std::runtime_error(std::format("'{}' system is already attached!", id.name()));
+                }
+
+                m_systemsRegistry.insert(id);
+                PrepareSystemFunc prepareFunction = [this, ... args = std::forward<Args>(args)](TaskRunner& runner) mutable {
+                    PrepareSystem(MakeUnique<System>(args...), runner);
+                };
+
+                m_prepareFunctions.push_back(std::move(prepareFunction));
+            }
+
+        private:
             Group(SystemsRegistry& systemsRegistry)
                 : m_systemsRegistry(systemsRegistry)
             {}
 
-            template<ecs_system System, typename... Args>
-            void AttachSystem(Args&&... args)
-            {
-                auto newSystem = MakeUnique<System>(std::forward<Args>(args)...);
-                m_systemsRegistry[std::type_index(typeid(System))] = std::move(newSystem);
-
-                m_prepareFunctions.emplace_back(&PrepareSystem<System>);
-            }
-
-        private:
             void Prepare(TaskRunner& runner)
             {
                 for (const auto& task : m_prepareFunctions)
                 {
-                    task(*this, runner);
+                    task(runner);
                 }
             }
 
             template<ecs_system System>
-            static void PrepareSystem(Group& group, TaskRunner& runner)
+            static void PrepareSystem(Unique<System> system, TaskRunner& runner)
             {
-                Unique<ISystem>& baseSystem = group.m_systemsRegistry.at(std::type_index(typeid(System)));
-                auto* system = static_cast<System*>(baseSystem.get());
-
-                auto task = [system = system](uint32, void* data, auto, auto) {
+                auto task = [system = std::move(system)](uint32, void* data, auto, auto) {
                     auto* world = reinterpret_cast<World*>(data);
                     const auto view = world->CreateView<System::AccessList>();
 
@@ -78,5 +83,6 @@ namespace be
         World& m_world;
         SystemsRegistry m_systems;
         std::vector<entt::scheduler<uint32>> m_runners;
+        bool m_isLocked = false;
     };
 } // namespace be

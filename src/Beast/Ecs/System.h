@@ -17,5 +17,7 @@ namespace be
     };
 
     template<typename T>
-    concept ecs_system = std::is_base_of<ISystem, T>::value;
+    concept ecs_system = requires {
+        std::is_same<typename T::AccessList, BaseAccessList>::value;
+    };
 } // namespace be
