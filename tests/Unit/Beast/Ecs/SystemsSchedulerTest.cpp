@@ -20,16 +20,6 @@ namespace be::tests::unit
         };
 
     public:
-#ifndef MY_SYSTEM
-    #define MY_SYSTEM(system)    \
-    public:                      \
-        system(bool& wasCalled)  \
-            : MySystem(wasCalled) \
-        {}                       \
-                                 \
-    private:
-#endif
-
         MySystem(bool& wasCalled)
             : m_wasCalled(wasCalled)
         {}
@@ -43,20 +33,20 @@ namespace be::tests::unit
         bool& m_wasCalled;
     };
 
-    class MySystem1 final : public MySystem
-    {
-        MY_SYSTEM(MySystem1)
-    };
+#ifndef MY_SYSTEM
+    #define MY_SYSTEM(system_class_name)                \
+        class system_class_name final : public MySystem \
+        {                                               \
+        public:                                         \
+            system_class_name(bool& wasCalled)          \
+                : MySystem(wasCalled)                   \
+            {}                                          \
+        }
+#endif
 
-    class MySystem2 final : public MySystem
-    {
-        MY_SYSTEM(MySystem2)
-    };
-
-    class MySystem3 final : public MySystem
-    {
-        MY_SYSTEM(MySystem3)
-    };
+    MY_SYSTEM(MySystem1);
+    MY_SYSTEM(MySystem2);
+    MY_SYSTEM(MySystem3);
 
     TEST_F(SystemsSchedulerTest, UpdateWillRunOneSystemInOneGroup)
     {

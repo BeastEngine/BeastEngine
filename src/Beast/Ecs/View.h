@@ -27,6 +27,9 @@ namespace be
         template<typename... ViewComponents>
         constexpr static auto Init(Components<ViewComponents...>, Registry& reg)
         {
+            // TODO: We should be getting entities only from the Get, Update and Remove
+            // The Add should be excluded from the View
+
             return reg.view<ViewComponents...>();
         }
 

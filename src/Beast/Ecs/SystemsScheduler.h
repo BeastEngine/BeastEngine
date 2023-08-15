@@ -1,6 +1,7 @@
 #pragma once
-#include <Beast/Ecs/System.h>
+#include <Beast/Ecs/Types.h>
 #include <Beast/Ecs/World.h>
+#include <Beast/Ecs/View.h>
 
 #include <Beast/Common/Types.h>
 
@@ -13,6 +14,11 @@
 
 namespace be
 {
+    template<typename T>
+    concept ecs_system = requires {
+        std::is_same<typename T::AccessList, be::BaseAccessList>::value;
+    };
+
     class SystemsScheduler final
     {
         using TaskRunner = entt::scheduler<uint32>;
@@ -47,11 +53,11 @@ namespace be
                 : m_systemsRegistry(systemsRegistry)
             {}
 
-            void Prepare(TaskRunner& runner)
+            void Prepare(TaskRunner& runner) const
             {
-                for (const auto& task : m_prepareFunctions)
+                for (const auto& prepareTask : m_prepareFunctions)
                 {
-                    task(runner);
+                    prepareTask(runner);
                 }
             }
 
@@ -76,13 +82,13 @@ namespace be
         SystemsScheduler(World& world);
 
         Group CreateGroup();
-        void Prepare(std::vector<Group>& groups);
+        void Prepare(const std::vector<Group>& groups);
         void Update();
 
     private:
         World& m_world;
         SystemsRegistry m_systems;
-        std::vector<entt::scheduler<uint32>> m_runners;
+        std::vector<TaskRunner> m_runners;
         bool m_isLocked = false;
     };
 } // namespace be

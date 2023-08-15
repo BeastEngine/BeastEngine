@@ -5,6 +5,7 @@
 #include <Beast/Ecs/Types.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
+#include <Beast/Ecs/SystemsScheduler.h>
 
 #include <entt/entt.hpp>
 
@@ -44,22 +45,34 @@ struct ComponentB
     unsigned int data = 0;
 };
 
-class ISystem
+class Attacher
 {
 public:
-    virtual ~ISystem() = default;
+    struct AccessList : be::BaseAccessList
+    {
+        using Add = be::Components<ComponentA, ComponentB>;
+    };
+
+    void Run(const be::View<AccessList>& view)
+    {
+        for (auto entity : view)
+        {
+            view.AddComponent<ComponentA>(entity, {.data = entt::to_integral(entity)});
+            view.AddComponent<ComponentB>(entity, {.data = entt::to_integral(entity)});
+        }
+    }
 };
 
-class MySystem : public ISystem
+class MySystem
 {
 public:
-    struct BaseAccessList : public be::BaseAccessList
+    struct AccessList : be::BaseAccessList
     {
         using Get = be::Components<ComponentA>;
         using Update = be::Components<ComponentB>;
     };
 
-    void Run(const be::View<BaseAccessList>& view)
+    void Run(const be::View<AccessList>& view)
     {
         for (auto ent : view)
         {
@@ -70,69 +83,6 @@ public:
         /*std::cout << view.Get<ComponentA>() << "\n";
         std::cout << view.Get<ComponentB>() << "\n";*/
     }
-};
-
-class SystemsManager
-{
-public:
-    template<typename System>
-    void Add()
-    {
-        m_systems[std::type_index(typeid(System))] = be::MakeUnique<System>();
-    }
-
-    template<typename System>
-    System* Get()
-    {
-        auto& system = m_systems.at(std::type_index(typeid(System)));
-        return static_cast<System*>(system.get());
-    }
-
-private:
-    std::unordered_map<std::type_index, be::Unique<ISystem>> m_systems;
-};
-
-class Scheduler
-{
-public:
-    Scheduler(SystemsManager* reg, entt::registry& entreg)
-        : m_sysReg(reg), m_entreg(entreg)
-    {
-    }
-
-    template<typename System>
-    void Attach()
-    {
-        auto* instance = m_sysReg->Get<System>();
-        auto task = [system = instance](be::uint32, void*, auto, auto) {
-            //entt::registry* reg = reinterpret_cast<entt::registry*>(data);
-            //// m_world->CreateView<System::BaseAccessList>(); It should look like this instead
-            //be::View<System::BaseAccessList> view(*reg);
-            //system->Run(view);
-        };
-        m_scheduler.attach(std::move(task));
-        //m_tasks.push_back(std::move(task));
-    }
-
-    void Update()
-    {
-        /*for (const auto& task : m_tasks)
-        {
-            task(m_entreg);
-        }*/
-        m_scheduler.update(1, reinterpret_cast<void*>(&m_entreg));
-    }
-
-    void Abort()
-    {
-        m_scheduler.abort(true);
-    }
-
-private:
-    SystemsManager* m_sysReg;
-    entt::registry& m_entreg;
-    //std::vector<std::function<void(entt::registry&)>> m_tasks;
-    entt::scheduler<be::uint32> m_scheduler;
 };
 
 class BasicApplication final : public be::AApplication
@@ -222,36 +172,22 @@ public:
             }
         }*/
 
-        entt::registry reg;
-        auto ent = reg.create();
-        reg.emplace_or_replace<ComponentA>(ent);
-        reg.emplace_or_replace<ComponentB>(ent);
+        be::World world;
+        be::SystemsScheduler scheduler(world);
+        auto group = scheduler.CreateGroup();
+        group.AttachSystem<MySystem>();
+        //group.AttachSystem<MySystem>(1);
 
-        ent = reg.create();
-        reg.emplace_or_replace<ComponentA>(ent);
-        reg.emplace_or_replace<ComponentB>(ent);
+        scheduler.Prepare({group});
 
-        SystemsManager sysRegister;
-        sysRegister.Add<MySystem>();
-
-        /*Scheduler scheduler(&sysRegister, reg);
-        auto& group = scheduler.CreateGroup();
-        group.Attach<MySystem>();
-
-        auto& group1 = scheduler.CreateGroup();
-        group1.Attach<MySecondSystem>();
-
-        scheduler.Prepare(group1, group2);*/
-
-        Scheduler scheduler(&sysRegister, reg);
-        scheduler.Attach<MySystem>();
+        [[maybe_unused]] const auto entity = world.CreateEntity();
 
         while (m_isRunning)
         {
             m_window->ProcessInput();
             if (m_keyboard->IsKeyPressed(be::KeyCode::Escape))
             {
-                scheduler.Abort();
+                //scheduler.Abort();
                 break;
             }
 

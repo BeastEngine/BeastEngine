@@ -12,7 +12,7 @@ namespace be
         return Group(m_systems);
     }
 
-    void SystemsScheduler::Prepare(std::vector<Group>& groups)
+    void SystemsScheduler::Prepare(const std::vector<Group>& groups)
     {
         if (m_isLocked)
         {
@@ -20,7 +20,7 @@ namespace be
         }
 
         m_runners.reserve(groups.size());
-        for (auto& group : groups)
+        for (const auto& group : groups)
         {
             m_runners.emplace_back();
             group.Prepare(m_runners.back());
