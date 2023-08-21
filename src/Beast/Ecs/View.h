@@ -22,22 +22,8 @@ namespace be
         using Add = AL::Add;
         using Remove = AL::Remove;
 
-        using All = JoinComponentsT<Get, Update, Add, Remove>;
-
-        template<typename... ViewComponents>
-        constexpr static auto Init(Components<ViewComponents...>, Registry& reg)
-        {
-            // TODO: We should be getting entities only from the Get, Update and Remove
-            // The Add should be excluded from the View
-
-            return reg.view<ViewComponents...>();
-        }
-
-        using ViewType =
-            decltype(Init(
-                All(),
-                std::declval<Registry&>()
-            ));
+        using Included = JoinComponentsT<Get, Update, Remove>;
+        using Excluded = JoinComponentsT<Add>;
 
     public:
         constexpr auto begin() const
@@ -85,15 +71,39 @@ namespace be
         }
 
     private:
-        constexpr explicit View(ViewType view, Registry& registry)
-            : m_view(view), m_registry(registry)
+        template<typename... IncludedComponents, typename... ExcludedComponents>
+        constexpr static auto Init(Components<IncludedComponents...>, Components<ExcludedComponents...>, Registry& reg)
+        {
+            // TODO: We should be getting entities only from the Get, Update and Remove
+            // The Add should be excluded from the View
+
+            if constexpr (sizeof...(IncludedComponents) == 0)
+            {
+                //return reg.view<entt::entity>(entt::exclude<ExcludedComponents...>);
+                return reg.view<entt::entity>();
+            }
+            else
+            {
+                return reg.view<IncludedComponents...>(entt::exclude<ExcludedComponents...>);
+            }
+        }
+
+        using ViewType =
+            decltype(Init(
+                Included(),
+                Excluded(),
+                std::declval<Registry&>()
+            ));
+
+        constexpr explicit View(Registry& registry)
+            : m_registry(registry), m_view(Init(Included(), Excluded(), m_registry))
         {
         }
 
         BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(View<BaseAccessList>);
 
     private:
-        ViewType m_view;
         Registry& m_registry;
+        ViewType m_view;
     };
 } // namespace be

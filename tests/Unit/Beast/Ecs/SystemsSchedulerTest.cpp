@@ -11,7 +11,7 @@ namespace be::tests::unit
         int value = 0;
     };
 
-    class MySystem
+    class TestSystem
     {
     public:
         struct AccessList : BaseAccessList
@@ -20,7 +20,7 @@ namespace be::tests::unit
         };
 
     public:
-        MySystem(bool& wasCalled)
+        TestSystem(bool& wasCalled)
             : m_wasCalled(wasCalled)
         {}
 
@@ -33,20 +33,20 @@ namespace be::tests::unit
         bool& m_wasCalled;
     };
 
-#ifndef MY_SYSTEM
-    #define MY_SYSTEM(system_class_name)                \
-        class system_class_name final : public MySystem \
+#ifndef TEST_SYSTEM
+    #define TEST_SYSTEM(system_class_name)                \
+        class system_class_name final : public TestSystem \
         {                                               \
         public:                                         \
             system_class_name(bool& wasCalled)          \
-                : MySystem(wasCalled)                   \
+                : TestSystem(wasCalled)                   \
             {}                                          \
         }
 #endif
 
-    MY_SYSTEM(MySystem1);
-    MY_SYSTEM(MySystem2);
-    MY_SYSTEM(MySystem3);
+    TEST_SYSTEM(TestSystem1);
+    TEST_SYSTEM(TestSystem2);
+    TEST_SYSTEM(TestSystem3);
 
     TEST_F(SystemsSchedulerTest, UpdateWillRunOneSystemInOneGroup)
     {
@@ -55,7 +55,7 @@ namespace be::tests::unit
         World world;
         SystemsScheduler sut(world);
         auto group = sut.CreateGroup();
-        group.AttachSystem<MySystem1>(std::ref(wasCalled));
+        group.AttachSystem<TestSystem1>(std::ref(wasCalled));
 
         std::vector<SystemsScheduler::Group> groups{group};
         sut.Prepare(groups);
@@ -73,9 +73,9 @@ namespace be::tests::unit
         World world;
         SystemsScheduler sut(world);
         auto group = sut.CreateGroup();
-        group.AttachSystem<MySystem1>(std::ref(wasCalled1));
-        group.AttachSystem<MySystem2>(std::ref(wasCalled2));
-        group.AttachSystem<MySystem3>(std::ref(wasCalled3));
+        group.AttachSystem<TestSystem1>(std::ref(wasCalled1));
+        group.AttachSystem<TestSystem2>(std::ref(wasCalled2));
+        group.AttachSystem<TestSystem3>(std::ref(wasCalled3));
 
         std::vector<SystemsScheduler::Group> groups{group};
         sut.Prepare(groups);
@@ -91,7 +91,7 @@ namespace be::tests::unit
         World world;
         SystemsScheduler sut(world);
         auto group = sut.CreateGroup();
-        group.AttachSystem<MySystem1>(true);
+        group.AttachSystem<TestSystem1>(true);
 
         std::vector<SystemsScheduler::Group> groups{group};
         sut.Prepare(groups);
@@ -105,8 +105,8 @@ namespace be::tests::unit
         SystemsScheduler scheduler(world);
 
         auto sut = scheduler.CreateGroup();
-        sut.AttachSystem<MySystem1>(true);
-        ASSERT_THROW(sut.AttachSystem<MySystem1>(true), std::runtime_error);
+        sut.AttachSystem<TestSystem1>(true);
+        ASSERT_THROW(sut.AttachSystem<TestSystem1>(true), std::runtime_error);
     }
 
     TEST_F(SystemsSchedulerGroupTest, AttachSystemWillThrowIfSystemAlreadyAttachedToDifferentGroup)
@@ -115,9 +115,9 @@ namespace be::tests::unit
         SystemsScheduler scheduler(world);
 
         auto group1 = scheduler.CreateGroup();
-        group1.AttachSystem<MySystem1>(true);
+        group1.AttachSystem<TestSystem1>(true);
 
         auto group2 = scheduler.CreateGroup();
-        ASSERT_THROW(group2.AttachSystem<MySystem1>(true), std::runtime_error);
+        ASSERT_THROW(group2.AttachSystem<TestSystem1>(true), std::runtime_error);
     }
 } // namespace be::tests::unit

@@ -7,7 +7,7 @@ set(
     "Windows/Win32/Win32TestSetup.h"
     "Windows/Win32/Win32WindowTest.h"
     "Ecs/WorldTest.h"
-    "Ecs/ViewTest.h"
+    
 )
 
 set(

@@ -21,10 +21,7 @@ namespace be
         template<typename AL> requires std::derived_from<AL, be::BaseAccessList>
         constexpr auto CreateView()
         {
-            using ViewType = View<AL>;
-            using ViewComponents = ViewType::All;
-
-            return ViewType(ViewType::Init(ViewComponents(), m_registry), m_registry);
+            return View<AL>(m_registry);
         }
 
     private:
