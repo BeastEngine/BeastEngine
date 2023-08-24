@@ -39,7 +39,7 @@ namespace be
         template<typename Component>
         constexpr const Component& GetComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Get, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Get, Component> || ComponentsHave<BaseAccessList::Update, Component>);
             return m_view.get<const Component>(entity);
         }
 
@@ -74,13 +74,9 @@ namespace be
         template<typename... IncludedComponents, typename... ExcludedComponents>
         constexpr static auto Init(Components<IncludedComponents...>, Components<ExcludedComponents...>, Registry& reg)
         {
-            // TODO: We should be getting entities only from the Get, Update and Remove
-            // The Add should be excluded from the View
-
             if constexpr (sizeof...(IncludedComponents) == 0)
             {
-                //return reg.view<entt::entity>(entt::exclude<ExcludedComponents...>);
-                return reg.view<entt::entity>();
+                return reg.view<entt::entity>(entt::exclude<ExcludedComponents...>);
             }
             else
             {

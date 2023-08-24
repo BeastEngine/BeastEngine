@@ -21,7 +21,7 @@ namespace be
 
     class SystemsScheduler final
     {
-        using TaskRunner = entt::scheduler<uint32>;
+        using TaskRunner = entt::scheduler;
         using SystemsRegistry = std::unordered_set<std::type_index>;
 
     public:

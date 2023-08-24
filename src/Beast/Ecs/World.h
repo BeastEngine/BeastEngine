@@ -9,7 +9,7 @@ namespace be
     class World final
     {
     public:
-        [[nodiscard]] Entity CreateEntity();
+        Entity CreateEntity();
         [[nodiscard]] bool IsValid(Entity entity) const;
 
         template<typename Component>
@@ -19,7 +19,7 @@ namespace be
         }
 
         template<typename AL> requires std::derived_from<AL, be::BaseAccessList>
-        constexpr auto CreateView()
+        [[nodiscard]] constexpr auto CreateView()
         {
             return View<AL>(m_registry);
         }

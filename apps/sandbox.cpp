@@ -1,6 +1,7 @@
 #include <Beast/EntryPoint.h>
 #include <Beast/BeastEngine.h>
 #include <Beast/Loggers/LoggersFactories.h>
+#include <Beast/Common/Types.h>
 
 #include <Beast/Ecs/Types.h>
 #include <Beast/Ecs/AccessList.h>
@@ -14,6 +15,12 @@
 #include <unordered_map>
 #include <typeindex>
 #include <spdlog/spdlog.h>
+
+#include <shared_mutex>
+#include <mutex>
+#include <unordered_map>
+#include <typeinfo>
+#include <typeindex>
 
 /*
 * ECS DESIGN
@@ -35,6 +42,138 @@
 * That's my goal after all. I'm not creating my own ecs library, but rather create wrappers to hide it from my systems.
 */
 
+class AnyResource
+{
+public:
+    AnyResource() = default;
+    virtual ~AnyResource() = default;
+};
+
+template<typename TResource>
+class ResourceRelaxed : public AnyResource
+{
+public:
+    template<typename... Args>
+    ResourceRelaxed(Args&&... args)
+        : m_resource(std::forward<Args>(args)...)
+    {
+    }
+
+    TResource& Get()
+    {
+        return m_resource;
+    }
+
+    const TResource& Get() const
+    {
+        return m_resource;
+    }
+
+private:
+    TResource m_resource;
+};
+
+template<typename TResource>
+class ResourceProtected : public AnyResource
+{
+public:
+    ResourceProtected(TResource&& resource)
+        : m_resource(std::move(resource))
+    {
+    }
+
+    TResource& Get()
+    {
+        return GetImpl();
+    }
+
+    const TResource& Get() const
+    {
+        return GetImpl();
+    }
+
+private:
+    decltype(auto) GetImpl()
+    {
+        std::shared_lock lock(m_guard);
+        return m_resource;
+    }
+
+private:
+    TResource m_resource;
+    mutable std::shared_mutex m_guard;
+};
+
+namespace resource
+{
+    struct Relaxed
+    {
+        template<typename TResource>
+        using Resource = ResourceRelaxed<TResource>;
+    };
+
+    struct Protected
+    {
+        template<typename TResource>
+        using Resource = ResourceProtected<TResource>;
+    };
+
+    template<typename AccessType>
+    class ResourceManager
+    {
+        template<typename TResource>
+        using ResourceWrapper = typename AccessType::template Resource<TResource>;
+
+    public:
+        template<typename TResource, typename... Args>
+        void AddResource(Args&&... args)
+        {
+            using Wrapper = ResourceWrapper<TResource>;
+
+            const auto& typeId = typeid(TResource);
+            m_resources[typeId] = be::MakeUnique<Wrapper>(std::forward<Args>(args)...);
+        }
+
+        template<typename TResource>
+        const TResource& GetResource()
+        {
+            using Wrapper = ResourceWrapper<TResource>;
+
+            const auto& typeId = typeid(TResource);
+            auto& resource = m_resources[typeId];
+            if (!resource)
+            {
+                throw std::runtime_error("Resource not found");
+            }
+
+            auto* wrapper = static_cast<Wrapper*>(resource.get());
+            return wrapper->Get();
+        }
+
+        template<typename TResource>
+        TResource& Update()
+        {
+            using Wrapper = ResourceWrapper<TResource>;
+
+            const auto& typeId = typeid(TResource);
+            auto& resource = m_resources[typeId];
+            if (!resource)
+            {
+                throw std::runtime_error("Resource not found");
+            }
+
+            auto* wrapper = static_cast<Wrapper*>(resource.get());
+            return wrapper->Get();
+        }
+
+    private:
+        std::unordered_map<std::type_index, be::Unique<AnyResource>> m_resources;
+    };
+
+    using RelaxedManager = ResourceManager<Protected>;
+    using ProtectedManager = ResourceManager<Protected>;
+} // namespace resource
+
 struct ComponentA
 {
     unsigned int data = 0;
@@ -45,6 +184,11 @@ struct ComponentB
     unsigned int data = 0;
 };
 
+struct Input
+{
+    bool isKeyPressed = false;
+};
+
 class Attacher
 {
 public:
@@ -53,6 +197,10 @@ public:
         using Add = be::Components<ComponentA, ComponentB>;
     };
 
+    Attacher(be::Shared<resource::RelaxedManager> manager)
+        : m_resourceManager(std::move(manager))
+    {}
+
     void Run(const be::View<AccessList>& view)
     {
         for (auto entity : view)
@@ -60,10 +208,16 @@ public:
             view.AddComponent<ComponentA>(entity, {.data = entt::to_integral(entity)});
             view.AddComponent<ComponentB>(entity, {.data = entt::to_integral(entity)});
         }
+
+        auto& input = m_resourceManager->Update<Input>();
+        input.isKeyPressed = !input.isKeyPressed;
     }
+
+private:
+    be::Shared<resource::RelaxedManager> m_resourceManager;
 };
 
-class MySystem
+class Getter
 {
 public:
     struct AccessList : be::BaseAccessList
@@ -72,17 +226,30 @@ public:
         using Update = be::Components<ComponentB>;
     };
 
+    Getter(be::Shared<resource::RelaxedManager> manager)
+        : m_resourceManager(std::move(manager))
+    {}
+
     void Run(const be::View<AccessList>& view)
     {
+        /*m_resourceManager->Add<be::Input>(be::ResourceManager::Access::Relaxed, {});
+
+        const auto& input = m_resourceManager->Get<be::Input>();*/
+
         for (auto ent : view)
         {
             spdlog::info("Component {} for entity {} = {}", typeid(ComponentA).name(), static_cast<be::uint32>(ent), view.GetComponent<ComponentA>(ent).data);
             spdlog::info("Component {} for entity {} = {}", typeid(ComponentB).name(), static_cast<be::uint32>(ent), ++view.UpdateComponent<ComponentB>(ent).data);
             //std::cout << comp.data++ << "\n";
         }
+
+        spdlog::info("Is key pressed: {}", m_resourceManager->GetResource<Input>().isKeyPressed);
         /*std::cout << view.Get<ComponentA>() << "\n";
         std::cout << view.Get<ComponentB>() << "\n";*/
     }
+
+private:
+    be::Shared<resource::RelaxedManager> m_resourceManager;
 };
 
 class BasicApplication final : public be::AApplication
@@ -99,7 +266,22 @@ public:
     {
         GetEngine().PrintInfo();
 
-        /*auto previousCords = m_mouse->GetMousePosition();
+        auto resource_manager = be::MakeShared<resource::RelaxedManager>();
+        resource_manager->AddResource<Input>();
+
+        be::World world;
+        be::SystemsScheduler scheduler(world);
+        auto group1 = scheduler.CreateGroup();
+        group1.AttachSystem<Getter>(resource_manager);
+
+        auto group2 = scheduler.CreateGroup();
+        group2.AttachSystem<Attacher>(resource_manager);
+        //group.AttachSystem<Getter>(1);
+
+        scheduler.Prepare({group2, group1});
+        world.CreateEntity();
+
+        auto previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();
 
         while (m_isRunning)
@@ -152,7 +334,7 @@ public:
             }
 
             if (m_keyboard->IsKeyPressed(be::KeyCode::Right))
-            {   
+            {
                 m_logger->LogInfo("Right arrow pressed\n");
             }
 
@@ -170,33 +352,14 @@ public:
             {
                 break;
             }
-        }*/
-
-        be::World world;
-        be::SystemsScheduler scheduler(world);
-        auto group = scheduler.CreateGroup();
-        group.AttachSystem<MySystem>();
-        //group.AttachSystem<MySystem>(1);
-
-        scheduler.Prepare({group});
-
-        [[maybe_unused]] const auto entity = world.CreateEntity();
-
-        while (m_isRunning)
-        {
-            m_window->ProcessInput();
-            if (m_keyboard->IsKeyPressed(be::KeyCode::Escape))
-            {
-                //scheduler.Abort();
-                break;
-            }
 
             scheduler.Update();
         }
     }
 
 private:
-    be::WindowClosedEventHandler OnWindowClosed()
+    be::WindowClosedEventHandler
+        OnWindowClosed()
     {
         return [&]() {
             m_isRunning = false;

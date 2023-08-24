@@ -225,7 +225,7 @@ namespace be::tests::integration
 
     TEST_F(ViewTest, IterationWillExcludeEntitiesWithComponentFromAddAccessList)
     {
-        /*struct AL : BaseAccessList
+        struct AL : BaseAccessList
         {
             using Add = Components<TestComponent1>;
         };
@@ -250,12 +250,104 @@ namespace be::tests::integration
             ++actualEntitiesCount;
         }
 
-        ASSERT_EQ(expectedEntitiesCount, actualEntitiesCount);*/
-        entt::registry reg;
-        [[maybe_unused]] const auto e = reg.create();
-        reg.emplace<TestComponent1>(e);
-        [[maybe_unused]]auto& stor = reg.storage<entt::entity>();
-        stor.begin();
+        ASSERT_EQ(expectedEntitiesCount, actualEntitiesCount);
     }
-    // Should Update allow using GetComponent<>?
+
+    TEST_F(ViewTest, IterationWillExcludeEntitiesWithAnyOfTheComponentsFromAddAccessList)
+    {
+        struct AL : BaseAccessList
+        {
+            using Add = Components<TestComponent1, TestComponent2>;
+        };
+
+        std::size_t expectedEntitiesCount = 1;
+
+        World world;
+        const auto excludedEntity1 = world.CreateEntity();
+        world.AddComponent<TestComponent1>(excludedEntity1, {});
+
+        const auto excludedEntity2 = world.CreateEntity();
+        world.AddComponent<TestComponent2>(excludedEntity2, {});
+
+        const auto includedEntity = world.CreateEntity();
+        std::size_t actualEntitiesCount = 0;
+
+        const auto sut = world.CreateView<AL>();
+        for (const auto& entity : sut)
+        {
+            ASSERT_NE(excludedEntity1, entity);
+            ASSERT_NE(excludedEntity2, entity);
+
+            ASSERT_EQ(includedEntity, entity);
+            ASSERT_NO_THROW(sut.AddComponent<TestComponent1>(entity, {}));
+
+            ++actualEntitiesCount;
+        }
+
+        ASSERT_EQ(expectedEntitiesCount, actualEntitiesCount);
+    }
+
+    template<typename AL>
+    static constexpr void RunAddCombined()
+    {
+        std::size_t expectedEntitiesCount = 1;
+
+        World world;
+        const auto excludedEntity1 = world.CreateEntity();
+        world.AddComponent<TestComponent1>(excludedEntity1, {});
+
+        const auto excludedEntity2 = world.CreateEntity();
+
+        const auto includedEntity = world.CreateEntity();
+        world.AddComponent<TestComponent2>(includedEntity, {});
+
+        std::size_t actualEntitiesCount = 0;
+
+        const auto sut = world.CreateView<AL>();
+        for (const auto& entity : sut)
+        {
+            ASSERT_NE(excludedEntity1, entity);
+            ASSERT_NE(excludedEntity2, entity);
+
+            ASSERT_EQ(includedEntity, entity);
+            ASSERT_NO_THROW(sut.AddComponent<TestComponent1>(entity, {}));
+
+            ++actualEntitiesCount;
+        }
+
+        ASSERT_EQ(expectedEntitiesCount, actualEntitiesCount);
+    }
+
+    TEST_F(ViewTest, IterationWillCombineEntitiesForAddAndGetComponents)
+    {
+        struct AL : BaseAccessList
+        {
+            using Add = Components<TestComponent1>;
+            using Get = Components<TestComponent2>;
+        };
+
+        RunAddCombined<AL>();
+    }
+
+    TEST_F(ViewTest, IterationWillCombineEntitiesForAddAndUpdateComponents)
+    {
+        struct AL : BaseAccessList
+        {
+            using Add = Components<TestComponent1>;
+            using Update = Components<TestComponent2>;
+        };
+
+        RunAddCombined<AL>();
+    }
+
+    TEST_F(ViewTest, IterationWillCombineEntitiesForAddAndRemoveComponents)
+    {
+        struct AL : BaseAccessList
+        {
+            using Add = Components<TestComponent1>;
+            using Remove = Components<TestComponent2>;
+        };
+
+        RunAddCombined<AL>();
+    }
 }; // namespace be::tests::integration
