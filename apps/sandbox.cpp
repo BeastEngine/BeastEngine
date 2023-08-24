@@ -42,70 +42,97 @@
 * That's my goal after all. I'm not creating my own ecs library, but rather create wrappers to hide it from my systems.
 */
 
-class AnyResource
-{
-public:
-    AnyResource() = default;
-    virtual ~AnyResource() = default;
-};
-
-template<typename TResource>
-class ResourceRelaxed : public AnyResource
-{
-public:
-    template<typename... Args>
-    ResourceRelaxed(Args&&... args)
-        : m_resource(std::forward<Args>(args)...)
-    {
-    }
-
-    TResource& Get()
-    {
-        return m_resource;
-    }
-
-    const TResource& Get() const
-    {
-        return m_resource;
-    }
-
-private:
-    TResource m_resource;
-};
-
-template<typename TResource>
-class ResourceProtected : public AnyResource
-{
-public:
-    ResourceProtected(TResource&& resource)
-        : m_resource(std::move(resource))
-    {
-    }
-
-    TResource& Get()
-    {
-        return GetImpl();
-    }
-
-    const TResource& Get() const
-    {
-        return GetImpl();
-    }
-
-private:
-    decltype(auto) GetImpl()
-    {
-        std::shared_lock lock(m_guard);
-        return m_resource;
-    }
-
-private:
-    TResource m_resource;
-    mutable std::shared_mutex m_guard;
-};
+// The protected wrapper would have to lock and unlock in the constructor.
 
 namespace resource
 {
+    template<typename TResource>
+    class Wrapper
+    {
+    public:
+        explicit Wrapper(TResource& resource)
+            : m_resource(resource)
+        {
+        }
+        
+        auto operator->()
+        {
+            return &m_resource;
+        }
+
+    private:
+        TResource& m_resource;
+    };
+
+    template<typename TResource, typename TLock>
+    class WrapperProtected : public Wrapper<TResource>
+    {
+    public:
+        WrapperProtected(TResource& resource, std::shared_mutex& mutex)
+            : Wrapper<TResource>(resource), m_lock(mutex)
+        {
+        }
+
+    private:
+        TLock m_lock;
+    };
+
+    class AnyResource
+    {
+    public:
+        AnyResource() = default;
+        virtual ~AnyResource() = default;
+    };
+
+    template<typename TResource>
+    class ResourceProtected : public AnyResource
+    {
+    public:
+        template<typename... Args>
+        explicit ResourceProtected(Args&&... args)
+            : m_resource(std::forward<Args>(args)...)
+        {
+        }
+
+        auto Update()
+        {
+            return WrapperProtected<TResource, std::unique_lock<std::shared_mutex>>(m_resource, m_mutex);
+        }
+
+        auto Get() const
+        {
+            return WrapperProtected<const TResource, std::shared_lock<std::shared_mutex>>(m_resource, m_mutex);
+        }
+
+    private:
+        TResource m_resource;
+        mutable std::shared_mutex m_mutex;
+    };
+
+    template<typename TResource>
+    class ResourceRelaxed : public AnyResource
+    {
+    public:
+        template<typename... Args>
+        explicit ResourceRelaxed(Args&&... args)
+            : m_resource(std::forward<Args>(args)...)
+        {
+        }
+
+        auto Update()
+        {
+            return Wrapper<TResource>(m_resource);
+        }
+
+        auto Get() const
+        {
+            return Wrapper<const TResource>(m_resource);
+        }
+
+    private:
+        TResource m_resource;
+    };
+
     struct Relaxed
     {
         template<typename TResource>
@@ -128,16 +155,16 @@ namespace resource
         template<typename TResource, typename... Args>
         void AddResource(Args&&... args)
         {
-            using Wrapper = ResourceWrapper<TResource>;
+            using TWrapper = ResourceWrapper<TResource>;
 
             const auto& typeId = typeid(TResource);
-            m_resources[typeId] = be::MakeUnique<Wrapper>(std::forward<Args>(args)...);
+            m_resources[typeId] = be::MakeUnique<TWrapper>(std::forward<Args>(args)...);
         }
 
         template<typename TResource>
-        const TResource& GetResource()
+        auto GetResource()
         {
-            using Wrapper = ResourceWrapper<TResource>;
+            using TWrapper = ResourceWrapper<TResource>;
 
             const auto& typeId = typeid(TResource);
             auto& resource = m_resources[typeId];
@@ -146,14 +173,14 @@ namespace resource
                 throw std::runtime_error("Resource not found");
             }
 
-            auto* wrapper = static_cast<Wrapper*>(resource.get());
+            auto* wrapper = static_cast<TWrapper*>(resource.get());
             return wrapper->Get();
         }
 
         template<typename TResource>
-        TResource& Update()
+        auto Update()
         {
-            using Wrapper = ResourceWrapper<TResource>;
+            using TWrapper = ResourceWrapper<TResource>;
 
             const auto& typeId = typeid(TResource);
             auto& resource = m_resources[typeId];
@@ -162,8 +189,8 @@ namespace resource
                 throw std::runtime_error("Resource not found");
             }
 
-            auto* wrapper = static_cast<Wrapper*>(resource.get());
-            return wrapper->Get();
+            auto* wrapper = static_cast<TWrapper*>(resource.get());
+            return wrapper->Update();
         }
 
     private:
@@ -186,7 +213,8 @@ struct ComponentB
 
 struct Input
 {
-    bool isKeyPressed = false;
+    be::Mouse& mouse;
+    be::Keyboard& keyboard;
 };
 
 class Attacher
@@ -208,9 +236,6 @@ public:
             view.AddComponent<ComponentA>(entity, {.data = entt::to_integral(entity)});
             view.AddComponent<ComponentB>(entity, {.data = entt::to_integral(entity)});
         }
-
-        auto& input = m_resourceManager->Update<Input>();
-        input.isKeyPressed = !input.isKeyPressed;
     }
 
 private:
@@ -230,20 +255,80 @@ public:
         : m_resourceManager(std::move(manager))
     {}
 
-    void Run(const be::View<AccessList>& view)
+    void Run(const be::View<AccessList>&)
     {
         /*m_resourceManager->Add<be::Input>(be::ResourceManager::Access::Relaxed, {});
 
         const auto& input = m_resourceManager->Get<be::Input>();*/
 
-        for (auto ent : view)
+        //for (auto ent : view)
+        //{
+        //    /*spdlog::info("Component {} for entity {} = {}", typeid(ComponentA).name(), static_cast<be::uint32>(ent), view.GetComponent<ComponentA>(ent).data);
+        //    spdlog::info("Component {} for entity {} = {}", typeid(ComponentB).name(), static_cast<be::uint32>(ent), ++view.UpdateComponent<ComponentB>(ent).data);*/
+        //    //std::cout << comp.data++ << "\n";
+        //}
+
+        auto input = m_resourceManager->GetResource<Input>();
+        be::Mouse& mouse = input->mouse;
+        be::Keyboard& keyboard = input->keyboard;
+
+        auto m_logger = m_resourceManager->GetResource<be::Shared<be::Logger>>();
+
+        if (mouse.IsButtonPressed(be::MouseButtonCode::BUTTON_LEFT))
         {
-            spdlog::info("Component {} for entity {} = {}", typeid(ComponentA).name(), static_cast<be::uint32>(ent), view.GetComponent<ComponentA>(ent).data);
-            spdlog::info("Component {} for entity {} = {}", typeid(ComponentB).name(), static_cast<be::uint32>(ent), ++view.UpdateComponent<ComponentB>(ent).data);
-            //std::cout << comp.data++ << "\n";
+            m_logger->get()->LogInfo("Left  button pressed");
         }
 
-        spdlog::info("Is key pressed: {}", m_resourceManager->GetResource<Input>().isKeyPressed);
+        if (mouse.IsButtonPressed(be::MouseButtonCode::BUTTON_MIDDLE))
+        {
+            m_logger->get()->LogInfo("Middle button pressed");
+        }
+
+        if (mouse.IsButtonPressed(be::MouseButtonCode::BUTTON_RIGHT))
+        {
+            m_logger->get()->LogInfo("Right button pressed");
+        }
+
+        if (mouse.IsButtonPressed(be::MouseButtonCode::BUTTON4))
+        {
+            m_logger->get()->LogInfo("Button 4 pressed");
+        }
+
+        if (mouse.IsButtonPressed(be::MouseButtonCode::BUTTON5))
+        {
+            m_logger->get()->LogInfo("Button 5 pressed");
+        }
+
+        if (mouse.IsButtonHeldDown(be::MouseButtonCode::BUTTON_LEFT))
+        {
+            m_logger->get()->LogInfo("Left button held down");
+        }
+
+        if (mouse.IsButtonHeldDown(be::MouseButtonCode::BUTTON_MIDDLE))
+        {
+            m_logger->get()->LogInfo("Middle button held down");
+        }
+
+        if (mouse.IsButtonHeldDown(be::MouseButtonCode::BUTTON_RIGHT))
+        {
+            m_logger->get()->LogInfo("Right button held down");
+        }
+
+        if (keyboard.IsKeyPressed(be::KeyCode::Right))
+        {
+            m_logger->get()->LogInfo("Right arrow pressed\n");
+        }
+
+        if (keyboard.IsKeyHeldDown(be::KeyCode::Right))
+        {
+            m_logger->get()->LogInfo("Right arrow held down!\n");
+        }
+
+        if (keyboard.IsKeyDown(be::KeyCode::Right))
+        {
+            m_logger->get()->LogInfo("Right arrow is down!\n");
+        }
+
         /*std::cout << view.Get<ComponentA>() << "\n";
         std::cout << view.Get<ComponentB>() << "\n";*/
     }
@@ -267,7 +352,8 @@ public:
         GetEngine().PrintInfo();
 
         auto resource_manager = be::MakeShared<resource::RelaxedManager>();
-        resource_manager->AddResource<Input>();
+        resource_manager->AddResource<Input>(*m_mouse, *m_keyboard);
+        resource_manager->AddResource<be::Shared<be::Logger>>(m_logger);
 
         be::World world;
         be::SystemsScheduler scheduler(world);
@@ -293,60 +379,6 @@ public:
             }
 
             m_window->ProcessInput();
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_LEFT))
-            {
-                m_logger->LogInfo("Left  button pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_MIDDLE))
-            {
-                m_logger->LogInfo("Middle button pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_RIGHT))
-            {
-                m_logger->LogInfo("Right button pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON4))
-            {
-                m_logger->LogInfo("Button 4 pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON5))
-            {
-                m_logger->LogInfo("Button 5 pressed");
-            }
-
-            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_LEFT))
-            {
-                m_logger->LogInfo("Left button held down");
-            }
-
-            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_MIDDLE))
-            {
-                m_logger->LogInfo("Middle button held down");
-            }
-
-            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_RIGHT))
-            {
-                m_logger->LogInfo("Right button held down");
-            }
-
-            if (m_keyboard->IsKeyPressed(be::KeyCode::Right))
-            {
-                m_logger->LogInfo("Right arrow pressed\n");
-            }
-
-            if (m_keyboard->IsKeyHeldDown(be::KeyCode::Right))
-            {
-                m_logger->LogInfo("Right arrow held down!\n");
-            }
-
-            if (m_keyboard->IsKeyDown(be::KeyCode::Right))
-            {
-                m_logger->LogInfo("Right arrow is down!\n");
-            }
 
             if (m_keyboard->IsKeyPressed(be::KeyCode::Escape))
             {
