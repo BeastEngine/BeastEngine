@@ -21,7 +21,7 @@ set(
     "Windows/IWindowFactory.h"
     "EntryPoint.h"
     "Math/Types.h"
-  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h" "Ecs/World.h"  "Ecs/SystemsScheduler.h")
+  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h" "Ecs/World.h"  "Ecs/SystemsScheduler.h" "Ecs/Ecs.h")
 
 set(
     BEAST_SOURCES
