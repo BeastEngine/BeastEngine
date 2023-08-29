@@ -1,5 +1,5 @@
 #pragma once
-#include "IWindowFactory.h"
+#include <Beast/Windows/IWindowFactory.h>
 
 #include <Beast/Common/Helpers.h>
 

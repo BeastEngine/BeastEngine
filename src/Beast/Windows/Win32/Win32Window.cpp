@@ -1,7 +1,7 @@
 #ifdef BE_PLATFORM_WINDOWS
-    #include "Beast/Windows/Win32/Win32Window.h"
-    #include "Beast/Assertions.h"
-    #include "Beast/Events/Events.h"
+    #include <Beast/Windows/Win32/Win32Window.h>
+    #include <Beast/Assertions.h>
+    #include <Beast/Events/Events.h>
 
     #include <Beast/Common/Exceptions.h>
     #include <unordered_map>

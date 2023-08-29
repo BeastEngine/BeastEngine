@@ -1,6 +1,6 @@
 #pragma once
-#include "Beast/PlatformSetup.h"
-#include "Beast/Events/Events.h"
+#include <Beast/PlatformSetup.h>
+#include <Beast/Events/Events.h>
 
 #include <Beast/Common/Types.h>
 #include <Beast/Common/Helpers.h>

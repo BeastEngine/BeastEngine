@@ -1,6 +1,6 @@
 #pragma once
-#include "Beast/PlatformSetup.h"
-#include "Beast/Application.h"
+#include <Beast/PlatformSetup.h>
+#include <Beast/Application.h>
 
 #include <Beast/Common/Types.h>
 

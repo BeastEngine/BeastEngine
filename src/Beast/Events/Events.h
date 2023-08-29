@@ -1,6 +1,6 @@
 #pragma once
-#include "KeyboardEvents.h"
-#include "MouseEvents.h"
+#include <Beast/Events/KeyboardEvents.h>
+#include <Beast/Events/MouseEvents.h>
 
 #include <functional>
 

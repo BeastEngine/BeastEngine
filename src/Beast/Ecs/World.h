@@ -19,8 +19,8 @@ namespace be
             m_registry.emplace<Component>(entity, std::move(component));
         }
 
-        template<typename AL> requires std::derived_from<AL, be::BaseAccessList>
-        [[nodiscard]] constexpr auto CreateView()
+        template<typename AL>
+        [[nodiscard]] constexpr auto CreateView() requires std::derived_from<AL, be::BaseAccessList>
         {
             return View<AL>(m_registry);
         }

@@ -1,8 +1,8 @@
 #pragma once
 #ifdef BE_PLATFORM_WINDOWS
-    #include "Beast/Windows/AWindow.h"
-    #include "Beast/PlatformSetup.h"
-    #include "Beast/DataStructures.h"
+    #include <Beast/Windows/AWindow.h>
+    #include <Beast/PlatformSetup.h>
+    #include <Beast/DataStructures.h>
 
     #include <Beast/Common/Helpers.h>
     #include <functional>

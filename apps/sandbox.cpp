@@ -123,8 +123,7 @@ public:
     }
 
 private:
-    be::WindowClosedEventHandler
-        OnWindowClosed()
+    be::WindowClosedEventHandler OnWindowClosed()
     {
         return [&]() {
             m_isRunning = false;

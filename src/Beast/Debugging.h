@@ -1,5 +1,5 @@
 #pragma once
-#include "Beast/Loggers/StaticLogger.h"
+#include <Beast/Loggers/StaticLogger.h>
 
 #include <fmt/format.h>
 

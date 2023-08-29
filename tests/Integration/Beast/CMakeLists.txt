@@ -1,7 +1,7 @@
 set(
     BE_HEADERS_LIST
     "BeastEngineTest.h"
-    "Loggers/FileLoggerTest.h"
+    
     "Windows/Win32/Win32KeyboardEventsTest.h"
     "Windows/Win32/Win32MouseEventsTest.h"
     "Windows/Win32/Win32TestSetup.h"

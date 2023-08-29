@@ -1,5 +1,5 @@
 #pragma once
-#include "Beast/Input/InputCodes.h"
+#include <Beast/Input/InputCodes.h>
 
 namespace be
 {
