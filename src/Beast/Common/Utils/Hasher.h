@@ -12,7 +12,7 @@ namespace be
     class Hasher final
     {
     public:
-        CT_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(Hasher);
+        BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(Hasher);
 
         /**
          * @brief Hashes given value using XXH64 hash function. 

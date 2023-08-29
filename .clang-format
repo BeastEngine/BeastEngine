@@ -100,3 +100,6 @@ SpacesInSquareBrackets: false
 Standard: Latest
 TabWidth: 4
 UseTab: Never
+RequiresExpressionIndentation: OuterScope
+IndentRequiresClause: false
+RequiresClausePosition: WithPreceding

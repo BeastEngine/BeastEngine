@@ -45,8 +45,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 endif()
 
-add_subdirectory(src/Beast) # Libraries
-
+add_subdirectory(src/Beast)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(apps) # Add executable
 
