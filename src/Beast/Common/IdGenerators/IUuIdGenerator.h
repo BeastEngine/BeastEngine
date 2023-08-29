@@ -10,7 +10,7 @@ namespace be
     class IUuIdGenerator
     {
     public:
-        CT_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IUuIdGenerator);
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IUuIdGenerator);
         IUuIdGenerator() = default;
         virtual ~IUuIdGenerator() = default;
 

@@ -36,7 +36,7 @@ namespace be
     using Unique = std::unique_ptr<T>;
 
     template<typename T, typename... Args>
-    [[nodiscard]] constexpr Unique<T> CreateUnique(Args&&... args)
+    [[nodiscard]] constexpr Unique<T> MakeUnique(Args&&... args)
     {
         return std::make_unique<T>(std::forward<Args>(args)...);
     }
@@ -45,7 +45,7 @@ namespace be
     using Shared = std::shared_ptr<T>;
 
     template<typename T, typename... Args>
-    [[nodiscard]] constexpr Shared<T> CreateShared(Args&&... args)
+    [[nodiscard]] constexpr Shared<T> MakeShared(Args&&... args)
     {
         return std::make_shared<T>(std::forward<Args>(args)...);
     }

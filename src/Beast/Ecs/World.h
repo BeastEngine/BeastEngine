@@ -1,0 +1,31 @@
+#pragma once
+#include <Beast/Ecs/Types.h>
+#include <Beast/Ecs/View.h>
+#include <Beast/Ecs/AccessList.h>
+
+#include <concepts>
+
+namespace be
+{
+    class World final
+    {
+    public:
+        Entity CreateEntity();
+        [[nodiscard]] bool IsValid(Entity entity) const;
+
+        template<typename Component>
+        constexpr void AddComponent(Entity entity, Component&& component)
+        {
+            m_registry.emplace<Component>(entity, std::move(component));
+        }
+
+        template<typename AL>
+        [[nodiscard]] constexpr auto CreateView() requires std::derived_from<AL, be::BaseAccessList>
+        {
+            return View<AL>(m_registry);
+        }
+
+    private:
+        Registry m_registry;
+    };
+} // namespace be

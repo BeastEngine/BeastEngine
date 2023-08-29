@@ -1,8 +1,79 @@
-#include <Beast/Core/EntryPoint.h>
-#include <Beast/Core/BeastEngine.h>
-#include <Beast/Core/Loggers/LoggersFactories.h>
+#include <Beast/EntryPoint.h>
+#include <Beast/BeastEngine.h>
+#include <Beast/Loggers/LoggersFactories.h>
+#include <Beast/Common/Types.h>
+
+#include <Beast/Ecs/Types.h>
+#include <Beast/Ecs/AccessList.h>
+#include <Beast/Ecs/View.h>
+#include <Beast/Ecs/SystemsScheduler.h>
+
+#include <entt/entt.hpp>
 
 #include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <typeindex>
+#include <spdlog/spdlog.h>
+
+#include <shared_mutex>
+#include <mutex>
+#include <unordered_map>
+#include <typeinfo>
+#include <typeindex>
+
+struct ComponentA
+{
+    unsigned int data = 0;
+};
+
+struct ComponentB
+{
+    unsigned int data = 0;
+};
+
+struct Input
+{
+    be::Mouse& mouse;
+    be::Keyboard& keyboard;
+};
+
+class Attacher
+{
+public:
+    struct AccessList : be::BaseAccessList
+    {
+        using Add = be::Components<ComponentA, ComponentB>;
+    };
+
+    void Run(const be::View<AccessList>& view)
+    {
+        for (auto entity : view)
+        {
+            view.AddComponent<ComponentA>(entity, {.data = entt::to_integral(entity)});
+            view.AddComponent<ComponentB>(entity, {.data = entt::to_integral(entity)});
+        }
+    }
+};
+
+class Getter
+{
+public:
+    struct AccessList : be::BaseAccessList
+    {
+        using Get = be::Components<ComponentA>;
+        using Update = be::Components<ComponentB>;
+    };
+
+    void Run(const be::View<AccessList>& view)
+    {
+        for (auto ent : view)
+        {
+            spdlog::info("Component {} for entity {} = {}", typeid(ComponentA).name(), static_cast<be::uint32>(ent), view.GetComponent<ComponentA>(ent).data);
+            spdlog::info("Component {} for entity {} = {}", typeid(ComponentB).name(), static_cast<be::uint32>(ent), ++view.UpdateComponent<ComponentB>(ent).data);
+        }
+    }
+};
 
 class BasicApplication final : public be::AApplication
 {
@@ -18,6 +89,17 @@ public:
     {
         GetEngine().PrintInfo();
 
+        auto& scheduler = m_ecs.scheduler;
+
+        auto group1 = scheduler.CreateGroup();
+        group1.AttachSystem<Getter>();
+
+        auto group2 = scheduler.CreateGroup();
+        group2.AttachSystem<Attacher>();
+
+        scheduler.Prepare({group2, group1});
+        m_ecs.world.CreateEntity();
+
         auto previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();
 
@@ -30,65 +112,13 @@ public:
             }
 
             m_window->ProcessInput();
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_LEFT))
-            {
-                m_logger->LogInfo("Left  button pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_MIDDLE))
-            {
-                m_logger->LogInfo("Middle button pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON_RIGHT))
-            {
-                m_logger->LogInfo("Right button pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON4))
-            {
-                m_logger->LogInfo("Button 4 pressed");
-            }
-
-            if (m_mouse->IsButtonPressed(be::MouseButtonCode::BUTTON5))
-            {
-                m_logger->LogInfo("Button 5 pressed");
-            }
-
-            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_LEFT))
-            {
-                m_logger->LogInfo("Left button held down");
-            }
-
-            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_MIDDLE))
-            {
-                m_logger->LogInfo("Middle button held down");
-            }
-
-            if (m_mouse->IsButtonHeldDown(be::MouseButtonCode::BUTTON_RIGHT))
-            {
-                m_logger->LogInfo("Right button held down");
-            }
-
-            if (m_keyboard->IsKeyPressed(be::KeyCode::Right))
-            {
-                m_logger->LogInfo("Right arrow pressed\n");
-            }
-
-            if (m_keyboard->IsKeyHeldDown(be::KeyCode::Right))
-            {
-                m_logger->LogInfo("Right arrow held down!\n");
-            }
-
-            if (m_keyboard->IsKeyDown(be::KeyCode::Right))
-            {
-                m_logger->LogInfo("Right arrow is down!\n");
-            }
 
             if (m_keyboard->IsKeyPressed(be::KeyCode::Escape))
             {
                 break;
             }
+
+            scheduler.Update();
         }
     }
 
@@ -118,8 +148,8 @@ be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHa
     auto config = be::EngineConfig();
 
     // Configure window
-    auto windowDescriptor = be::WindowDescriptor(std::move(windowHandleInstance));
+    be::WindowDescriptor windowDescriptor(std::move(windowHandleInstance));
     windowDescriptor.style = WindowStyle::WINDOW_DEFUALT;
 
-    return be::CreateUnique<BasicApplication>(std::move(config), windowDescriptor);
+    return be::MakeUnique<BasicApplication>(std::move(config), windowDescriptor);
 }
