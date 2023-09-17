@@ -13,7 +13,7 @@ set(
 set(
     SANDBOX_SRC_LIST
     "Sandbox.cpp"
-)
+ "Ideas.cpp")
 
 add_executable(${SANDBOX_TARGET_NAME} "${SANDBOX_SRC_LIST}" "${SANDBOX_HEADERS_LIST}")
 target_link_libraries(${SANDBOX_TARGET_NAME} PRIVATE BE::core)
