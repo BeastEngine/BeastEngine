@@ -350,4 +350,27 @@ namespace be::tests::integration
 
         RunAddCombined<AL>();
     }
+
+    TEST_F(ViewTest, SizeWillReturnNumberOfEntitiesInTheView)
+    {
+        struct AL : BaseAccessList
+        {
+            using Get = Components<TestComponent1>;
+        };
+
+        const std::size_t expectedSize = 5;
+
+        World world;
+        std::vector<be::Entity> entities(expectedSize);
+        std::generate(entities.begin(), entities.end(), [&world]() {
+            auto entity = world.CreateEntity();
+            world.AddComponent<TestComponent1>(entity, {});
+            return entity;
+        });
+
+        [[maybe_unused]] const auto excludedEntity = world.CreateEntity();
+
+        auto sut = world.CreateView<AL>();
+        ASSERT_EQ(expectedSize, sut.Size());
+    }
 }; // namespace be::tests::integration

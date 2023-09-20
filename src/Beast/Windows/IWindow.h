@@ -62,8 +62,8 @@ namespace be
         }
 
         std::string title = "BeastEngine";
-        IntVec2 dimensions = {800, 600};
-        IntVec2 position = {0, 0};
+        Vec2i dimensions = {800, 600};
+        Vec2i position = {0, 0};
         WindowStyle style = {WindowStyle::WINDOW_DEFUALT};
         const WindowHandleInstance handleInstance;
     };

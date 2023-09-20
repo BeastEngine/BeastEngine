@@ -17,6 +17,6 @@ namespace be
         uuids::uuid_random_generator uuidGenerator{generatorEngine};
 
         const auto id = uuidGenerator();
-        return Hasher::Hash(id.as_bytes());
+        return Hash(id.as_bytes());
     }
 } // namespace be

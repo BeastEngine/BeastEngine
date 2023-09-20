@@ -1,4 +1,4 @@
-#if 1
+#if 0
 
     #include <Beast/Common/IdGenerators/IUuIdGenerator.h>
     #include <Beast/Common/Filesystem/Types.h>
@@ -24,7 +24,7 @@ namespace be
     {
     };
 
-    class TexturesManager
+    class TexturesManager1
     {
     public:
         struct TexturePath
@@ -34,7 +34,7 @@ namespace be
         };
 
     public:
-        TexturesManager(std::span<const TexturePath> texturePaths, graphics::Context* context)
+        TexturesManager1(std::span<const TexturePath> texturePaths, graphics::Context* context)
             : m_context(context)
         {
         }
@@ -80,6 +80,49 @@ namespace be
             graphics::Texture* data;
             FilesystemPath filepath;
         };
+
+    private:
+        graphics::Context* m_context;
+        std::unordered_map<TextureId, TextureResource> m_textures;
+    };
+
+    class TexturesManager2
+    {
+    public:
+        struct TexturePath
+        {
+            TextureId id;
+            be::FilesystemPath filepath;
+        };
+
+    public:
+        TexturesManager2(std::span<const TexturePath> texturePaths, graphics::Context* context)
+            : m_context(context)
+        {
+        }
+
+        graphics::Texture& Get(TextureId id)
+        {
+            auto& texture = m_textures[id];
+            if (!texture.data)
+            {
+                Create(texture);
+            }
+
+            return *texture.data;
+        }
+
+    private:
+        struct TextureResource
+        {
+            graphics::Texture* data;
+            FilesystemPath filepath;
+        };
+
+        void Create(TextureResource& resource)
+        {
+            resource.data = m_context->CreateTexture(resource.filepath);
+        }
 
     private:
         graphics::Context* m_context;

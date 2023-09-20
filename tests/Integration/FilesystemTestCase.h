@@ -142,7 +142,7 @@ namespace be::tests::integration
 
         static std::string GenerateRandomString()
         {
-            return std::to_string(m_idGenerator.Generate());
+            return std::to_string(ToUnderlying(m_idGenerator.Generate()));
         }
 
     private:

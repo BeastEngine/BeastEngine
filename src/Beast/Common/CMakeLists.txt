@@ -9,7 +9,7 @@ set(
 	BE_SRC_LIST
   "IdGenerators/UuId4Generator.cpp")
 
-add_library(BeastCommon STATIC "${BE_SRC_LIST}" "${BEAST_API_LIST}")
+add_library(BeastCommon STATIC "${BE_SRC_LIST}" "${BEAST_API_LIST}" "Utils/Xxh64.h" "Utils/String.h")
 target_include_directories(BeastCommon PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 target_compile_features(BeastCommon PUBLIC cxx_std_20)
 

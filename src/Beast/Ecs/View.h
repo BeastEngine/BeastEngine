@@ -70,6 +70,11 @@ namespace be
             return m_registry.try_get<Component>(entity) != nullptr;
         }
 
+        constexpr std::size_t Size() const
+        {
+            return m_view.size();
+        }
+
     private:
         template<typename... IncludedComponents, typename... ExcludedComponents>
         constexpr static auto Init(Components<IncludedComponents...>, Components<ExcludedComponents...>, Registry& reg)

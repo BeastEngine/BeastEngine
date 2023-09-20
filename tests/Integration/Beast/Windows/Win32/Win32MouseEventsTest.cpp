@@ -10,7 +10,7 @@ namespace be::tests::integration
     {
         bool wasHandlerCalled = false;
         const auto expectedEventType = MouseEventType::EVENT_MOUSE_MOVED;
-        const auto expectedMouseMovementCoords = IntVec2(250, 500);
+        const auto expectedMouseMovementCoords = Vec2i(250, 500);
 
         MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
             wasHandlerCalled = true;
@@ -43,7 +43,7 @@ namespace be::tests::integration
     {
         bool wasHandlerCalled = false;
         const auto expectedEventType = MouseEventType::EVENT_MOUSE_SCROLLED;
-        const auto expectedMouseMovementCoords = IntVec2(250, 500);
+        const auto expectedMouseMovementCoords = Vec2i(250, 500);
         const auto expectedWheelDelta = GetParam();
 
         MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
@@ -90,7 +90,7 @@ namespace be::tests::integration
         bool wasHandlerCalled = false;
         const auto expectedEventType = MouseEventType::EVENT_MOUSE_BUTTON_PRESSED;
         const auto expectedButtonCode = testParams.expectedButtonCode;
-        const auto expectedMouseClickCoords = IntVec2(400, 300);
+        const auto expectedMouseClickCoords = Vec2i(400, 300);
 
         MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
             wasHandlerCalled = true;
@@ -151,7 +151,7 @@ namespace be::tests::integration
         bool wasHandlerCalled = false;
         const auto expectedEventType = MouseEventType::EVENT_MOUSE_BUTTON_RELEASED;
         const auto expectedButtonCode = testParams.expectedButtonCode;
-        const auto expectedMouseClickCoords = IntVec2(400, 300);
+        const auto expectedMouseClickCoords = Vec2i(400, 300);
 
         MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
             wasHandlerCalled = true;

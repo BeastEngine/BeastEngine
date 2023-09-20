@@ -26,7 +26,7 @@ set(
 	
  "Ecs/SystemsSchedulerTest.h")
 
-add_executable(BeastCoreUnits "${BE_SRC_LIST}" "${BE_HEADERS_LIST}")
+add_executable(BeastCoreUnits "${BE_SRC_LIST}" "${BE_HEADERS_LIST}" "Utils/HasherTest.cpp" "Utils/StringTest.cpp")
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
 
 find_package(GTest REQUIRED)

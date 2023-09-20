@@ -32,7 +32,7 @@ namespace be::tests::integration
     private:
         std::wstring GetIdAsWString(Id id)
         {
-            return std::to_wstring(id);
+            return std::to_wstring(ToUnderlying(id));
         }
     };
 } // namespace be::tests::integration

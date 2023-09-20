@@ -67,7 +67,7 @@ namespace be
             void ScrollWheel(int16 scrollAmount) noexcept;
 
         private:
-            IntVec2 m_coordinates;
+            Vec2i m_coordinates;
             std::unordered_map<MouseButtonCode, ButtonState> m_buttonsStates;
 
             uint16 m_scrollThreshold = 120;

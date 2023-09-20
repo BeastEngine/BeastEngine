@@ -76,9 +76,9 @@ namespace be::internals
          * screen dimensions retrieved from the WinAPI. Otherwise, dimensions defined via WindowDescriptor struct will be returned.
          * This function is used because we need to know the actual display dimensions in order to make the window fullscreen.
          * 
-         * @return IntVec2{x=width, y=height}
+         * @return Vec2i{x=width, y=height}
          */
-        IntVec2 GetWindowDimensions() const;
+        Vec2i GetWindowDimensions() const;
 
         /**
          * @brief Calls WinAPI's ShowWindow(...) functions with appropriate parameters based on the provided window styles.
@@ -194,12 +194,12 @@ namespace be::internals
         void ProcessHeldDownMessages() const;
 
         /**
-         * @brief Returns mouse coordinates as IntVec2 extracted from the LPARAM of the WindowProc message.
+         * @brief Returns mouse coordinates as Vec2i extracted from the LPARAM of the WindowProc message.
          * 
          * @param lParam - LPARAM used to extract mouse coordinates from
          * @return
          */
-        IntVec2 GetMouseCoordinates(LPARAM lParam) const
+        Vec2i GetMouseCoordinates(LPARAM lParam) const
         {
             const auto point = MAKEPOINTS(lParam);
             return {point.x, point.y};

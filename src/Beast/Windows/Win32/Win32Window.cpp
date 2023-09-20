@@ -272,7 +272,7 @@ namespace be::internals
         return WINDOW_STYLES_MAP.At(windowStyle);
     }
 
-    IntVec2 Win32Window::GetWindowDimensions() const
+    Vec2i Win32Window::GetWindowDimensions() const
     {
         if (m_descriptor.style == WindowStyle::WINDOW_FULLSCREEN)
         {

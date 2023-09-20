@@ -11,4 +11,4 @@ namespace be
     {
         return m_registry.valid(entity);
     }
-}
+} // namespace be

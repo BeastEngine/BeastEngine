@@ -21,7 +21,7 @@ set(
     "Windows/IWindowFactory.h"
     "EntryPoint.h"
     "Math/Types.h"
-  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h" "Ecs/World.h"  "Ecs/SystemsScheduler.h" "Ecs/Ecs.h")
+  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h" "Ecs/World.h"  "Ecs/SystemsScheduler.h" "Ecs/Ecs.h" "Ecs/Components/Sprite.h")
 
 set(
     BEAST_SOURCES
@@ -46,7 +46,7 @@ add_library(
         STATIC
             "${BEAST_SOURCES}"
             "${BEAST_API_FILES}"
-)
+ "Rendering/Renderer.h" "Rendering/Renderer.cpp")
 target_include_directories(
     BeastCore
         PUBLIC
