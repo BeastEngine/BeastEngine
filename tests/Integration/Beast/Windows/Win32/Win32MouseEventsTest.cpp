@@ -25,7 +25,7 @@ namespace be::tests::integration
         sut->SetMouseEventsHandler(expectedHandler);
 
         const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseMovementCoords.x, expectedMouseMovementCoords.y);
-        PostMessage(sut->GetNativeHandle(), winApiMessageToSend, NULL, messageMouseCoords);
+        PostMessage(sut->GetHandle(), winApiMessageToSend, NULL, messageMouseCoords);
 
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
@@ -61,7 +61,7 @@ namespace be::tests::integration
 
         const WPARAM messageMouseWheelDelta = MAKEWPARAM(0 /*low order*/, expectedWheelDelta);
         const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseMovementCoords.x, expectedMouseMovementCoords.y);
-        PostMessage(sut->GetNativeHandle(), winApiMessageToSend, messageMouseWheelDelta, messageMouseCoords);
+        PostMessage(sut->GetHandle(), winApiMessageToSend, messageMouseWheelDelta, messageMouseCoords);
 
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
@@ -104,7 +104,7 @@ namespace be::tests::integration
         sut->SetMouseEventsHandler(expectedHandler);
 
         const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseClickCoords.x, expectedMouseClickCoords.y);
-        PostMessage(sut->GetNativeHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, messageMouseCoords);
+        PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, messageMouseCoords);
 
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
@@ -116,14 +116,14 @@ namespace be::tests::integration
         auto sut = GetWindow();
 
         bool wasHandlerCalled = false;
-        const auto expectedCapturedWindowHandle = sut->GetNativeHandle();
+        const auto expectedCapturedWindowHandle = sut->GetHandle();
         MouseEventHandler expectedHandler = [&](const MouseEvent&) {
             wasHandlerCalled = true;
             ASSERT_EQ(expectedCapturedWindowHandle, GetCapture());
         };
         sut->SetMouseEventsHandler(expectedHandler);
 
-        PostMessage(sut->GetNativeHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, NULL);
+        PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, NULL);
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
     }
@@ -165,7 +165,7 @@ namespace be::tests::integration
         sut->SetMouseEventsHandler(expectedHandler);
 
         const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseClickCoords.x, expectedMouseClickCoords.y);
-        PostMessage(sut->GetNativeHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, messageMouseCoords);
+        PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, messageMouseCoords);
 
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
@@ -177,7 +177,7 @@ namespace be::tests::integration
         bool wasHandlerCalled = false;
 
         auto sut = GetWindow();
-        const auto nativeWindowHandle = sut->GetNativeHandle();
+        const auto nativeWindowHandle = sut->GetHandle();
 
         MouseEventHandler expectedHandler = [&](const MouseEvent&) {
             wasHandlerCalled = true;

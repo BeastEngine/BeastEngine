@@ -11,6 +11,7 @@
 #include <Beast/Ecs/Components/Sprite.h>
 
 #include <Beast/Rendering/Renderer.h>
+#include <Beast/Graphics/D3D11/Context.h>
 
 #include <entt/entt.hpp>
 
@@ -75,7 +76,7 @@ public:
         group2.AttachSystem<Attacher>();
 
         auto group1 = scheduler.CreateGroup();
-        group2.AttachSystem<be::Renderer>();
+        group2.AttachSystem<be::Renderer>(be::MakeShared<be::graphics::d3d11::Context>(*m_window));
 
         scheduler.Prepare({group2, group1});
         m_ecs.world.CreateEntity();
@@ -128,7 +129,7 @@ private:
     const be::Shared<be::Logger> m_logger = nullptr;
 };
 
-be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
+be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstanceType windowHandleInstance)
 {
     // Configure engine
     auto config = be::EngineConfig();

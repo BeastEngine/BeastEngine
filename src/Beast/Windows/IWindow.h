@@ -28,7 +28,7 @@ namespace be
     {
     public:
         /**
-         * @brief Initializes WindowHandleInstance class with platform specific instance.
+         * @brief Initializes WindowHandleInstanceType class with platform specific instance.
          * 
          * @param instance
          */
@@ -112,6 +112,11 @@ namespace be
          * @see Set*EventsHandler() for reference
          */
         virtual void ProcessInput() = 0;
+
+        /**
+         * @brief Returns handle associated with this window.
+         */
+        virtual WindowHandle GetHandle() const noexcept = 0;
     };
     /******************************************************/
     /******************************************************/

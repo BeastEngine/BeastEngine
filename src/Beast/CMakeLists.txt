@@ -46,7 +46,7 @@ add_library(
         STATIC
             "${BEAST_SOURCES}"
             "${BEAST_API_FILES}"
- "Rendering/Renderer.h" "Rendering/Renderer.cpp")
+ "Rendering/Renderer.h" "Rendering/Renderer.cpp" "Graphics/D3D11/Context.h" "Graphics/D3D11/Context.cpp" "Graphics/IContext.h" "Graphics/D3D11/Debug.h" "Graphics/Types.h")
 target_include_directories(
     BeastCore
         PUBLIC
@@ -81,6 +81,13 @@ target_compile_definitions(BeastCore PRIVATE ${BEAST_DEBUGGING_DEFINES})
 
 if(WIN32)
     target_compile_definitions(BeastCore PUBLIC BE_PLATFORM_WINDOWS)
+    target_link_libraries(
+        BeastCore
+        PUBLIC
+            d3d11.lib
+            Rpcrt4.lib
+            D3dcompiler.lib
+    )
 endif()
 
 configure_file(

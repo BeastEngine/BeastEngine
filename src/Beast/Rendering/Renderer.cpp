@@ -9,7 +9,11 @@
 
 namespace be
 {
-    // TODO: Define layers upfront as an enum class
+    Renderer::Renderer(Shared<graphics::IContext> context)
+        : m_context(std::move(context))
+    {
+    }
+
     void Renderer::Run(const View<AccessList>& view)
     {
         std::array<std::vector<const Sprite*>, LAYERS_COUNT> sprites{};
@@ -47,5 +51,8 @@ namespace be
                 );
             }
         }
+
+        m_context->ClearRenderTargetView({0.6f, 0.2f, 0.3f, 1.0f});
+        m_context->Present();
     }
 } // namespace be

@@ -50,7 +50,7 @@ namespace be::internals
          * 
          * @return HWND of the window
          */
-        HWND GetNativeHandle() const noexcept;
+        WindowHandle GetHandle() const noexcept override;
 
     private:
         /**

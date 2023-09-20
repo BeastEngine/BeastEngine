@@ -2,6 +2,9 @@
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/Components/Sprite.h>
 
+#include <Beast/Graphics/IContext.h>
+#include <Beast/Common/Types.h>
+
 namespace be
 {
     template<typename>
@@ -15,6 +18,7 @@ namespace be
             using Get = Components<Sprite>;
         };
 
+        explicit Renderer(Shared<graphics::IContext> context);
         void Run(const View<AccessList>& view);
 
     private:
@@ -25,5 +29,6 @@ namespace be
         };
 
         std::vector<RenderingResource> m_resources;
+        Shared<graphics::IContext> m_context;
     };
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <Beast/Common/Types.h>
 #include <Beast/Math/Types.h>
+#include <Beast/Graphics/Types.h>
 
 namespace be
 {
@@ -13,14 +14,6 @@ namespace be
 
     constexpr auto LAYERS_COUNT = 3;
 
-    struct Color
-    {
-        float r = 1.0f;
-        float g = 1.0f;
-        float b = 1.0f;
-        float a = 1.0f;
-    };
-
     struct Texture
     {
         Id id = ID_EMPTY;
@@ -29,7 +22,7 @@ namespace be
 
     struct Material
     {
-        Color color;
+        graphics::Color color;
     };
 
     struct Sprite

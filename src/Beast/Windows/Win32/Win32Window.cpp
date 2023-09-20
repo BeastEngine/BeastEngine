@@ -251,7 +251,7 @@ namespace be::internals
         }
     }
 
-    HWND Win32Window::GetNativeHandle() const noexcept
+    HWND Win32Window::GetHandle() const noexcept
     {
         return m_hwnd;
     }

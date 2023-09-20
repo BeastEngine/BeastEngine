@@ -24,7 +24,7 @@ namespace be::tests::integration
             Id uniqeClassNameId = idGenerator.Generate();
 
             auto window = MakeUnique<be::internals::Win32Window>(GetWindowDescriptor(), GetIdAsWString(uniqeClassNameId).c_str());
-            ShowWindow(window->GetNativeHandle(), SW_SHOWNOACTIVATE);
+            ShowWindow(window->GetHandle(), SW_SHOWNOACTIVATE);
 
             return window;
         }

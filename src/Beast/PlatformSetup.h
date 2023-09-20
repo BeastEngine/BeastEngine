@@ -68,6 +68,7 @@ namespace be
     #define BE_WINDOW_HANDLE_INSTANCE_TYPE 1
     #ifdef BE_PLATFORM_WINDOWS
     using WindowHandleInstanceType = HINSTANCE;
+    using WindowHandle = HWND;
     #else
         #error "No instance defined for this platform!"
     #endif

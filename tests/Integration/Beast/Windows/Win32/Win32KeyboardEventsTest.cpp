@@ -152,7 +152,7 @@ namespace be::tests::integration
         sut->SetKeyboardEventsHandler(expectedHandler);
 
         // Send WM_KEYDOWN WinAPI message
-        PostMessage(sut->GetNativeHandle(), WM_KEYDOWN, testParams.virtualKeyCode, NULL);
+        PostMessage(sut->GetHandle(), WM_KEYDOWN, testParams.virtualKeyCode, NULL);
 
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
@@ -177,7 +177,7 @@ namespace be::tests::integration
         sut->SetKeyboardEventsHandler(expectedHandler);
 
         // Send WM_KEYUP WinAPI message
-        PostMessage(sut->GetNativeHandle(), WM_KEYUP, testParams.virtualKeyCode, NULL);
+        PostMessage(sut->GetHandle(), WM_KEYUP, testParams.virtualKeyCode, NULL);
 
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
@@ -203,7 +203,7 @@ namespace be::tests::integration
 
         // Send WM_KEYDOWN WinAPI message
         LPARAM keyDownRepeated = (static_cast<LPARAM>(1) << 30); // Bit 30 set to 1 defines that the key was previously pressed
-        PostMessage(sut->GetNativeHandle(), WM_KEYDOWN, testParams.virtualKeyCode, keyDownRepeated);
+        PostMessage(sut->GetHandle(), WM_KEYDOWN, testParams.virtualKeyCode, keyDownRepeated);
 
         sut->ProcessInput();
         ASSERT_TRUE(wasHandlerCalled);
