@@ -1,5 +1,5 @@
 #include <Beast/Graphics/D3D11/Context.h>
-#include <Beast/Graphics/D3D11/Debug.h>
+#include <Beast/Graphics/D3D11/Asserts.h>
 
 namespace be::graphics::d3d11
 {
@@ -38,20 +38,20 @@ namespace be::graphics::d3d11
             nullptr,
             &m_context
         );
-        BE_D3D11_CHECK(result);
+        CheckResult(result);
 
         wrl::ComPtr<ID3D11Resource> backBuffer = nullptr;
-        BE_D3D11_CHECK(m_swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer));
-        BE_D3D11_CHECK(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_renderTargetView));
+        CheckResult(m_swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer));
+        CheckResult(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_renderTargetView));
     }
 
-    void graphics::d3d11::Context::ClearRenderTargetView(const Color& color) const noexcept
+    void graphics::d3d11::Context::Clear(const Color& color) const noexcept
     {
         m_context->ClearRenderTargetView(m_renderTargetView.Get(), color.Data());
     }
     
     void graphics::d3d11::Context::Present() const noexcept
     {
-        m_swapChain->Present(1, 0);
+        Assert(m_swapChain->Present(1, 0));
     }
 } // namespace be::graphics::d3d11

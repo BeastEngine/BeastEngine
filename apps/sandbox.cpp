@@ -8,10 +8,10 @@
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
 #include <Beast/Ecs/SystemsScheduler.h>
-#include <Beast/Ecs/Components/Sprite.h>
 
-#include <Beast/Rendering/Renderer.h>
+#include <Beast/Graphics/Rendering/Renderer.h>
 #include <Beast/Graphics/D3D11/Context.h>
+#include <Beast/Graphics/Rendering/Components/Sprite.h>
 
 #include <entt/entt.hpp>
 
@@ -34,7 +34,7 @@ class Attacher
 public:
     struct AccessList : be::BaseAccessList
     {
-        using Add = be::Components<be::Sprite>;
+        using Add = be::Components<be::graphics::Sprite>;
     };
 
     void Run(const be::View<AccessList>& view)
@@ -44,14 +44,14 @@ public:
         {
             view.AddComponent(
                 entity,
-                be::Sprite{
+                be::graphics::Sprite{
                     .texture{.id = TEXTURE_ID, .uvCoords = {0.0f, 1.0f}},
                     .material{.color{}},
-                    .layer = be::ToEnum<be::Layer>(layer),
+                    .layer = be::ToEnum<be::graphics::Layer>(layer),
                 }
             );
 
-            layer = (layer + 1) % be::LAYERS_COUNT;
+            layer = (layer + 1) % be::graphics::LAYERS_COUNT;
         }
     }
 };
@@ -76,7 +76,7 @@ public:
         group2.AttachSystem<Attacher>();
 
         auto group1 = scheduler.CreateGroup();
-        group2.AttachSystem<be::Renderer>(be::MakeShared<be::graphics::d3d11::Context>(*m_window));
+        group2.AttachSystem<be::graphics::Renderer>(be::MakeShared<be::graphics::d3d11::Context>(*m_window));
 
         scheduler.Prepare({group2, group1});
         m_ecs.world.CreateEntity();

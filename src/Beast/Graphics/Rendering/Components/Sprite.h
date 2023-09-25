@@ -1,9 +1,10 @@
 #pragma once
-#include <Beast/Common/Types.h>
-#include <Beast/Math/Types.h>
 #include <Beast/Graphics/Types.h>
 
-namespace be
+#include <Beast/Common/Types.h>
+#include <Beast/Math/Types.h>
+
+namespace be::graphics
 {
     enum class Layer : uint8
     {

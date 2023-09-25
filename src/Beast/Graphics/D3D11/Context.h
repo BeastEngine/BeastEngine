@@ -16,7 +16,7 @@ namespace be::graphics::d3d11
     public:
         explicit Context(const IWindow& window);
         
-        void ClearRenderTargetView(const Color& color) const noexcept override;
+        void Clear(const Color& color) const noexcept override;
         void Present() const noexcept override;
 
     private:

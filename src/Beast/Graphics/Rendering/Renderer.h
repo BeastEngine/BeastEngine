@@ -1,15 +1,18 @@
 #pragma once
-#include <Beast/Ecs/AccessList.h>
-#include <Beast/Ecs/Components/Sprite.h>
-
+#include <Beast/Graphics/Rendering/Components/Sprite.h>
 #include <Beast/Graphics/IContext.h>
+
+#include <Beast/Ecs/AccessList.h>
 #include <Beast/Common/Types.h>
 
 namespace be
 {
     template<typename>
     class View;
+}
 
+namespace be::graphics
+{
     class Renderer final
     {
     public:
@@ -18,7 +21,7 @@ namespace be
             using Get = Components<Sprite>;
         };
 
-        explicit Renderer(Shared<graphics::IContext> context);
+        explicit Renderer(Shared<IContext> context);
         void Run(const View<AccessList>& view);
 
     private:
@@ -29,6 +32,6 @@ namespace be
         };
 
         std::vector<RenderingResource> m_resources;
-        Shared<graphics::IContext> m_context;
+        Shared<IContext> m_context;
     };
-}
+} // namespace be::graphics

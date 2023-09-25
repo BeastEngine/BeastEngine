@@ -1,4 +1,4 @@
-#include <Beast/Rendering/Renderer.h>
+#include <Beast/Graphics/Rendering/Renderer.h>
 #include <Beast/Common/Utils/String.h>
 #include <Beast/Common/Types.h>
 #include <Beast/Ecs/View.h>
@@ -7,7 +7,7 @@
 
 #include <algorithm>
 
-namespace be
+namespace be::graphics
 {
     Renderer::Renderer(Shared<graphics::IContext> context)
         : m_context(std::move(context))
@@ -52,7 +52,7 @@ namespace be
             }
         }
 
-        m_context->ClearRenderTargetView({0.6f, 0.2f, 0.3f, 1.0f});
+        m_context->Clear({0.6f, 0.2f, 0.3f, 1.0f});
         m_context->Present();
     }
 } // namespace be

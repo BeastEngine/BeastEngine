@@ -21,7 +21,7 @@ set(
     "Windows/IWindowFactory.h"
     "EntryPoint.h"
     "Math/Types.h"
-  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h" "Ecs/World.h"  "Ecs/SystemsScheduler.h" "Ecs/Ecs.h" "Ecs/Components/Sprite.h")
+  "Ecs/AccessList.h" "Ecs/Types.h" "Ecs/View.h" "Ecs/World.h"  "Ecs/SystemsScheduler.h" "Ecs/Ecs.h")
 
 set(
     BEAST_SOURCES
@@ -46,7 +46,15 @@ add_library(
         STATIC
             "${BEAST_SOURCES}"
             "${BEAST_API_FILES}"
- "Rendering/Renderer.h" "Rendering/Renderer.cpp" "Graphics/D3D11/Context.h" "Graphics/D3D11/Context.cpp" "Graphics/IContext.h" "Graphics/D3D11/Debug.h" "Graphics/Types.h")
+            "Graphics/Rendering/Renderer.h"
+            "Graphics/Rendering/Renderer.cpp"
+            "Graphics/Rendering/Components/Sprite.h"
+            "Graphics/D3D11/Context.h"
+            "Graphics/D3D11/Context.cpp"
+            "Graphics/IContext.h"
+            "Graphics/D3D11/Asserts.h"
+            "Graphics/Types.h"
+  )
 target_include_directories(
     BeastCore
         PUBLIC

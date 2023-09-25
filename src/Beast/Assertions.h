@@ -36,9 +36,26 @@ namespace be::internals
             else                                                                                               \
             {                                                                                                  \
                 BE_DEBUG_LOG_ERROR("The '{}' assertion failed! It evaluated to: {}", #expression, expression); \
+                BE_DEBUG_BREAK();                                                                              \
             }
     #else
         #define BE_ASSERT(expression)
+    #endif
+#endif
+
+#ifndef BE_ASSERT_MSG
+    #ifdef BE_ASSERTIONS_ENABLED
+        #define BE_ASSERT_MSG(expression, fmt, ...)                                        \
+            if (expression)                                                                \
+            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */ \
+            }                                                                              \
+            else                                                                           \
+            {                                                                              \
+                BE_DEBUG_LOG_ERROR(fmt, __VA_ARGS__);                          \
+                BE_DEBUG_BREAK();                                                          \
+            }
+    #else
+        #define BE_ASSERT_MSG(expression, fmt, ...)
     #endif
 #endif
 }; // namespace be::internals

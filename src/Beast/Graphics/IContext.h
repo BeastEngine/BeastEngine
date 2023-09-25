@@ -11,7 +11,7 @@ namespace be::graphics
         BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IContext);
         virtual ~IContext() = default;
 
-        virtual void ClearRenderTargetView(const Color& color) const noexcept = 0;
+        virtual void Clear(const Color& color) const noexcept = 0;
         virtual void Present() const noexcept = 0;
     };
 }
