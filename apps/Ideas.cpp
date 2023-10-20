@@ -1,11 +1,11 @@
 #if 0
 
-    #include <Beast/Common/IdGenerators/IUuIdGenerator.h>
-    #include <Beast/Common/Filesystem/Types.h>
+    #include "Beast/Common/IdGenerators/IUuIdGenerator.h"
+    #include "Beast/Common/Filesystem/Types.h"
     #include <span>
     #include <shared_mutex>
     #include <mutex>
-#include <Beast/Assertions.h>
+#include "Beast/Assertions.h"
 
 namespace be
 {
@@ -99,6 +99,7 @@ namespace be
         TexturesManager2(std::span<const TexturePath> texturePaths, graphics::Context* context)
             : m_context(context)
         {
+            // Initialize m_textures with nullptr for data and given texturePaths
         }
 
         graphics::Texture& Get(TextureId id)

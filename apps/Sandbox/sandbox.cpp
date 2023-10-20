@@ -1,17 +1,19 @@
+#include "Rendering/Renderer.h"
+
 #include <Beast/EntryPoint.h>
 #include <Beast/BeastEngine.h>
 #include <Beast/Loggers/LoggersFactories.h>
 #include <Beast/Common/Types.h>
 #include <Beast/Common/Utils/Hasher.h>
+#include <Beast/Common/IdGenerators/UuId4Generator.h>
 
 #include <Beast/Ecs/Types.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
 #include <Beast/Ecs/SystemsScheduler.h>
 
-#include <Beast/Graphics/Rendering/Renderer.h>
 #include <Beast/Graphics/D3D11/Context.h>
-#include <Beast/Graphics/Rendering/Components/Sprite.h>
+#include <Beast/Graphics/Components.h>
 
 #include <entt/entt.hpp>
 
@@ -34,7 +36,7 @@ class Attacher
 public:
     struct AccessList : be::BaseAccessList
     {
-        using Add = be::Components<be::graphics::Sprite>;
+        using Add = be::Components<be::Sprite>;
     };
 
     void Run(const be::View<AccessList>& view)
@@ -44,14 +46,14 @@ public:
         {
             view.AddComponent(
                 entity,
-                be::graphics::Sprite{
+                be::Sprite{
                     .texture{.id = TEXTURE_ID, .uvCoords = {0.0f, 1.0f}},
                     .material{.color{}},
-                    .layer = be::ToEnum<be::graphics::Layer>(layer),
+                    .layer = be::ToEnum<be::Layer>(layer),
                 }
             );
 
-            layer = (layer + 1) % be::graphics::LAYERS_COUNT;
+            layer = (layer + 1) % be::LAYERS_COUNT;
         }
     }
 };
@@ -75,8 +77,10 @@ public:
         auto group2 = scheduler.CreateGroup();
         group2.AttachSystem<Attacher>();
 
+        auto idGenerator = be::MakeShared<be::UuId4Generator>();
+        group2.AttachSystem<Renderer>(be::MakeShared<be::graphics::d3d11::Context>(*m_window, std::move(idGenerator)));
+
         auto group1 = scheduler.CreateGroup();
-        group2.AttachSystem<be::graphics::Renderer>(be::MakeShared<be::graphics::d3d11::Context>(*m_window));
 
         scheduler.Prepare({group2, group1});
         m_ecs.world.CreateEntity();

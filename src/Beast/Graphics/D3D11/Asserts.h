@@ -1,6 +1,6 @@
 #pragma once
-#include <Beast/Assertions.h>
-#include <Beast/PlatformSetup.h>
+#include "Beast/Assertions.h"
+#include "Beast/PlatformSetup.h"
 
 #include <source_location>
 #include <exception>
@@ -17,6 +17,7 @@ namespace be::graphics::d3d11
     {
         if (FAILED(result))
         {
+            Assert(result, location);
             throw std::runtime_error(std::format("D3D11 call failed with result {}!\n{}::{}::{}", result, location.file_name(), location.function_name(), location.line()));
         }
     }

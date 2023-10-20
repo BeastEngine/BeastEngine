@@ -1,6 +1,6 @@
 #pragma once
-#include <Beast/Common/Helpers.h>
-#include <Beast/Common/Utils/Xxh64.h>
+#include "Beast/Common/Helpers.h"
+#include "Beast/Common/Utils/Xxh64.h"
 
 #include <xxhash.h>
 #include <string_view>

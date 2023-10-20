@@ -1,7 +1,7 @@
 #pragma once
-#include <Beast/Ecs/Types.h>
-#include <Beast/Ecs/View.h>
-#include <Beast/Ecs/AccessList.h>
+#include "Beast/Ecs/Types.h"
+#include "Beast/Ecs/View.h"
+#include "Beast/Ecs/AccessList.h"
 
 #include <concepts>
 

@@ -1,12 +1,12 @@
 #pragma once
-#include <Beast/PlatformSetup.h>
-#include <Beast/Application.h>
+#include "Beast/PlatformSetup.h"
+#include "Beast/Application.h"
 
-#include <Beast/Common/Types.h>
+#include "Beast/Common/Types.h"
 
 #ifndef BE_MAIN
     #ifdef BE_PLATFORM_WINDOWS
-        #define BE_MAIN()                 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR pCmdLine, int nCmdShow)
+        #define BE_MAIN()                 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int)
         #define BE_WINDOW_HANDLE_INSTANCE be::WindowHandleInstanceType(hInstance)
     #else
         #define BE_MAIN() int main(int argc, char** argv)

@@ -1,8 +1,8 @@
-#include <Beast/BeastEngine.h>
-#include <Beast/Versions.h>
-#include <Beast/Windows/WindowFactory.h>
-#include <Beast/Loggers/LoggersFactories.h>
-#include <Beast/Loggers/StaticLogger.h>
+#include "Beast/BeastEngine.h"
+#include "Beast/Versions.h"
+#include "Beast/Windows/WindowFactory.h"
+#include "Beast/Loggers/LoggersFactories.h"
+#include "Beast/Loggers/StaticLogger.h"
 
 #include <fmt/color.h>
 

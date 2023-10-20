@@ -1,9 +1,10 @@
-#include <Beast/Graphics/D3D11/Context.h>
-#include <Beast/Graphics/D3D11/Asserts.h>
+#include "Beast/Graphics/D3D11/Context.h"
+#include "Beast/Graphics/D3D11/Asserts.h"
 
 namespace be::graphics::d3d11
 {
-    Context::Context(const IWindow& window)
+    Context::Context(const IWindow& window, Shared<IUuIdGenerator> idGenerator)
+        : m_idGenerator(std::move(idGenerator))
     {
         const auto hwnd = window.GetHandle();
 
@@ -45,11 +46,19 @@ namespace be::graphics::d3d11
         CheckResult(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &m_renderTargetView));
     }
 
+    graphics::VertexBuffer Context::CreateVertexBuffer()
+    {
+        graphics::VertexBuffer buffer{.id = m_idGenerator->Generate()};
+        m_vertexBuffers.insert({buffer.id, {*m_device.Get()}});
+
+        return buffer;
+    }
+
     void graphics::d3d11::Context::Clear(const Color& color) const noexcept
     {
         m_context->ClearRenderTargetView(m_renderTargetView.Get(), color.Data());
     }
-    
+
     void graphics::d3d11::Context::Present() const noexcept
     {
         Assert(m_swapChain->Present(1, 0));

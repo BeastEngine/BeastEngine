@@ -1,6 +1,6 @@
 #pragma once
-#include <Beast/Ecs/Types.h>
-#include <Beast/Common/Helpers.h>
+#include "Beast/Ecs/Types.h"
+#include "Beast/Common/Helpers.h"
 
 #include <entt/entity/registry.hpp>
 

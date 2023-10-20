@@ -1,14 +1,14 @@
 #pragma once
-#include <Beast/Events/Events.h>
-#include <Beast/Input/InputCodes.h>
-#include <Beast/Windows/IWindow.h>
-#include <Beast/BeastEngine.h>
+#include "Beast/Events/Events.h"
+#include "Beast/Input/InputCodes.h"
+#include "Beast/Windows/IWindow.h"
+#include "Beast/BeastEngine.h"
 
-#include <Beast/Ecs/Ecs.h>
+#include "Beast/Ecs/Ecs.h"
 
-#include <Beast/Common/Types.h>
-#include <Beast/Common/Helpers.h>
-#include <Beast/Math/Types.h>
+#include "Beast/Common/Types.h"
+#include "Beast/Common/Helpers.h"
+#include "Beast/Math/Types.h"
 
 namespace be
 {

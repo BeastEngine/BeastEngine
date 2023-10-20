@@ -1,7 +1,7 @@
 #pragma once
-#include <Beast/Windows/IWindow.h>
+#include "Beast/Windows/IWindow.h"
 
-#include <Beast/Common/Helpers.h>
+#include "Beast/Common/Helpers.h"
 
 namespace be
 {

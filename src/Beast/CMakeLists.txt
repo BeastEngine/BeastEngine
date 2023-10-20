@@ -46,15 +46,10 @@ add_library(
         STATIC
             "${BEAST_SOURCES}"
             "${BEAST_API_FILES}"
-            "Graphics/Rendering/Renderer.h"
-            "Graphics/Rendering/Renderer.cpp"
-            "Graphics/Rendering/Components/Sprite.h"
             "Graphics/D3D11/Context.h"
             "Graphics/D3D11/Context.cpp"
             "Graphics/IContext.h"
-            "Graphics/D3D11/Asserts.h"
-            "Graphics/Types.h"
-  )
+            "Graphics/D3D11/Asserts.h" "Graphics/D3D11/VertexBuffer.h" "Graphics/D3D11/D3D11.h" "Graphics/Components.h")
 target_include_directories(
     BeastCore
         PUBLIC

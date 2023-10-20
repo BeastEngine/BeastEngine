@@ -1,7 +1,7 @@
 #pragma once
-#include <Beast/Input/InputCodes.h>
+#include "Beast/Input/InputCodes.h"
 
-#include <Beast/Math/Types.h>
+#include "Beast/Math/Types.h"
 
 namespace be
 {
