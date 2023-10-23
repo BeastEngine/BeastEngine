@@ -8,8 +8,8 @@
 
 #include <algorithm>
 
-Renderer::Renderer(be::Shared<be::graphics::IContext> context)
-    : m_context(std::move(context))
+Renderer::Renderer(be::Shared<be::graphics::Graphics> graphics)
+    : m_graphics(std::move(graphics))
 {
     //[[maybe_unused]] const auto buffer = m_context->CreateVertexBuffer();
 }
@@ -52,8 +52,8 @@ void Renderer::Run(const be::View<AccessList>& view)
         }
     }
 
-    m_context->Clear({0.6f, 0.2f, 0.3f, 1.0f});
-    m_context->Present();
+    m_graphics->Context().Clear({0.6f, 0.2f, 0.3f, 1.0f});
+    m_graphics->Context().Present();
 
     /**
          * Alternative.

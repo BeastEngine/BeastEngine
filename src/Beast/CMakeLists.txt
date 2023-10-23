@@ -48,8 +48,8 @@ add_library(
             "${BEAST_API_FILES}"
             "Graphics/D3D11/Context.h"
             "Graphics/D3D11/Context.cpp"
-            "Graphics/IContext.h"
-            "Graphics/D3D11/Asserts.h" "Graphics/D3D11/VertexBuffer.h" "Graphics/D3D11/D3D11.h" "Graphics/Components.h")
+            
+            "Graphics/D3D11/Asserts.h" "Graphics/D3D11/VertexBuffer.h" "Graphics/D3D11/D3D11.h" "Graphics/Components.h" "Graphics/Graphics.h" "Graphics/Graphics.cpp" "Graphics/D3D11/Device.h" "Graphics/D3D11/Device.cpp"  "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp")
 target_include_directories(
     BeastCore
         PUBLIC

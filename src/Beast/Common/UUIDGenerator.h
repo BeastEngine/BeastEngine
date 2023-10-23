@@ -1,4 +1,5 @@
-#include "Beast/Common/IdGenerators/UuId4Generator.h"
+#pragma once
+#include "Beast/Common/Types.h"
 #include "Beast/Common/Utils/Hasher.h"
 
 #include <uuid.h>
@@ -6,7 +7,12 @@
 
 namespace be
 {
-    Id UuId4Generator::Generate() const
+    /**
+     * @brief Generates new universally unique identifier (UUIDs) in the form of an integer.
+     * 
+     * @return New, unique Id
+     */
+    [[nodiscard]] inline Id GenerateUUID4()
     {
         std::random_device randomDevice;
         auto seed = std::array<int, std::mt19937::state_size>{};
@@ -16,7 +22,6 @@ namespace be
         std::mt19937 generatorEngine(seedSequence);
         uuids::uuid_random_generator uuidGenerator{generatorEngine};
 
-        const auto id = uuidGenerator();
-        return Hash(id.as_bytes());
+        return Hash(uuidGenerator().as_bytes());
     }
 } // namespace be

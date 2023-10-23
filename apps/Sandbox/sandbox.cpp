@@ -5,7 +5,6 @@
 #include <Beast/Loggers/LoggersFactories.h>
 #include <Beast/Common/Types.h>
 #include <Beast/Common/Utils/Hasher.h>
-#include <Beast/Common/IdGenerators/UuId4Generator.h>
 
 #include <Beast/Ecs/Types.h>
 #include <Beast/Ecs/AccessList.h>
@@ -77,8 +76,8 @@ public:
         auto group2 = scheduler.CreateGroup();
         group2.AttachSystem<Attacher>();
 
-        auto idGenerator = be::MakeShared<be::UuId4Generator>();
-        group2.AttachSystem<Renderer>(be::MakeShared<be::graphics::d3d11::Context>(*m_window, std::move(idGenerator)));
+        be::Shared<be::graphics::Graphics> graphics = GetEngine().CreateGraphics(be::graphics::RenderingApi::D3D11, *m_window);
+        group2.AttachSystem<Renderer>(graphics);
 
         auto group1 = scheduler.CreateGroup();
 

@@ -19,7 +19,3 @@ if (WIN32)
             /ENTRY:wWinMainCRTStartup /SUBSYSTEM:CONSOLE
     )
 endif()
-
-# # Group files into proper folders - for IDE
-# be_group_files("${SANDBOX_HEADERS_LIST}" "${SANDBOX_INCLUDE_DIR}")
-# be_group_files("${SANDBOX_SRC_LIST}" "${SANDBOX_SRC_DIR}")

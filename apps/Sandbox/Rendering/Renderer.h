@@ -1,6 +1,6 @@
 #pragma once
 #include <Beast/Graphics/Components.h>
-#include <Beast/Graphics/IContext.h>
+#include <Beast/Graphics/Graphics.h>
 
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Common/Types.h>
@@ -19,7 +19,7 @@ public:
         using Get = be::Components<be::Sprite>;
     };
 
-    explicit Renderer(be::Shared<be::graphics::IContext> context);
+    explicit Renderer(be::Shared<be::graphics::Graphics> graphics);
     void Run(const be::View<AccessList>& view);
 
 private:
@@ -30,5 +30,5 @@ private:
     };
 
     std::vector<RenderingResource> m_resources;
-    be::Shared<be::graphics::IContext> m_context;
+    be::Shared<be::graphics::Graphics> m_graphics;
 };

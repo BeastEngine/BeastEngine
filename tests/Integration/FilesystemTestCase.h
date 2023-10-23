@@ -3,7 +3,7 @@
 
 #include <Beast/Common/Filesystem/Types.h>
 #include <Beast/Common/Types.h>
-#include <Beast/Common/IdGenerators/UuId4Generator.h>
+#include <Beast/Common/UUIDGenerator.h>
 
 #include <filesystem>
 #include <fstream>
@@ -142,12 +142,11 @@ namespace be::tests::integration
 
         static std::string GenerateRandomString()
         {
-            return std::to_string(ToUnderlying(m_idGenerator.Generate()));
+            return std::to_string(ToUnderlying(GenerateUUID4()));
         }
 
     private:
         static inline FilesystemPath m_globalBaseDirectoryPath = "";
-        static inline UuId4Generator m_idGenerator{};
 
         FilesystemPath m_testCaseBaseDirPath;
     };
