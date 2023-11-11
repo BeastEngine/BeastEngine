@@ -15,9 +15,9 @@ namespace be::graphics::d3d11
     {
         switch (format)
         {
-        case be::graphics::InputLayout::VertexAttribute::Format::Float4:
+        case be::graphics::InputLayout::VertexAttribute::Format::Vec4:
             return DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT;
-        case be::graphics::InputLayout::VertexAttribute::Format::Float2:
+        case be::graphics::InputLayout::VertexAttribute::Format::Vec2:
             return DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT;
         default:
             BE_DEBUG_LOG_WARNING("Given attribute {} is not recognized a supported d3d11 dxgi format.", ToUnderlying(format));
@@ -28,32 +28,25 @@ namespace be::graphics::d3d11
     class VertexShader final
     {
     public:
-        VertexShader(ID3D11Device& device, ID3DBlob& shaderByteCode, const InputLayout& inputLayout)
+        VertexShader(wrl::ComPtr<ID3D11VertexShader> shader, wrl::ComPtr<ID3D11InputLayout> inputLayout)
+            : m_shader(std::move(shader)), m_inputLayout(std::move(inputLayout))
         {
-            CheckResult(device.CreateVertexShader(shaderByteCode.GetBufferPointer(), shaderByteCode.GetBufferSize(), nullptr, &m_shader));
-
-            std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements;
-            inputElements.reserve(inputLayout.vertexAttributes.size());
-            for (const auto& attribute : inputLayout.vertexAttributes)
-            {
-                inputElements.emplace_back(D3D11_INPUT_ELEMENT_DESC{
-                    .SemanticName = attribute.name,
-                    .SemanticIndex = attribute.index,
-                    .Format = ConvertInputElementFormat(attribute.format),
-                    .InputSlot = 0u,
-                    .AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
-                    .InputSlotClass = D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
-                    .InstanceDataStepRate = 0u,
-                });
-            }
-
-            CheckResult(device.CreateInputLayout(inputElements.data(), static_cast<UINT>(inputElements.size()), shaderByteCode.GetBufferPointer(), shaderByteCode.GetBufferSize(), &m_inputLayout));
         }
 
-        void Use(ID3D11DeviceContext& context)
+        /*void Bind(ID3D11DeviceContext& context)
         {
             context.IASetInputLayout(m_inputLayout.Get());
             context.VSSetShader(m_shader.Get(), nullptr, 0u);
+        }*/
+
+        ID3D11VertexShader* GetShader()
+        {
+            return m_shader.Get();
+        }
+
+        ID3D11InputLayout* GetLayout()
+        {
+            return m_inputLayout.Get();
         }
 
     private:

@@ -17,10 +17,13 @@ namespace be::graphics::d3d11
         wrl::ComPtr<IDXGISwapChain> GetSwapChain() const noexcept;
         wrl::ComPtr<ID3D11RenderTargetView> CreateRenderTargetView(IDXGISwapChain& swapChain) const;
 
-        graphics::VertexBuffer CreateVertexBuffer() override;
+        graphics::VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) override;
         graphics::VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) override;
         graphics::PixelShader CreatePixelShader(const FilesystemPath& filepath) override;
 
+        d3d11::VertexBuffer& GetBuffer(graphics::VertexBuffer bufferRef);
+
+        // TODO: Remove
         void Run() override;
 
     private:

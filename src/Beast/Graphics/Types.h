@@ -21,6 +21,7 @@ namespace be::graphics
     {
         Vec2 position;
         Color color;
+        Vec2 uv;
     };
 
     enum class RenderingApi
@@ -39,8 +40,8 @@ namespace be::graphics
         {
             enum class Format
             {
-                Float2,
-                Float4,
+                Vec2,
+                Vec4,
             };
 
             const char* name;

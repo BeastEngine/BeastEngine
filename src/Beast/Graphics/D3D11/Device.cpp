@@ -7,27 +7,34 @@
 
 namespace be::graphics::d3d11
 {
+    static wrl::ComPtr<ID3DBlob> LoadShaderByteCode(const FilesystemPath& shaderFilepath)
+    {
+        wrl::ComPtr<ID3DBlob> shaderByteCode;
+        CheckResult(D3DReadFileToBlob(shaderFilepath.wstring().c_str(), &shaderByteCode));
+
+        return shaderByteCode;
+    }
+
     Device::Device(const IWindow& window)
     {
         const auto hwnd = window.GetHandle();
-        const auto& windowDimensions = window.GetDimensions();
 
         DXGI_SWAP_CHAIN_DESC sd = {};
-        sd.BufferDesc.Width = windowDimensions.x;
-        sd.BufferDesc.Height = windowDimensions.y;
-        sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM ;
-        sd.BufferDesc.RefreshRate.Numerator = 0;
-        sd.BufferDesc.RefreshRate.Denominator = 0;
+        sd.BufferDesc.Width = 0u;
+        sd.BufferDesc.Height = 0u;
+        sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        sd.BufferDesc.RefreshRate.Numerator = 0u;
+        sd.BufferDesc.RefreshRate.Denominator = 0u;
         sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
         sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-        sd.SampleDesc.Count = 1;
-        sd.SampleDesc.Quality = 0;
+        sd.SampleDesc.Count = 1u;
+        sd.SampleDesc.Quality = 0u;
         sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        sd.BufferCount = 1;
+        sd.BufferCount = 1u;
         sd.OutputWindow = hwnd;
         sd.Windowed = TRUE;
         sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-        sd.Flags = 0;
+        sd.Flags = 0u;
 
         const auto result = D3D11CreateDeviceAndSwapChain(
             nullptr,
@@ -35,7 +42,7 @@ namespace be::graphics::d3d11
             nullptr,
             D3D11_CREATE_DEVICE_DEBUG,
             nullptr,
-            0,
+            0u,
             D3D11_SDK_VERSION,
             &sd,
             &m_swapChain,
@@ -61,174 +68,224 @@ namespace be::graphics::d3d11
         wrl::ComPtr<ID3D11RenderTargetView> renderTargetView;
 
         wrl::ComPtr<ID3D11Resource> backBuffer = nullptr;
-        CheckResult(swapChain.GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer));
+        CheckResult(swapChain.GetBuffer(0u, __uuidof(ID3D11Resource), &backBuffer));
         CheckResult(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &renderTargetView));
 
         return renderTargetView;
     }
 
-    graphics::VertexBuffer Device::CreateVertexBuffer()
+    graphics::VertexBuffer Device::CreateVertexBuffer(uint32 stride, uint32 maxSize)
     {
-        graphics::VertexBuffer buffer{.id = GenerateUUID4()};
-        m_vertexBuffers.insert({buffer.id, {*m_device.Get()}});
+        D3D11_BUFFER_DESC bufferDescriptor = {
+            .ByteWidth = maxSize,
+            .Usage = D3D11_USAGE_DYNAMIC,
+            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+            .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+            .MiscFlags = 0,
+            .StructureByteStride = stride,
+        };
+        wrl::ComPtr<ID3D11Buffer> bufferPtr;
+        CheckResult(m_device->CreateBuffer(&bufferDescriptor, nullptr, &bufferPtr));
 
-        return buffer;
+        d3d11::VertexBuffer buffer{std::move(bufferPtr), stride};
+        graphics::VertexBuffer bufferRef{.id = GenerateUUID4()};
+        
+        m_vertexBuffers.insert({bufferRef.id, std::move(buffer)});
+
+        return bufferRef;
     }
 
     graphics::VertexShader Device::CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout)
     {
-        wrl::ComPtr<ID3DBlob> shaderByteCode;
-        CheckResult(D3DReadFileToBlob(filepath.wstring().c_str(), &shaderByteCode));
+        wrl::ComPtr<ID3D11VertexShader> shaderPtr;
+        wrl::ComPtr<ID3D11InputLayout> layoutPtr;
+        wrl::ComPtr<ID3DBlob> shaderByteCode = LoadShaderByteCode(filepath);
 
-        graphics::VertexShader shader{.id = GenerateUUID4()};
-        m_vertexShaders.insert({shader.id, {*m_device.Get(), *shaderByteCode.Get(), inputLayout}});
+        // Create Shader
+        {
+            CheckResult(m_device->CreateVertexShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &shaderPtr));
+        }
 
-        return shader;
+        // Create Input Layout
+        {
+            std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements;
+            inputElements.reserve(inputLayout.vertexAttributes.size());
+            
+            for (const auto& attribute : inputLayout.vertexAttributes)
+            {
+                inputElements.emplace_back(D3D11_INPUT_ELEMENT_DESC{
+                    .SemanticName = attribute.name,
+                    .SemanticIndex = attribute.index,
+                    .Format = ConvertInputElementFormat(attribute.format),
+                    .InputSlot = 0u,
+                    .AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT,
+                    .InputSlotClass = D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
+                    .InstanceDataStepRate = 0u,
+                });
+            }
+            
+            CheckResult(m_device->CreateInputLayout(inputElements.data(), static_cast<UINT>(inputElements.size()), shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), &layoutPtr));
+        }
+
+        d3d11::VertexShader shader{std::move(shaderPtr), std::move(layoutPtr)};
+        graphics::VertexShader shaderRef{.id = GenerateUUID4()};
+
+        m_vertexShaders.insert({shaderRef.id, std::move(shader)});
+
+        return shaderRef;
     }
 
     graphics::PixelShader Device::CreatePixelShader(const FilesystemPath& filepath)
     {
-        wrl::ComPtr<ID3DBlob> shaderByteCode;
-        CheckResult(D3DReadFileToBlob(filepath.wstring().c_str(), &shaderByteCode));
+        wrl::ComPtr<ID3D11PixelShader> shaderPtr;
+        wrl::ComPtr<ID3DBlob> shaderByteCode = LoadShaderByteCode(filepath);        
+        CheckResult(m_device->CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &shaderPtr));
 
-        graphics::PixelShader shader{.id = GenerateUUID4()};
-        m_pixelShaders.insert({shader.id, {*m_device.Get(), *shaderByteCode.Get()}});
+        d3d11::PixelShader shader{std::move(shaderPtr)};
+        graphics::PixelShader shaderRef{.id = GenerateUUID4()};
 
-        return shader;
+        m_pixelShaders.insert({shaderRef.id, std::move(shader)});
+
+        return shaderRef;
+    }
+
+    d3d11::VertexBuffer& Device::GetBuffer(graphics::VertexBuffer bufferRef)
+    {
+        return m_vertexBuffers.at(bufferRef.id);
     }
 
     void Device::Run()
     {
-        static const auto vertexBuffer = CreateVertexBuffer();
-        static const std::vector<Vertex> vertices = {
-            {
-                .position = {-0.5f, -0.5f},
-                .color = {1.0f, 0.0f, 0.0f, 1.0f},
-            },
-            {
-                .position = {0.0f, 0.5f},
-                .color = {0.0f, 1.0f, 0.0f, 1.0f},
-            },
-            {
-                .position = {0.5f, -0.5f},
-                .color = {0.0f, 0.0f, 1.0f, 1.0f},
-            },
-        };
-        auto& buffer = m_vertexBuffers.at(vertexBuffer.id);
-        buffer.Update(*m_context.Get(), vertices);
-        buffer.Bind(*m_context.Get());
-
-        /*const float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-        static const auto renderTargetView = CreateRenderTargetView(*m_swapChain.Get());
-        m_context->ClearRenderTargetView(renderTargetView.Get(), color);*/
-
+        //static const auto vertexBuffer = CreateVertexBuffer();
         //static const std::vector<Vertex> vertices = {
         //    {
-        //        .position = {0.5f, -0.5f},
-        //        //.color = {1.0f, 0.0f, 0.0f, 1.0f},
-        //    },
-        //    {
         //        .position = {-0.5f, -0.5f},
-        //        //.color = {0.0f, 1.0f, 0.0f, 1.0f},
+        //        .color = {1.0f, 0.0f, 0.0f, 1.0f},
         //    },
         //    {
         //        .position = {0.0f, 0.5f},
-        //        //.color = {0.0f, 0.0f, 1.0f, 1.0f},
+        //        .color = {0.0f, 1.0f, 0.0f, 1.0f},
+        //    },
+        //    {
+        //        .position = {0.5f, -0.5f},
+        //        .color = {0.0f, 0.0f, 1.0f, 1.0f},
         //    },
         //};
+        //auto& buffer = m_vertexBuffers.at(vertexBuffer.id);
+        //buffer.Update(*m_context.Get(), vertices);
+        //buffer.Bind(*m_context.Get());
 
-        //wrl::ComPtr<ID3D11Buffer> vertexBuffer;
+        ///*const float color[] = {0.0f, 0.0f, 0.0f, 1.0f};
 
-        //D3D11_BUFFER_DESC bufferDescriptor = {};
-        //bufferDescriptor.ByteWidth = sizeof(Vertex) * 3; // This must be the MAX size of the buffer
-        //bufferDescriptor.Usage = D3D11_USAGE_DEFAULT;
-        //bufferDescriptor.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-        //bufferDescriptor.CPUAccessFlags = 0;
-        //bufferDescriptor.MiscFlags = 0;
-        //bufferDescriptor.StructureByteStride = sizeof(Vertex);
+        //static const auto renderTargetView = CreateRenderTargetView(*m_swapChain.Get());
+        //m_context->ClearRenderTargetView(renderTargetView.Get(), color);*/
 
-        //D3D11_SUBRESOURCE_DATA bufferData = {};
-        //bufferData.pSysMem = vertices.data();
+        ////static const std::vector<Vertex> vertices = {
+        ////    {
+        ////        .position = {0.5f, -0.5f},
+        ////        //.color = {1.0f, 0.0f, 0.0f, 1.0f},
+        ////    },
+        ////    {
+        ////        .position = {-0.5f, -0.5f},
+        ////        //.color = {0.0f, 1.0f, 0.0f, 1.0f},
+        ////    },
+        ////    {
+        ////        .position = {0.0f, 0.5f},
+        ////        //.color = {0.0f, 0.0f, 1.0f, 1.0f},
+        ////    },
+        ////};
 
-        //CheckResult(m_device->CreateBuffer(&bufferDescriptor, &bufferData, &vertexBuffer));
-        //const UINT stride = sizeof(Vertex);
-        //const UINT offset = 0u;
-        //m_context->IASetVertexBuffers(0u, 1u, vertexBuffer.GetAddressOf(), &stride, &offset);
+        ////wrl::ComPtr<ID3D11Buffer> vertexBuffer;
 
-        //// VERTEX SHADER
-        //wrl::ComPtr<ID3D11VertexShader> vShader;
-        //wrl::ComPtr<ID3DBlob> shaderByteCode;
-        //CheckResult(D3DReadFileToBlob(L"VertexShader.cso", &shaderByteCode));
+        ////D3D11_BUFFER_DESC bufferDescriptor = {};
+        ////bufferDescriptor.ByteWidth = sizeof(Vertex) * 3; // This must be the MAX size of the buffer
+        ////bufferDescriptor.Usage = D3D11_USAGE_DEFAULT;
+        ////bufferDescriptor.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+        ////bufferDescriptor.CPUAccessFlags = 0;
+        ////bufferDescriptor.MiscFlags = 0;
+        ////bufferDescriptor.StructureByteStride = sizeof(Vertex);
 
-        //CheckResult(m_device->CreateVertexShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &vShader));
-        //m_context->VSSetShader(vShader.Get(), nullptr, 0);
+        ////D3D11_SUBRESOURCE_DATA bufferData = {};
+        ////bufferData.pSysMem = vertices.data();
 
-        //D3D11_INPUT_ELEMENT_DESC decs{
-        //    .SemanticName = "POSITION",
-        //    .SemanticIndex = 0,
-        //    .Format = DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
-        //    .InputSlot = 0,
-        //    .InputSlotClass = D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
-        //    .InstanceDataStepRate = 0,
+        ////CheckResult(m_device->CreateBuffer(&bufferDescriptor, &bufferData, &vertexBuffer));
+        ////const UINT stride = sizeof(Vertex);
+        ////const UINT offset = 0u;
+        ////m_context->IASetVertexBuffers(0u, 1u, vertexBuffer.GetAddressOf(), &stride, &offset);
+
+        ////// VERTEX SHADER
+        ////wrl::ComPtr<ID3D11VertexShader> vShader;
+        ////wrl::ComPtr<ID3DBlob> shaderByteCode;
+        ////CheckResult(D3DReadFileToBlob(L"VertexShader.cso", &shaderByteCode));
+
+        ////CheckResult(m_device->CreateVertexShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &vShader));
+        ////m_context->VSSetShader(vShader.Get(), nullptr, 0);
+
+        ////D3D11_INPUT_ELEMENT_DESC decs{
+        ////    .SemanticName = "POSITION",
+        ////    .SemanticIndex = 0,
+        ////    .Format = DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT,
+        ////    .InputSlot = 0,
+        ////    .InputSlotClass = D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA,
+        ////    .InstanceDataStepRate = 0,
+        ////};
+
+        ////wrl::ComPtr<ID3D11InputLayout> inputLayout;
+        ////CheckResult(m_device->CreateInputLayout(&decs, 1u, shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), &inputLayout));
+        ////m_context->IASetInputLayout(inputLayout.Get());
+
+        ////// PIXEL SHADER
+        ////wrl::ComPtr<ID3D11PixelShader> pShader;
+        ////CheckResult(D3DReadFileToBlob(L"PixelShader.cso", &shaderByteCode));
+
+        ////CheckResult(m_device->CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &pShader));
+        ////m_context->PSSetShader(pShader.Get(), nullptr, 0u);
+
+        ////// RENDER TARGET
+        //////m_context->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), nullptr);
+
+        ///*D3D11_VIEWPORT d3dViewport{};
+        //d3dViewport.Width = 800.0f;
+        //d3dViewport.Height = 600.0f;
+        //d3dViewport.MinDepth = 0.0f;
+        //d3dViewport.MaxDepth = 1.0f;
+        //d3dViewport.TopLeftX = 0.0f;
+        //d3dViewport.TopLeftY = 0.0f;
+        //m_context->RSSetViewports(1, &d3dViewport);
+
+        //m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        //m_context->Draw(3u, 0u);*/
+
+        //static const InputLayout layout{
+        //    .vertexAttributes = {
+        //        {"POSITION", InputLayout::VertexAttribute::Format::Vec2},
+        //        {"COLOR", InputLayout::VertexAttribute::Format::Vec4},
+        //    },
         //};
+        //static const auto vertexShaderRef = CreateVertexShader("VertexShader.cso", layout);
+        //auto& vertexShader = m_vertexShaders.at(vertexShaderRef.id);
+        //vertexShader.Bind(*m_context.Get());
 
-        //wrl::ComPtr<ID3D11InputLayout> inputLayout;
-        //CheckResult(m_device->CreateInputLayout(&decs, 1u, shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), &inputLayout));
-        //m_context->IASetInputLayout(inputLayout.Get());
+        //static const auto pixelShaderRef = CreatePixelShader("PixelShader.cso");
+        //auto& pixelShader = m_pixelShaders.at(pixelShaderRef.id);
+        //pixelShader.Bind(*m_context.Get());
 
-        //// PIXEL SHADER
-        //wrl::ComPtr<ID3D11PixelShader> pShader;
-        //CheckResult(D3DReadFileToBlob(L"PixelShader.cso", &shaderByteCode));
+        //D3D11_VIEWPORT d3dViewport{};
+        //d3dViewport.Width = 800.0f;
+        //d3dViewport.Height = 600.0f;
+        //d3dViewport.MinDepth = 0.0f;
+        //d3dViewport.MaxDepth = 1.0f;
+        //d3dViewport.TopLeftX = 0.0f;
+        //d3dViewport.TopLeftY = 0.0f;
+        //m_context->RSSetViewports(1, &d3dViewport);
 
-        //CheckResult(m_device->CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &pShader));
-        //m_context->PSSetShader(pShader.Get(), nullptr, 0u);
+        ///*static const auto renderTargetView = CreateRenderTargetView(*m_swapChain.Get());
 
-        //// RENDER TARGET
-        ////m_context->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), nullptr);
+        //m_context->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), m_view.Get());
+        //Color color{0.0f, 0.0f, 0.0f, 1.0f};
+        //m_context->ClearRenderTargetView(renderTargetView.Get(), color.Data());*/
 
-        /*D3D11_VIEWPORT d3dViewport{};
-        d3dViewport.Width = 800.0f;
-        d3dViewport.Height = 600.0f;
-        d3dViewport.MinDepth = 0.0f;
-        d3dViewport.MaxDepth = 1.0f;
-        d3dViewport.TopLeftX = 0.0f;
-        d3dViewport.TopLeftY = 0.0f;
-        m_context->RSSetViewports(1, &d3dViewport);
-
-        m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        m_context->Draw(3u, 0u);*/
-        
-        static const InputLayout layout{
-            .vertexAttributes = {
-                {"POSITION", InputLayout::VertexAttribute::Format::Vec2},
-                {"COLOR", InputLayout::VertexAttribute::Format::Vec4},
-            },
-        };
-        static const auto vertexShaderRef = CreateVertexShader("VertexShader.cso", layout);
-        auto& vertexShader = m_vertexShaders.at(vertexShaderRef.id);
-        vertexShader.Use(*m_context.Get());
-
-        static const auto pixelShaderRef = CreatePixelShader("PixelShader.cso");
-        auto& pixelShader = m_pixelShaders.at(pixelShaderRef.id);
-        pixelShader.Use(*m_context.Get());
-
-        D3D11_VIEWPORT d3dViewport{};
-        d3dViewport.Width = 800.0f;
-        d3dViewport.Height = 600.0f;
-        d3dViewport.MinDepth = 0.0f;
-        d3dViewport.MaxDepth = 1.0f;
-        d3dViewport.TopLeftX = 0.0f;
-        d3dViewport.TopLeftY = 0.0f;
-        m_context->RSSetViewports(1, &d3dViewport);
-
-        /*static const auto renderTargetView = CreateRenderTargetView(*m_swapChain.Get());
-
-        m_context->OMSetRenderTargets(1, renderTargetView.GetAddressOf(), m_view.Get());
-        Color color{0.0f, 0.0f, 0.0f, 1.0f};
-        m_context->ClearRenderTargetView(renderTargetView.Get(), color.Data());*/
-
-        m_context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        m_context->Draw(3, 0);
+        //m_context->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        //m_context->Draw(3, 0);
     }
 } // namespace be::graphics::d3d11

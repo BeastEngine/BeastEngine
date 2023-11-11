@@ -28,7 +28,7 @@ namespace be::graphics
         BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IDevice);
         virtual ~IDevice() = default;
 
-        virtual VertexBuffer CreateVertexBuffer() = 0;
+        virtual VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) = 0;
         virtual VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) = 0;
         virtual PixelShader CreatePixelShader(const FilesystemPath& filepath) = 0;
 

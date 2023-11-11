@@ -14,14 +14,19 @@ namespace be::graphics::d3d11
     class PixelShader final
     {
     public:
-        PixelShader(ID3D11Device& device, ID3DBlob& shaderByteCode)
+        PixelShader(wrl::ComPtr<ID3D11PixelShader> shader)
+            : m_shader(std::move(shader))
         {
-            CheckResult(device.CreatePixelShader(shaderByteCode.GetBufferPointer(), shaderByteCode.GetBufferSize(), nullptr, &m_shader));
         }
 
-        void Use(ID3D11DeviceContext& context)
+        /*void Bind(ID3D11DeviceContext& context)
         {
             context.PSSetShader(m_shader.Get(), nullptr, 0);
+        }*/
+
+        ID3D11PixelShader* GetShader()
+        {
+            return m_shader.Get();
         }
 
     private:

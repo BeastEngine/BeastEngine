@@ -55,7 +55,7 @@
     #define NOPROXYSTUB
     #define NORPC
 
-    // Use Windows types strict mode to increase type safety
+    // Bind Windows types strict mode to increase type safety
     #ifndef STRICT
         #define STRICT
     #endif
