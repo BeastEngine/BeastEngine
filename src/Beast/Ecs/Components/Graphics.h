@@ -2,31 +2,10 @@
 #include "Beast/Common/Types.h"
 #include "Beast/Math/Types.h"
 
+#include "Beast/Graphics/Types.h"
+
 namespace be
 {
-    namespace graphics
-    {
-        struct Color
-        {
-            const float* Data() const
-            {
-                return &r;
-            }
-
-            float r = 1.0f;
-            float g = 1.0f;
-            float b = 1.0f;
-            float a = 1.0f;
-        };
-
-        struct Vertex
-        {
-            Vec2 position;
-            Color color;
-            Vec2 uv;
-        };
-    } // namespace graphics
-
     enum class Layer : uint8
     {
         Back = 0,

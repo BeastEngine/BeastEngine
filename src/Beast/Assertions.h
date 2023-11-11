@@ -7,7 +7,7 @@ namespace be::internals
     #ifdef _MSC_VER
         #define BE_DEBUG_BREAK() DebugBreak()
     #else
-        #define BE_DEBUG_BREAK()
+        #define BE_DEBUG_BREAK() static_assert(false, "Not supported!");
     #endif
 #endif
 

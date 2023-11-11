@@ -10,9 +10,9 @@
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
 #include <Beast/Ecs/SystemsScheduler.h>
+#include <Beast/Ecs/Components/Graphics.h>
 
 #include <Beast/Graphics/D3D11/Context.h>
-#include <Beast/Graphics/Components.h>
 
 #include <entt/entt.hpp>
 
@@ -35,14 +35,15 @@ class Attacher
 public:
     struct AccessList : be::BaseAccessList
     {
-        using Add = be::Components<be::Sprite>;
+        using Add = be::Components<be::Sprite, be::Transform>;
     };
 
     void Run(const be::View<AccessList>& view)
     {
         be::uint32 layer = 0;
-        for (auto entity : view)
+        for (std::size_t i = 0; i < 10; ++i)
         {
+            const auto entity = view.CreateEntity();
             view.AddComponent(
                 entity,
                 be::Sprite{
@@ -82,13 +83,6 @@ public:
         auto group1 = scheduler.CreateGroup();
 
         scheduler.Prepare({group2, group1});
-        m_ecs.world.CreateEntity();
-        m_ecs.world.CreateEntity();
-        m_ecs.world.CreateEntity();
-        m_ecs.world.CreateEntity();
-        m_ecs.world.CreateEntity();
-        m_ecs.world.CreateEntity();
-        m_ecs.world.CreateEntity();
 
         be::Vec2i previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();

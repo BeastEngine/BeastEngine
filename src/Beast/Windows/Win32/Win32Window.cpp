@@ -256,6 +256,11 @@ namespace be::internals
         return m_hwnd;
     }
 
+    const Vec2i& Win32Window::GetDimensions() const noexcept
+    {
+        return m_descriptor.dimensions;
+    }
+
     std::wstring Win32Window::ConvertWindowTitle(const std::string& narrowTitle) const
     {
         const auto wcharBufferSize = MultiByteToWideChar(CP_UTF8, 0, narrowTitle.c_str(), -1, nullptr, 0);

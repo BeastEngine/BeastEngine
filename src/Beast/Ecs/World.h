@@ -3,23 +3,21 @@
 #include "Beast/Ecs/View.h"
 #include "Beast/Ecs/AccessList.h"
 
+#include "Beast/Common/Types.h"
+
 #include <concepts>
 
 namespace be
 {
     class World final
     {
-    public:
-        Entity CreateEntity();
-        [[nodiscard]] bool IsValid(Entity entity) const;
-
-        template<typename Component>
-        constexpr void AddComponent(Entity entity, Component&& component)
+        struct CreateEntityAccessList final : BaseAccessList
         {
-            m_registry.emplace<Component>(entity, std::move(component));
-        }
+            using Add = Components<Transform>;
+        };
 
-        template<typename AL>
+    public:
+        template<typename AL = World::CreateEntityAccessList>
         [[nodiscard]] constexpr auto CreateView() requires std::derived_from<AL, be::BaseAccessList>
         {
             return View<AL>(m_registry);

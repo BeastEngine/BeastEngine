@@ -1,5 +1,7 @@
 #pragma once
 #include "Beast/Ecs/Types.h"
+#include "Beast/Ecs/Components/Core.h"
+
 #include "Beast/Common/Helpers.h"
 
 #include <entt/entity/registry.hpp>
@@ -39,28 +41,28 @@ namespace be
         template<typename Component>
         constexpr const Component& GetComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Get, Component> || ComponentsHave<BaseAccessList::Update, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Get, Component> || ComponentsHave<BaseAccessList::Update, Component>, "Component must be in either the AL::Get or AL::Update list!");
             return m_view.get<const Component>(entity);
         }
 
         template<typename Component>
         constexpr Component& UpdateComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Update, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Update, Component>, "Component must be in the AL::Update list!");
             return m_view.get<Component>(entity);
         }
 
         template<typename Component>
         constexpr void AddComponent(be::Entity entity, Component&& component) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Add, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Add, Component>, "Component must be in the AL::Add list!");
             m_registry.emplace<Component>(entity, std::move(component));
         }
 
         template<typename Component>
         constexpr void RemoveComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Remove, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Remove, Component>, "Component must be in the AL::Remove list!");
             m_registry.remove<Component>(entity);
         }
 
@@ -70,9 +72,31 @@ namespace be
             return m_registry.try_get<Component>(entity) != nullptr;
         }
 
-        constexpr std::size_t Size() const
+        constexpr be::Entity CreateEntity() const
         {
-            return m_view.size();
+            auto entity = m_registry.create();
+            AddComponent<be::Transform>(entity, {});
+
+            return entity;
+        }
+
+        constexpr std::size_t EntitiesCount() const
+        {
+            return std::distance(m_view.begin(), m_view.end());
+
+            /*constexpr bool hasSize = requires(const ViewType& view) {
+                view.size();
+            };
+
+            
+            if constexpr (hasSize)
+            {
+                return m_view.size();
+            }
+            else
+            {
+                return m_view.size_hint();
+            }*/
         }
 
     private:

@@ -1,21 +1,12 @@
 #pragma once
-#include "Beast/Graphics/Components.h"
+#include "Beast/Graphics/Types.h"
 
 #include "Beast/Common/Types.h"
 #include "Beast/Common/Helpers.h"
+#include "Beast/Common/Filesystem/Types.h"
 
 namespace be::graphics
 {
-    enum class RenderingApi
-    {
-        D3D11,
-    };
-
-    struct VertexBuffer
-    {
-        const Id id;
-    };
-
     class IContext
     {
     public:
@@ -25,6 +16,9 @@ namespace be::graphics
 
         virtual void Clear(const Color& color) const noexcept = 0;
         virtual void Present() const noexcept = 0;
+
+        // TODO: Remove!
+        virtual void Run() = 0;
     };
 
     class IDevice
@@ -35,6 +29,11 @@ namespace be::graphics
         virtual ~IDevice() = default;
 
         virtual VertexBuffer CreateVertexBuffer() = 0;
+        virtual VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) = 0;
+        virtual PixelShader CreatePixelShader(const FilesystemPath& filepath) = 0;
+
+        // TODO: Remove!
+        virtual void Run() = 0;
     };
 
     class Graphics final

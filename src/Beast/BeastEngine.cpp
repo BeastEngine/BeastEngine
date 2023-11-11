@@ -1,8 +1,11 @@
 #include "Beast/BeastEngine.h"
 #include "Beast/Versions.h"
 #include "Beast/Windows/WindowFactory.h"
+
 #include "Beast/Loggers/LoggersFactories.h"
 #include "Beast/Loggers/StaticLogger.h"
+
+#include "Beast/Graphics/GraphicsFactory.h"
 
 #include <fmt/color.h>
 
@@ -14,7 +17,6 @@ namespace be
     {
         SetLogger(config);
         SetWindowFactory(config);
-        SetGraphicsFactory(config);
     }
 
     void BeastEngine::PrintInfo() const
@@ -31,7 +33,7 @@ namespace be
 
     Unique<graphics::Graphics> BeastEngine::CreateGraphics(graphics::RenderingApi api, const IWindow& window) const
     {
-        return m_graphicsFactory->Create(api, window);
+        return internals::CreateGraphics(api, window);
     }
 
     void BeastEngine::SetLogger(EngineConfig& config)
@@ -51,15 +53,6 @@ namespace be
         if (m_windowFactory == nullptr)
         {
             m_windowFactory = MakeUnique<internals::WindowFactory>();
-        }
-    }
-
-    void BeastEngine::SetGraphicsFactory(EngineConfig& config)
-    {
-        m_graphicsFactory = std::move(config.graphicsFactory);
-        if (m_graphicsFactory == nullptr)
-        {
-            m_graphicsFactory = MakeUnique<graphics::DefaultGraphicsFactory>();
         }
     }
 } // namespace be

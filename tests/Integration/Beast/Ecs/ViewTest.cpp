@@ -1,5 +1,6 @@
 #include <Beast/Ecs/World.h>
 #include <Beast/Ecs/View.h>
+#include <Beast/Ecs/Components/Core.h>
 
 #include <gtest/gtest.h>
 
@@ -15,6 +16,11 @@ namespace be::tests::integration
         const char* data = "TestComponent2";
     };
 
+    struct AddComponentAL : BaseAccessList
+    {
+        using Add = Components<TestComponent1, TestComponent2, Transform>;
+    };
+
     class ViewTest : public testing::Test
     {
     };
@@ -27,14 +33,16 @@ namespace be::tests::integration
         };
 
         World world;
-        const auto entity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto entity2 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity2, {});
+        const auto entity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity1, {});
 
-        const auto entity3 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity3, {});
+        const auto entity2 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity2, {});
+
+        const auto entity3 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity3, {});
 
         std::vector<be::Entity> expectedEntities{entity1, entity2, entity3};
         std::size_t actualEntitiesCount = 0;
@@ -61,15 +69,17 @@ namespace be::tests::integration
         std::size_t expectedEntitiesCount = 1;
 
         World world;
-        const auto entity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto entity2 = world.CreateEntity();
-        world.AddComponent<TestComponent2>(entity2, {});
+        const auto entity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity1, {});
 
-        const auto entity3 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity3, {});
-        world.AddComponent<TestComponent2>(entity3, {});
+        const auto entity2 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent2>(entity2, {});
+
+        const auto entity3 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity3, {});
+        creatorView.AddComponent<TestComponent2>(entity3, {});
 
         const auto expectedEntity = entity3;
         std::size_t actualEntitiesCount = 0;
@@ -95,14 +105,16 @@ namespace be::tests::integration
         };
 
         World world;
-        const auto entity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto entity2 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity2, {});
+        const auto entity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity1, {});
 
-        const auto entity3 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity3, {});
+        const auto entity2 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity2, {});
+
+        const auto entity3 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity3, {});
 
         std::vector<be::Entity> expectedEntities{entity1, entity2, entity3};
         std::size_t actualEntitiesCount = 0;
@@ -129,15 +141,17 @@ namespace be::tests::integration
         std::size_t expectedEntitiesCount = 1;
 
         World world;
-        const auto entity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto entity2 = world.CreateEntity();
-        world.AddComponent<TestComponent2>(entity2, {});
+        const auto entity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity1, {});
 
-        const auto entity3 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity3, {});
-        world.AddComponent<TestComponent2>(entity3, {});
+        const auto entity2 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent2>(entity2, {});
+
+        const auto entity3 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity3, {});
+        creatorView.AddComponent<TestComponent2>(entity3, {});
 
         const auto expectedEntity = entity3;
         std::size_t actualEntitiesCount = 0;
@@ -163,14 +177,16 @@ namespace be::tests::integration
         };
 
         World world;
-        const auto entity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto entity2 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity2, {});
+        const auto entity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity1, {});
 
-        const auto entity3 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity3, {});
+        const auto entity2 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity2, {});
+
+        const auto entity3 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity3, {});
 
         std::vector<be::Entity> expectedEntities{entity1, entity2, entity3};
         std::size_t actualEntitiesCount = 0;
@@ -197,15 +213,17 @@ namespace be::tests::integration
         std::size_t expectedEntitiesCount = 1;
 
         World world;
-        const auto entity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto entity2 = world.CreateEntity();
-        world.AddComponent<TestComponent2>(entity2, {});
+        const auto entity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity1, {});
 
-        const auto entity3 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(entity3, {});
-        world.AddComponent<TestComponent2>(entity3, {});
+        const auto entity2 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent2>(entity2, {});
+
+        const auto entity3 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(entity3, {});
+        creatorView.AddComponent<TestComponent2>(entity3, {});
 
         const auto expectedEntity = entity3;
         std::size_t actualEntitiesCount = 0;
@@ -233,10 +251,12 @@ namespace be::tests::integration
         std::size_t expectedEntitiesCount = 1;
 
         World world;
-        const auto excludedEntity = world.CreateEntity();
-        world.AddComponent<TestComponent1>(excludedEntity, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto includedEntity = world.CreateEntity();
+        const auto excludedEntity = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(excludedEntity, {});
+
+        const auto includedEntity = creatorView.CreateEntity();
         std::size_t actualEntitiesCount = 0;
 
         const auto sut = world.CreateView<AL>();
@@ -263,13 +283,15 @@ namespace be::tests::integration
         std::size_t expectedEntitiesCount = 1;
 
         World world;
-        const auto excludedEntity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(excludedEntity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto excludedEntity2 = world.CreateEntity();
-        world.AddComponent<TestComponent2>(excludedEntity2, {});
+        const auto excludedEntity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(excludedEntity1, {});
 
-        const auto includedEntity = world.CreateEntity();
+        const auto excludedEntity2 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent2>(excludedEntity2, {});
+
+        const auto includedEntity = creatorView.CreateEntity();
         std::size_t actualEntitiesCount = 0;
 
         const auto sut = world.CreateView<AL>();
@@ -288,18 +310,20 @@ namespace be::tests::integration
     }
 
     template<typename AL>
-    static constexpr void RunAddCombined()
+    static void RunAddCombined()
     {
         std::size_t expectedEntitiesCount = 1;
 
         World world;
-        const auto excludedEntity1 = world.CreateEntity();
-        world.AddComponent<TestComponent1>(excludedEntity1, {});
+        const auto creatorView = world.CreateView<AddComponentAL>();
 
-        const auto excludedEntity2 = world.CreateEntity();
+        const auto excludedEntity1 = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent1>(excludedEntity1, {});
 
-        const auto includedEntity = world.CreateEntity();
-        world.AddComponent<TestComponent2>(includedEntity, {});
+        const auto excludedEntity2 = creatorView.CreateEntity();
+
+        const auto includedEntity = creatorView.CreateEntity();
+        creatorView.AddComponent<TestComponent2>(includedEntity, {});
 
         std::size_t actualEntitiesCount = 0;
 
@@ -361,16 +385,151 @@ namespace be::tests::integration
         const std::size_t expectedSize = 5;
 
         World world;
+        const auto creatorView = world.CreateView<AddComponentAL>();
+
         std::vector<be::Entity> entities(expectedSize);
-        std::generate(entities.begin(), entities.end(), [&world]() {
-            auto entity = world.CreateEntity();
-            world.AddComponent<TestComponent1>(entity, {});
+        std::generate(entities.begin(), entities.end(), [&creatorView]() {
+            auto entity = creatorView.CreateEntity();
+            creatorView.AddComponent<TestComponent1>(entity, {});
+            
             return entity;
         });
 
-        [[maybe_unused]] const auto excludedEntity = world.CreateEntity();
+        [[maybe_unused]] const auto excludedEntity = creatorView.CreateEntity();
 
         auto sut = world.CreateView<AL>();
-        ASSERT_EQ(expectedSize, sut.Size());
+        ASSERT_EQ(expectedSize, sut.EntitiesCount());
     }
+
+    TEST_F(ViewTest, CreateEntityWillAddNewEntityToTheWorld)
+    {
+        struct AL : BaseAccessList
+        {
+            using Get = Components<Transform>;
+        };
+
+        World world;
+        const auto creatorView = world.CreateView<AddComponentAL>();
+
+        const auto entitiesCountBefore = creatorView.EntitiesCount();
+        creatorView.CreateEntity();
+
+        auto sut = world.CreateView<AL>();
+
+        const auto entitiesCountAfter = sut.EntitiesCount();
+        ASSERT_NE(entitiesCountBefore, entitiesCountAfter);
+        ASSERT_EQ(1, entitiesCountAfter);
+    }
+
+    TEST_F(ViewTest, CreateEntityWillAssignTransformComponent)
+    {
+        struct AssignAL : BaseAccessList
+        {
+            using Add = Components<Transform>;
+        };
+
+        struct GetAL : BaseAccessList
+        {
+            using Get = Components<Transform>;
+        };
+
+        const std::size_t expectedEntitiesCount = 1;
+
+        World world;
+
+        auto getViewBefore = world.CreateView<GetAL>();
+        const auto countBefore = getViewBefore.EntitiesCount();
+
+        auto createView = world.CreateView<AssignAL>();
+        createView.CreateEntity();
+
+        auto getViewAfter = world.CreateView<GetAL>();
+        const auto countAfter = getViewAfter.EntitiesCount();
+
+        ASSERT_EQ(0, countBefore);
+        ASSERT_EQ(expectedEntitiesCount, countAfter);
+    }
+
+    TEST_F(ViewTest, EntitiesCountWillReturnNumberOfEntitiesForSingleComponent)
+    {
+        struct AL : BaseAccessList
+        {
+            using Get = Components<Transform>;
+        };
+
+        const auto expectedSize = 5;
+        World world;
+
+        const auto creatorView = world.CreateView();
+        for (std::size_t i = 0; i < expectedSize; ++i)
+        {
+            creatorView.CreateEntity();
+        }
+        
+        const auto sut = world.CreateView<AL>();
+        ASSERT_EQ(expectedSize, sut.EntitiesCount());
+    }
+
+    TEST_F(ViewTest, EntitiesCountWillReturnNumberOfEntitiesWithAllComponentsAssigned)
+    {
+        struct CreatorAL : BaseAccessList
+        {
+            using Add = Components<Transform, TestComponent1, TestComponent2>;
+        };
+
+        struct GetterAL : BaseAccessList
+        {
+            using Get = Components<Transform, TestComponent1, TestComponent2>;
+        };
+
+        const auto expectedSize = 5;
+        World world;
+
+        const auto creatorView = world.CreateView<CreatorAL>();
+        for (std::size_t i = 0; i < expectedSize; ++i)
+        {
+            const auto entity = creatorView.CreateEntity();
+            creatorView.AddComponent(entity, TestComponent1{});
+            creatorView.AddComponent(entity, TestComponent2{});
+        }
+
+        const auto sut = world.CreateView<GetterAL>();
+        ASSERT_EQ(expectedSize, sut.EntitiesCount());
+    }
+
+    TEST_F(ViewTest, EntitiesCountWillReturnNumberOfOnlyTheEntitiesThatHaveAllComponentsAssigned)
+    {
+        struct CreatorAL : BaseAccessList
+        {
+            using Add = Components<Transform, TestComponent1, TestComponent2>;
+        };
+
+        struct GetterAL : BaseAccessList
+        {
+            using Get = Components<Transform, TestComponent1, TestComponent2>;
+        };
+
+        const auto expectedSize = 1;
+        World world;
+
+        const auto creatorView = world.CreateView<CreatorAL>();
+        
+        creatorView.CreateEntity();
+        creatorView.CreateEntity();
+        
+        auto entity = creatorView.CreateEntity();
+        creatorView.AddComponent(entity, TestComponent1{});
+
+        entity = creatorView.CreateEntity();
+        creatorView.AddComponent(entity, TestComponent2{});
+
+        // Only this one has all three components. Transform is assigned automatically.
+        entity = creatorView.CreateEntity();
+        creatorView.AddComponent(entity, TestComponent1{});
+        creatorView.AddComponent(entity, TestComponent2{});
+
+        const auto sut = world.CreateView<GetterAL>();
+        ASSERT_EQ(expectedSize, sut.EntitiesCount());
+    }
+    // TODO: Add proper tests for checking the size of the view in different scenarios
 }; // namespace be::tests::integration

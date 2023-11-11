@@ -1,4 +1,5 @@
 add_subdirectory(Common)
+add_subdirectory(Graphics/D3D11/Shaders)
 
 set(
     BEAST_API_FILES
@@ -33,7 +34,7 @@ set(
     "Windows/Win32/Win32Window.h"
     "Windows/WindowFactory.cpp"
     "Windows/WindowFactory.h"
- "Ecs/World.cpp" "Ecs/SystemsScheduler.cpp")
+  "Ecs/SystemsScheduler.cpp")
 
 if(WIN32)
     list(APPEND BEAST_SOURCES "beastengine.dll.manifest")
@@ -49,7 +50,7 @@ add_library(
             "Graphics/D3D11/Context.h"
             "Graphics/D3D11/Context.cpp"
             
-            "Graphics/D3D11/Asserts.h" "Graphics/D3D11/VertexBuffer.h" "Graphics/D3D11/D3D11.h" "Graphics/Components.h" "Graphics/Graphics.h" "Graphics/Graphics.cpp" "Graphics/D3D11/Device.h" "Graphics/D3D11/Device.cpp"  "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp")
+            "Graphics/D3D11/Asserts.h" "Graphics/D3D11/VertexBuffer.h" "Graphics/D3D11/D3D11.h"  "Graphics/Graphics.h" "Graphics/Graphics.cpp" "Graphics/D3D11/Device.h" "Graphics/D3D11/Device.cpp"  "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp" "Ecs/Components/Core.h" "Graphics/Renderer.h" "Graphics/Renderer.cpp" "Graphics/D3D11/VertexShader.h" "Graphics/Types.h" "Ecs/Components/Graphics.h" "Graphics/D3D11/PixelShader.h")
 target_include_directories(
     BeastCore
         PUBLIC
@@ -70,6 +71,7 @@ target_link_libraries(
         EnTT::EnTT
         glm::glm
 )
+add_dependencies(BeastCore BeCoreShaders)
 
 set(BEAST_DEBUGGING_DEFINES)
 if (${BE_ENABLE_DEBUG_INFO})

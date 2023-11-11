@@ -1,5 +1,7 @@
 #pragma once
-#include <Beast/Graphics/Components.h>
+#include <Beast/Ecs/Components/Core.h>
+#include <Beast/Ecs/Components/Graphics.h>
+
 #include <Beast/Graphics/Graphics.h>
 
 #include <Beast/Ecs/AccessList.h>
@@ -16,7 +18,7 @@ class Renderer final
 public:
     struct AccessList : be::BaseAccessList
     {
-        using Get = be::Components<be::Sprite>;
+        using Get = be::Components<be::Sprite, be::Transform>;
     };
 
     explicit Renderer(be::Shared<be::graphics::Graphics> graphics);

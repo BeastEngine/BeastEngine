@@ -8,7 +8,7 @@
 #include "Beast/Common/Helpers.h"
 #include "Beast/Common/Types.h"
 
-#include "Beast/Graphics/GraphicsFactory.h"
+#include "Beast/Graphics/Graphics.h"
 
 namespace be
 {
@@ -28,12 +28,6 @@ namespace be
          * If set to nullptr, the default engine's implementation will be used.
          */
         Unique<IWindowFactory> windowFactory = nullptr;
-
-        /**
-         * @brief IGraphicsFactory implementation that will be used to create graphics adapters by the engine.
-         * If set to nullptr, the default engine's implementation will be used.
-         */
-        Unique<graphics::IGraphicsFactory> graphicsFactory = nullptr;
     };
 
     /**
@@ -66,15 +60,20 @@ namespace be
          */
         Unique<IWindow> CreateNewWindow(const WindowDescriptor& descriptor) const;
 
+        /**
+         * @brief Creates an instance of the Graphics Adapter implementation of the given \p api for given \p window.
+         * The adapter can be used to create rendering resources and issue rendering commands.
+         * 
+         * @param api - Rendering API that should be used underneath. @see graphics::RenderingApi
+         * @param window - The windows instance that will be used as a target for rendering
+         */
         Unique<graphics::Graphics> CreateGraphics(graphics::RenderingApi api, const IWindow& window) const;
 
     private:
         void SetLogger(EngineConfig& config);
         void SetWindowFactory(EngineConfig& config);
-        void SetGraphicsFactory(EngineConfig& config);
 
     private:
         Unique<IWindowFactory> m_windowFactory = nullptr;
-        Unique<graphics::IGraphicsFactory> m_graphicsFactory = nullptr;
     };
 } // namespace be

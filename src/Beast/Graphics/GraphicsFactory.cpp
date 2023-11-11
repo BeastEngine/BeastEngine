@@ -6,19 +6,19 @@
     #include "Beast/Graphics/D3D11/Context.h"
 #endif
 
-namespace be::graphics
+namespace be::internals
 {
-    Unique<Graphics> DefaultGraphicsFactory::Create(RenderingApi api, const IWindow& window) const
+    Unique<graphics::Graphics> CreateGraphics(graphics::RenderingApi api, const IWindow& window)
     {
         switch (api)
         {
         case be::graphics::RenderingApi::D3D11:
 #ifdef BE_PLATFORM_WINDOWS
         {
-            auto device = MakeUnique<d3d11::Device>(window);
-            auto context = MakeUnique<d3d11::Context>(*device);
+            auto device = MakeUnique<graphics::d3d11::Device>(window);
+            auto context = MakeUnique<graphics::d3d11::Context>(*device);
 
-            return MakeUnique<Graphics>(std::move(context), std::move(device));
+            return MakeUnique<graphics::Graphics>(std::move(context), std::move(device));
         }
 
         break;

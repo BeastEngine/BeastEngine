@@ -1,19 +1,14 @@
-#include <Integration/Beast/Ecs/WorldTest.h>
-
 #include <Beast/Ecs/World.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/Types.h>
 
+#include <gtest/gtest.h>
+
 namespace be::tests::integration
 {
-    TEST_F(WorldTest, CreateEntityWillAddNewEntityToTheWorld)
+    class WorldTest : public testing::Test
     {
-        World sut;
-        const auto newEntity = sut.CreateEntity();
-
-        ASSERT_TRUE(newEntity != NULL_ENTITY);
-        ASSERT_TRUE(sut.IsValid(newEntity));
-    }
+    };
 
     struct TestComponent
     {
@@ -22,50 +17,39 @@ namespace be::tests::integration
 
     TEST_F(WorldTest, CreateViewWillCreateViewWithSpecifiedGetAccessList)
     {
-        struct TestComponent
-        {
-            int data = 10;
-        };
-
         struct AL : BaseAccessList
         {
-            using Get = Components<TestComponent>;
+            using Get = Components<Transform>;
         };
 
         World sut;
-        const auto entity = sut.CreateEntity();
-        sut.AddComponent<TestComponent>(entity, {});
+        const auto entity = sut.CreateView().CreateEntity();
 
         const auto view = sut.CreateView<AL>();
 
-        const TestComponent expectedComponent{};
-        const auto& actualComponent = view.GetComponent<TestComponent>(entity);
-        ASSERT_EQ(expectedComponent.data, actualComponent.data);
+        const Transform expectedComponent{};
+        const auto& actualComponent = view.GetComponent<Transform>(entity);
+
+        ASSERT_EQ(expectedComponent.position, actualComponent.position);
     }
 
     TEST_F(WorldTest, CreateViewWillCreateViewWithSpecifiedUpdateAccessList)
     {
-        struct TestComponent
-        {
-            int data = 10;
-        };
-
         struct AL : BaseAccessList
         {
-            using Update = Components<TestComponent>;
+            using Update = Components<Transform>;
         };
 
         World sut;
-        const auto entity = sut.CreateEntity();
-        sut.AddComponent<TestComponent>(entity, {});
+        const auto entity = sut.CreateView().CreateEntity();
 
         const auto view = sut.CreateView<AL>();
 
-        auto& firstComponent = view.UpdateComponent<TestComponent>(entity);
-        firstComponent.data = 5;
+        auto& firstComponent = view.UpdateComponent<Transform>(entity);
+        firstComponent.position.x = 5;
 
-        auto& secondCompoent = view.UpdateComponent<TestComponent>(entity);
-        ASSERT_EQ(firstComponent.data, secondCompoent.data);
+        auto& secondCompoent = view.UpdateComponent<Transform>(entity);
+        ASSERT_EQ(firstComponent.position, secondCompoent.position);
     }
 
     TEST_F(WorldTest, CreateViewWillCreateViewWithSpecifiedAddAccessList)
@@ -83,16 +67,16 @@ namespace be::tests::integration
         const int expectedData = 15;
 
         World sut;
-        const auto entity = sut.CreateEntity();
+        const auto entity = sut.CreateView().CreateEntity();
 
         const auto view = sut.CreateView<TestedAL>();
-        view.AddComponent<TestComponent>(entity, {.data=expectedData});
+        view.AddComponent<TestComponent>(entity, {.data = expectedData});
 
         struct AL : BaseAccessList
         {
             using Get = Components<TestComponent>;
         };
-        
+
         const auto secondView = sut.CreateView<AL>();
         const auto& component = secondView.GetComponent<TestComponent>(entity);
         ASSERT_EQ(expectedData, component.data);
@@ -100,24 +84,36 @@ namespace be::tests::integration
 
     TEST_F(WorldTest, CreateViewWillCreateViewWithSpecifiedRemoveAccessList)
     {
-        struct TestComponent
-        {
-            int data = 10;
-        };
-
         struct AL : BaseAccessList
         {
-            using Remove = Components<TestComponent>;
+            using Remove = Components<Transform>;
         };
 
         World sut;
-        const auto entity = sut.CreateEntity();
-        sut.AddComponent<TestComponent>(entity, {});
+        const auto entity = sut.CreateView().CreateEntity();
 
         const auto view = sut.CreateView<AL>();
-        ASSERT_TRUE(view.HasComponent<TestComponent>(entity));
-        
-        view.RemoveComponent<TestComponent>(entity);
-        ASSERT_FALSE(view.HasComponent<TestComponent>(entity));
+        ASSERT_TRUE(view.HasComponent<Transform>(entity));
+
+        view.RemoveComponent<Transform>(entity);
+        ASSERT_FALSE(view.HasComponent<Transform>(entity));
     }
-}
+
+    TEST_F(WorldTest, CreateViewWithDefaultParameterWillReturnViewCapableOfCreatingEntities)
+    {
+        struct GetTransformAL : BaseAccessList
+        {
+            using Get = Components<Transform>;
+        };
+
+        World sut;
+        const auto verifierView = sut.CreateView<GetTransformAL>();
+        ASSERT_EQ(0, verifierView.EntitiesCount());
+
+        const auto view = sut.CreateView();
+        const auto entity =view.CreateEntity();
+
+        ASSERT_EQ(1, verifierView.EntitiesCount());
+        ASSERT_TRUE(verifierView.HasComponent<Transform>(entity));
+    }
+} // namespace be::tests::integration

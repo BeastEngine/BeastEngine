@@ -52,6 +52,8 @@ namespace be::internals
          */
         WindowHandle GetHandle() const noexcept override;
 
+        const Vec2i& GetDimensions() const noexcept override;
+
     private:
         /**
          * @brief Converts std::string into WinAPI's wide string.
