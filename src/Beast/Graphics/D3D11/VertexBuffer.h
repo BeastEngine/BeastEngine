@@ -22,7 +22,7 @@ namespace be::graphics::d3d11
             context.IASetVertexBuffers(inputSlot, 1, m_bufferPtr.GetAddressOf(), &m_stride, &m_offset);
         }*/
 
-        void Update(ID3D11DeviceContext& context, std::span<const Vertex> data)
+        void Update(ID3D11DeviceContext& context, std::span<const Vertex> data) const
         {
             D3D11_MAPPED_SUBRESOURCE subresource;
             CheckResult(context.Map(m_bufferPtr.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
@@ -32,12 +32,12 @@ namespace be::graphics::d3d11
             context.Unmap(m_bufferPtr.Get(), 0);
         }
 
-        uint32 Stride() const
+        const uint32 Stride() const
         {
             return m_stride;
         }
 
-        ID3D11Buffer** BufferAddress()
+        ID3D11Buffer* const* BufferAddress() const
         {
             return m_bufferPtr.GetAddressOf();
         }

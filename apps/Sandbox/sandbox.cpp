@@ -1,5 +1,3 @@
-#include "Rendering/Renderer.h"
-
 #include <Beast/EntryPoint.h>
 #include <Beast/BeastEngine.h>
 #include <Beast/Loggers/LoggersFactories.h>
@@ -64,7 +62,7 @@ public:
     BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor)
         : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger"))
     {
-        m_window->SetWindowClosedEventHandler(OnWindowClosed());
+        m_window->SetWindowClosedEventHandler(OnWindowClosedCustom());
         m_mouse->SetWheelScrolledListener(OnWheelScrolled());
     }
 
@@ -77,8 +75,8 @@ public:
         auto group2 = scheduler.CreateGroup();
         group2.AttachSystem<Attacher>();
 
-        be::Shared<be::graphics::Graphics> graphics = GetEngine().CreateGraphics(be::graphics::RenderingApi::D3D11, *m_window);
-        group2.AttachSystem<Renderer>(graphics);
+        /*be::Shared<be::graphics::Graphics> graphics = GetEngine().CreateGraphics(be::graphics::RenderingApi::D3D11, *m_window);
+        group2.AttachSystem<Renderer>(graphics);*/
 
         auto group1 = scheduler.CreateGroup();
 
@@ -107,7 +105,7 @@ public:
     }
 
 private:
-    be::WindowClosedEventHandler OnWindowClosed()
+    be::WindowClosedEventHandler OnWindowClosedCustom()
     {
         return [&]() {
             m_isRunning = false;

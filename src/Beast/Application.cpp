@@ -106,5 +106,7 @@ namespace be
         m_window = m_engine->CreateNewWindow(mainWindowDescriptor);
         m_mouse = MakeUnique<Mouse>(*m_window);
         m_keyboard = MakeUnique<Keyboard>(*m_window);
+
+        m_window->SetWindowClosedEventHandler(OnWindowClosed());
     }
 } // namespace be

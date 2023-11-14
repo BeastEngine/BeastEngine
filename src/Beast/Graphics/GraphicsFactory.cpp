@@ -18,7 +18,7 @@ namespace be::internals
             auto device = MakeUnique<graphics::d3d11::Device>(window);
             auto context = MakeUnique<graphics::d3d11::Context>(*device);
 
-            return MakeUnique<graphics::Graphics>(std::move(context), std::move(device));
+            return MakeUnique<graphics::Graphics>(std::move(device), std::move(context));
         }
 
         break;

@@ -21,7 +21,9 @@ namespace be::graphics::d3d11
         graphics::VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) override;
         graphics::PixelShader CreatePixelShader(const FilesystemPath& filepath) override;
 
-        d3d11::VertexBuffer& GetBuffer(graphics::VertexBuffer bufferRef);
+        const d3d11::VertexBuffer& GetBuffer(graphics::VertexBuffer bufferRef) const;
+        const d3d11::VertexShader& GetShader(graphics::VertexShader shaderRef) const;
+        const d3d11::PixelShader& GetShader(graphics::PixelShader shaderRef) const;
 
         // TODO: Remove
         void Run() override;

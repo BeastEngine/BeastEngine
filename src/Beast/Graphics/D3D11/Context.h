@@ -11,10 +11,11 @@ namespace be::graphics::d3d11
     public:
         Context(Device& device);
 
+        void Draw(const Pipeline& pipeline) const noexcept override;
         void Clear(const Color& color) const noexcept override;
         void Present() const noexcept override;
 
-        void Run() override;
+        void UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) override;
 
     private:
         Device& m_device;

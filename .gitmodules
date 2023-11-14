@@ -1,0 +1,3 @@
+[submodule "apps/AV"]
+	path = apps/AV
+	url = https://github.com/BeastEngine/AV

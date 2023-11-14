@@ -50,7 +50,7 @@ add_library(
             "Graphics/D3D11/Context.h"
             "Graphics/D3D11/Context.cpp"
             
-            "Graphics/D3D11/Asserts.h" "Graphics/D3D11/VertexBuffer.h" "Graphics/D3D11/D3D11.h"  "Graphics/Graphics.h" "Graphics/Graphics.cpp" "Graphics/D3D11/Device.h" "Graphics/D3D11/Device.cpp"  "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp" "Ecs/Components/Core.h" "Graphics/Renderer.h" "Graphics/Renderer.cpp" "Graphics/D3D11/VertexShader.h" "Graphics/Types.h" "Ecs/Components/Graphics.h" "Graphics/D3D11/PixelShader.h")
+            "Graphics/D3D11/Asserts.h" "Graphics/D3D11/VertexBuffer.h" "Graphics/D3D11/D3D11.h"  "Graphics/Graphics.h" "Graphics/Graphics.cpp" "Graphics/D3D11/Device.h" "Graphics/D3D11/Device.cpp"  "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp" "Ecs/Components/Core.h" "Graphics/2DRenderer.h" "Graphics/2DRenderer.cpp" "Graphics/D3D11/VertexShader.h" "Graphics/Types.h" "Ecs/Components/Graphics.h" "Graphics/D3D11/PixelShader.h" "Logging.h" "Ecs.h")
 target_include_directories(
     BeastCore
         PUBLIC
@@ -73,7 +73,7 @@ target_link_libraries(
 )
 add_dependencies(BeastCore BeCoreShaders)
 
-set(BEAST_DEBUGGING_DEFINES)
+set(BEAST_DEBUGGING_DEFINES $<$<CONFIG:Debug>:BE_DEBUG>)
 if (${BE_ENABLE_DEBUG_INFO})
     list(APPEND BEAST_DEBUGGING_DEFINES BE_DEBUGGING_INFO_ENABLED)
 endif()

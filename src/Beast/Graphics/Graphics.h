@@ -7,6 +7,37 @@
 
 namespace be::graphics
 {
+    struct Pipeline
+    {
+        struct VSStage
+        {
+            VertexShader shader;
+        };
+
+        struct PSStage
+        {
+            PixelShader shader;
+        };
+
+        struct Viewport
+        {
+            Vec2 dimensions;
+        };
+
+        struct DrawCall
+        {
+            uint32 firstVertexIndex = 0;
+            uint32 vertexCount = 3;
+        };
+
+        VertexBuffer vertexBuffer;
+        VSStage vertexShaderStage;
+        PSStage pixelShaderStage;
+        Viewport viewport;
+
+        DrawCall drawCall;
+    };
+
     class IContext
     {
     public:
@@ -14,11 +45,11 @@ namespace be::graphics
         BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IContext);
         virtual ~IContext() = default;
 
+        virtual void Draw(const Pipeline& pipeline) const noexcept = 0;
         virtual void Clear(const Color& color) const noexcept = 0;
         virtual void Present() const noexcept = 0;
 
-        // TODO: Remove!
-        virtual void Run() = 0;
+        virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) = 0;
     };
 
     class IDevice
@@ -39,13 +70,13 @@ namespace be::graphics
     class Graphics final
     {
     public:
-        Graphics(Unique<IContext> context, Unique<IDevice> device);
+        Graphics(Unique<IDevice> device, Unique<IContext> context);
 
         IContext& Context();
         IDevice& Device();
 
     private:
-        Unique<IContext> m_context;
         Unique<IDevice> m_device;
+        Unique<IContext> m_context;
     };
 } // namespace be::graphics

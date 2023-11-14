@@ -2,9 +2,8 @@
 
 namespace be::graphics
 {
-    Graphics::Graphics(Unique<IContext> context, Unique<IDevice> device)
-        : m_context(std::move(context)),
-          m_device(std::move(device))
+    Graphics::Graphics(Unique<IDevice> device, Unique<IContext> context)
+        : m_device(std::move(device)), m_context(std::move(context))
     {
     }
 

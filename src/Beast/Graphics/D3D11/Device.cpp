@@ -149,9 +149,19 @@ namespace be::graphics::d3d11
         return shaderRef;
     }
 
-    d3d11::VertexBuffer& Device::GetBuffer(graphics::VertexBuffer bufferRef)
+    const d3d11::VertexBuffer& Device::GetBuffer(graphics::VertexBuffer bufferRef) const
     {
         return m_vertexBuffers.at(bufferRef.id);
+    }
+
+    const d3d11::VertexShader& Device::GetShader(graphics::VertexShader shaderRef) const
+    {
+        return m_vertexShaders.at(shaderRef.id);
+    }
+
+    const d3d11::PixelShader& Device::GetShader(graphics::PixelShader shaderRef) const
+    {
+        return m_pixelShaders.at(shaderRef.id);
     }
 
     void Device::Run()

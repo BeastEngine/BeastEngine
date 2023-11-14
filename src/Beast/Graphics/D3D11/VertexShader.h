@@ -39,12 +39,12 @@ namespace be::graphics::d3d11
             context.VSSetShader(m_shader.Get(), nullptr, 0u);
         }*/
 
-        ID3D11VertexShader* GetShader()
+        ID3D11VertexShader* GetShader() const
         {
             return m_shader.Get();
         }
 
-        ID3D11InputLayout* GetLayout()
+        ID3D11InputLayout* GetLayout() const
         {
             return m_inputLayout.Get();
         }

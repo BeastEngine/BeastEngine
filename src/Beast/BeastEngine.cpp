@@ -31,7 +31,7 @@ namespace be
         return m_windowFactory->Create(descriptor);
     }
 
-    Unique<graphics::Graphics> BeastEngine::CreateGraphics(graphics::RenderingApi api, const IWindow& window) const
+    Unique<graphics::Graphics> BeastEngine::CreateGraphics(const IWindow& window, graphics::RenderingApi api) const
     {
         return internals::CreateGraphics(api, window);
     }

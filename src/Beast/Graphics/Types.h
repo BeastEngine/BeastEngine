@@ -31,7 +31,7 @@ namespace be::graphics
 
     struct VertexBuffer
     {
-        const Id id;
+        Id id;
     };
 
     struct InputLayout
@@ -54,11 +54,11 @@ namespace be::graphics
 
     struct VertexShader
     {
-        const Id id;
+        Id id;
     };
 
     struct PixelShader
     {
-        const Id id;
+        Id id;
     };
 }

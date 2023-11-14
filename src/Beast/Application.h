@@ -156,12 +156,21 @@ namespace be
             return *m_engine;
         }
 
+    private:
+        be::WindowClosedEventHandler OnWindowClosed()
+        {
+            return [&]() {
+                m_shouldClose = true;
+            };
+        }
+
     protected:
         Unique<Mouse> m_mouse = nullptr;
         Unique<Keyboard> m_keyboard = nullptr;
         Unique<IWindow> m_window = nullptr;
 
         Ecs m_ecs;
+        bool m_shouldClose = false;
 
     private:
         Unique<BeastEngine> m_engine;

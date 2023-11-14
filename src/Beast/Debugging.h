@@ -44,4 +44,12 @@ namespace be::internals
         #define BE_DEBUG_LOG_FATAL_ERROR(message, ...)
     #endif
 #endif
+
+#ifdef BE_DEBUG
+    #define BE_DEBUG_FIELD(field) field
+    #define BE_DEBUG_EXPRESSION(expression) expression
+#else
+    #define BE_DEBUG_FIELD(field)
+    #define BE_DEBUG_EXPRESSION(expression)
+#endif
 } // namespace be::internals

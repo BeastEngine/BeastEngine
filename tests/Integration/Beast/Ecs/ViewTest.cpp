@@ -391,7 +391,7 @@ namespace be::tests::integration
         std::generate(entities.begin(), entities.end(), [&creatorView]() {
             auto entity = creatorView.CreateEntity();
             creatorView.AddComponent<TestComponent1>(entity, {});
-            
+
             return entity;
         });
 
@@ -441,13 +441,43 @@ namespace be::tests::integration
         const auto countBefore = getViewBefore.EntitiesCount();
 
         auto createView = world.CreateView<AssignAL>();
-        createView.CreateEntity();
+        const auto createdEntity = createView.CreateEntity();
 
         auto getViewAfter = world.CreateView<GetAL>();
         const auto countAfter = getViewAfter.EntitiesCount();
 
+        const auto& actualTransform = getViewAfter.GetComponent<Transform>(createdEntity);
+
         ASSERT_EQ(0, countBefore);
         ASSERT_EQ(expectedEntitiesCount, countAfter);
+        ASSERT_EQ(Transform{}, actualTransform);
+    }
+
+    TEST_F(ViewTest, CreateEntityWillAssignGivenTransformComponent)
+    {
+        struct AssignAL : BaseAccessList
+        {
+            using Add = Components<Transform>;
+        };
+
+        struct GetAL : BaseAccessList
+        {
+            using Get = Components<Transform>;
+        };
+
+        Transform expectedTransform{
+            .position = {7654.0f, -123143.f},
+        };
+
+        World world;
+
+        auto createView = world.CreateView<AssignAL>();
+        const auto createdEntity = createView.CreateEntity(expectedTransform);
+
+        auto getViewAfter = world.CreateView<GetAL>();
+        const auto& actualTransform = getViewAfter.GetComponent<Transform>(createdEntity);
+
+        ASSERT_EQ(expectedTransform, actualTransform);
     }
 
     TEST_F(ViewTest, EntitiesCountWillReturnNumberOfEntitiesForSingleComponent)
@@ -465,7 +495,7 @@ namespace be::tests::integration
         {
             creatorView.CreateEntity();
         }
-        
+
         const auto sut = world.CreateView<AL>();
         ASSERT_EQ(expectedSize, sut.EntitiesCount());
     }
@@ -513,10 +543,10 @@ namespace be::tests::integration
         World world;
 
         const auto creatorView = world.CreateView<CreatorAL>();
-        
+
         creatorView.CreateEntity();
         creatorView.CreateEntity();
-        
+
         auto entity = creatorView.CreateEntity();
         creatorView.AddComponent(entity, TestComponent1{});
 
