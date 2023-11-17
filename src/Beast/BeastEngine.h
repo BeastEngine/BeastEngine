@@ -67,7 +67,7 @@ namespace be
          * @param api - Rendering API that should be used underneath. @see graphics::RenderingApi
          * @param window - The windows instance that will be used as a target for rendering
          */
-        Unique<graphics::Graphics> CreateGraphics(const IWindow& window, graphics::RenderingApi api = graphics::RenderingApi::D3D11) const;
+        Unique<graphics::IGraphics> CreateGraphics(const IWindow& window, graphics::RenderingApi api = graphics::RenderingApi::D3D11) const;
 
     private:
         void SetLogger(EngineConfig& config);

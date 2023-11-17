@@ -19,14 +19,14 @@ namespace be::graphics
         };
 
     public:
-        explicit Renderer2D(be::Unique<Graphics> graphics);
+        explicit Renderer2D(be::Unique<IGraphics> graphics);
 
         void StartFrame();
         void AddSprite(const Transform& transform, const Sprite& sprite);
         void EndFrame();
 
     private:
-        be::Unique<Graphics> m_graphics;
+        be::Unique<IGraphics> m_graphics;
         std::vector<Primitive> m_framePrimitives;
 
         bool m_hasFrameStarted = false;

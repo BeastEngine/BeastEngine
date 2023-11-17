@@ -1,18 +1,53 @@
 #include "Beast/Graphics/D3D11/D3D11.h"
 #include "Beast/Graphics/D3D11/Device.h"
+#include "Beast/Graphics/D3D11/Context.h"
 
 #include "Beast/Common/UUIDGenerator.h"
 
 #include <d3dcompiler.h>
 
+#pragma comment(lib, "DXGI.lib")
+
 namespace be::graphics::d3d11
 {
     static wrl::ComPtr<ID3DBlob> LoadShaderByteCode(const FilesystemPath& shaderFilepath)
     {
+        if (!std::filesystem::exists(shaderFilepath))
+        {
+            throw std::runtime_error("placeholder");
+        }
+
         wrl::ComPtr<ID3DBlob> shaderByteCode;
         CheckResult(D3DReadFileToBlob(shaderFilepath.wstring().c_str(), &shaderByteCode));
 
         return shaderByteCode;
+    }
+
+    std::vector<IDXGIAdapter*> EnumerateAdapters(void)
+    {
+        IDXGIAdapter* pAdapter;
+        std::vector<IDXGIAdapter*> vAdapters;
+        IDXGIFactory1* pFactory = NULL;
+
+        // Create a DXGIFactory object.
+        if (FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&pFactory)))
+        {
+            return vAdapters;
+        }
+
+        for (UINT i = 0;
+             pFactory->EnumAdapters(i, &pAdapter) != DXGI_ERROR_NOT_FOUND;
+             ++i)
+        {
+            vAdapters.push_back(pAdapter);
+        }
+
+        if (pFactory)
+        {
+            pFactory->Release();
+        }
+
+        return vAdapters;
     }
 
     Device::Device(const IWindow& window)
@@ -51,27 +86,38 @@ namespace be::graphics::d3d11
             &m_context
         );
         CheckResult(result);
+
+        m_renderContext = MakeUnique<Context>(*this, m_swapChain.Get(), m_context.Get(), CreateRenderTargetView(*m_swapChain.Get()));
+
+        const auto adapters = EnumerateAdapters();
+        for (auto* pAdapter : adapters)
+        {
+            IDXGIOutput* pOutput = NULL;
+
+            CheckResult(pAdapter->EnumOutputs(0, &pOutput));
+            
+            UINT numModes = 0;
+            DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+
+            // Get the number of elements
+            CheckResult(pOutput->GetDisplayModeList(format, 0, &numModes, NULL));
+
+            std::vector<DXGI_MODE_DESC> displayModes(numModes);
+
+            // Get the list
+            CheckResult(pOutput->GetDisplayModeList(format, 0, &numModes, displayModes.data()));
+
+            for (const auto& mode : displayModes)
+            {
+                BE_DEBUG_LOG_INFO("[width: {}, height: {}]", mode.Width, mode.Height);
+            }
+        }
     }
 
-    wrl::ComPtr<ID3D11DeviceContext> Device::GetContext() const noexcept
+    Device::~Device()
     {
-        return m_context;
-    }
-
-    wrl::ComPtr<IDXGISwapChain> Device::GetSwapChain() const noexcept
-    {
-        return m_swapChain;
-    }
-
-    wrl::ComPtr<ID3D11RenderTargetView> Device::CreateRenderTargetView(IDXGISwapChain& swapChain) const
-    {
-        wrl::ComPtr<ID3D11RenderTargetView> renderTargetView;
-
-        wrl::ComPtr<ID3D11Resource> backBuffer = nullptr;
-        CheckResult(swapChain.GetBuffer(0u, __uuidof(ID3D11Resource), &backBuffer));
-        CheckResult(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &renderTargetView));
-
-        return renderTargetView;
+        // Make sure this is destroyed first as it internally references "*this"
+        m_renderContext.reset();
     }
 
     graphics::VertexBuffer Device::CreateVertexBuffer(uint32 stride, uint32 maxSize)
@@ -147,6 +193,22 @@ namespace be::graphics::d3d11
         m_pixelShaders.insert({shaderRef.id, std::move(shader)});
 
         return shaderRef;
+    }
+
+    const IRenderContext& Device::GetContext() const noexcept
+    {
+        return *m_renderContext;
+    }
+
+    wrl::ComPtr<ID3D11RenderTargetView> Device::CreateRenderTargetView(IDXGISwapChain& swapChain) const
+    {
+        wrl::ComPtr<ID3D11RenderTargetView> renderTargetView;
+
+        wrl::ComPtr<ID3D11Resource> backBuffer = nullptr;
+        CheckResult(swapChain.GetBuffer(0u, __uuidof(ID3D11Resource), &backBuffer));
+        CheckResult(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &renderTargetView));
+
+        return renderTargetView;
     }
 
     const d3d11::VertexBuffer& Device::GetBuffer(graphics::VertexBuffer bufferRef) const

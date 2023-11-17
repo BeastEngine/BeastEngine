@@ -1,14 +1,12 @@
 #include "Beast/Graphics/D3D11/Context.h"
 #include "Beast/Graphics/D3D11/Asserts.h"
+#include "Beast/Graphics/D3D11/Device.h"
 
 namespace be::graphics::d3d11
 {
-    Context::Context(Device& device)
-        : m_device(device)
+    Context::Context(Device& device, IDXGISwapChain* swapChain, ID3D11DeviceContext* context, wrl::ComPtr<ID3D11RenderTargetView> renderTargetView)
+        : m_device(device), m_swapChain(swapChain), m_context(context), m_renderTargetView(std::move(renderTargetView))
     {
-        m_context = m_device.GetContext();
-        m_swapChain = m_device.GetSwapChain();
-        m_renderTargetView = m_device.CreateRenderTargetView(*m_swapChain.Get());
     }
 
     void Context::Draw(const Pipeline& pipeline) const noexcept
@@ -19,7 +17,6 @@ namespace be::graphics::d3d11
             const auto stride = buffer.Stride();
             const uint32 offset = 0;
 
-            // TODO: Make sure the &buffer.Stride() isn't risky!
             m_context->IASetVertexBuffers(0, 1, buffer.BufferAddress(), &stride, &offset);
         }
 
@@ -67,8 +64,8 @@ namespace be::graphics::d3d11
         Assert(m_swapChain->Present(1, 0));
     }
 
-    void Context::UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies)
+    void Context::UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) const
     {
-        m_device.GetBuffer(buffer).Update(*m_context.Get(), verticies);
+        m_device.GetBuffer(buffer).Update(*m_context, verticies);
     }
 } // namespace be::graphics::d3d11

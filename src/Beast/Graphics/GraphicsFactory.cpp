@@ -8,17 +8,14 @@
 
 namespace be::internals
 {
-    Unique<graphics::Graphics> CreateGraphics(graphics::RenderingApi api, const IWindow& window)
+    Unique<graphics::IGraphics> CreateGraphics(graphics::RenderingApi api, const IWindow& window)
     {
         switch (api)
         {
         case be::graphics::RenderingApi::D3D11:
 #ifdef BE_PLATFORM_WINDOWS
         {
-            auto device = MakeUnique<graphics::d3d11::Device>(window);
-            auto context = MakeUnique<graphics::d3d11::Context>(*device);
-
-            return MakeUnique<graphics::Graphics>(std::move(device), std::move(context));
+            return MakeUnique<graphics::d3d11::Device>(window);
         }
 
         break;

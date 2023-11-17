@@ -5,6 +5,11 @@
 #include "Beast/Common/Helpers.h"
 #include "Beast/Common/Filesystem/Types.h"
 
+namespace be
+{
+    class IWindow;
+}
+
 namespace be::graphics
 {
     struct Pipeline
@@ -38,45 +43,48 @@ namespace be::graphics
         DrawCall drawCall;
     };
 
-    class IContext
+    class IRenderContext
     {
     public:
-        IContext() = default;
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IContext);
-        virtual ~IContext() = default;
+        IRenderContext() = default;
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IRenderContext);
+        virtual ~IRenderContext() = default;
 
         virtual void Draw(const Pipeline& pipeline) const noexcept = 0;
         virtual void Clear(const Color& color) const noexcept = 0;
         virtual void Present() const noexcept = 0;
 
-        virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) = 0;
+        virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) const = 0;
     };
 
-    class IDevice
+    class IGraphics
     {
     public:
-        IDevice() = default;
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IDevice);
-        virtual ~IDevice() = default;
+        IGraphics() = default;
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IGraphics);
+        virtual ~IGraphics() = default;
 
         virtual VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) = 0;
         virtual VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) = 0;
         virtual PixelShader CreatePixelShader(const FilesystemPath& filepath) = 0;
 
+        virtual const IRenderContext& GetContext() const noexcept = 0;
+        
         // TODO: Remove!
         virtual void Run() = 0;
     };
 
-    class Graphics final
+    /*class Graphics final
     {
     public:
-        Graphics(Unique<IDevice> device, Unique<IContext> context);
+        Graphics(RenderingApi api, be::IWindow& window);
+        ~Graphics();
 
-        IContext& Context();
-        IDevice& Device();
+        IRenderContext& Context();
+        IGraphics& Device();
 
     private:
-        Unique<IDevice> m_device;
-        Unique<IContext> m_context;
-    };
+        Unique<IGraphics> m_device;
+        Unique<IRenderContext> m_context;
+    };*/
 } // namespace be::graphics

@@ -9,18 +9,26 @@
 
 namespace be::graphics::d3d11
 {
-    class Device final : public IDevice
+    class Device final : public IGraphics
     {
     public:
         Device(const IWindow& window);
-        wrl::ComPtr<ID3D11DeviceContext> GetContext() const noexcept;
+        ~Device() override;
+        
+        /*wrl::ComPtr<ID3D11DeviceContext> GetContext() const noexcept;
         wrl::ComPtr<IDXGISwapChain> GetSwapChain() const noexcept;
-        wrl::ComPtr<ID3D11RenderTargetView> CreateRenderTargetView(IDXGISwapChain& swapChain) const;
+        wrl::ComPtr<ID3D11RenderTargetView> CreateRenderTargetView(IDXGISwapChain& swapChain) const;*/
 
+        // Public API
         graphics::VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) override;
         graphics::VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) override;
         graphics::PixelShader CreatePixelShader(const FilesystemPath& filepath) override;
 
+        const IRenderContext& GetContext() const noexcept;
+
+        // Internal API
+        wrl::ComPtr<ID3D11RenderTargetView> CreateRenderTargetView(IDXGISwapChain& swapChain) const;
+        
         const d3d11::VertexBuffer& GetBuffer(graphics::VertexBuffer bufferRef) const;
         const d3d11::VertexShader& GetShader(graphics::VertexShader shaderRef) const;
         const d3d11::PixelShader& GetShader(graphics::PixelShader shaderRef) const;
@@ -40,5 +48,7 @@ namespace be::graphics::d3d11
         // TEMP
         wrl::ComPtr<ID3D11Texture2D> m_bufferPtr;
         wrl::ComPtr<ID3D11DepthStencilView> m_view;
+
+        Unique<IRenderContext> m_renderContext;
     };
 }

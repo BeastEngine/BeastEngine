@@ -4,10 +4,10 @@
 
 namespace be::graphics
 {
-    Renderer2D::Renderer2D(be::Unique<Graphics> graphics)
+    Renderer2D::Renderer2D(be::Unique<IGraphics> graphics)
         : m_graphics(std::move(graphics))
     {
-        m_buffer = m_graphics->Device().CreateVertexBuffer(sizeof(Vertex), sizeof(Vertex) * 3 * 1000);
+        m_buffer = m_graphics->CreateVertexBuffer(sizeof(Vertex), sizeof(Vertex) * 3 * 1000);
         be::graphics::InputLayout layout{
             .vertexAttributes = {
                 {"POSITION", be::graphics::InputLayout::VertexAttribute::Format::Vec2},
@@ -16,8 +16,8 @@ namespace be::graphics
             },
         };
 
-        m_vertexShader = m_graphics->Device().CreateVertexShader("VertexShader.cso", layout);
-        m_pixelShader = m_graphics->Device().CreatePixelShader("PixelShader.cso");
+        m_vertexShader = m_graphics->CreateVertexShader("VertexShader.cso", layout);
+        m_pixelShader = m_graphics->CreatePixelShader("PixelShader.cso");
     }
 
     void Renderer2D::StartFrame()
@@ -45,7 +45,7 @@ namespace be::graphics
         {
             const uint32 verticesCount = static_cast<uint32>(m_framePrimitives.size() * 3u);
 
-            auto& ctx = m_graphics->Context();
+            const auto& ctx = m_graphics->GetContext();
             std::vector<Vertex> vertices;
             vertices.reserve(verticesCount);
 
