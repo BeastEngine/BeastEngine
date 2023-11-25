@@ -5,7 +5,7 @@
 #include "Beast/Graphics/Graphics.h"
 #include "Beast/Graphics/Types.h"
 
-#include "Beast/Debugging.h"
+#include "Beast/Debug.h"
 
 namespace be::graphics
 {

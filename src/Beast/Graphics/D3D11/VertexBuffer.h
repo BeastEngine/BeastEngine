@@ -1,6 +1,6 @@
 #pragma once
 #include "Beast/Graphics/D3D11/D3D11.h"
-#include "Beast/Graphics/D3D11/Asserts.h"
+#include "Beast/Graphics/D3D11/Debug.h"
 #include "Beast/Graphics/Types.h"
 
 #include "Beast/Common/Types.h"
@@ -25,7 +25,7 @@ namespace be::graphics::d3d11
         void Update(ID3D11DeviceContext& context, std::span<const Vertex> data) const
         {
             D3D11_MAPPED_SUBRESOURCE subresource;
-            CheckResult(context.Map(m_bufferPtr.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
+            BE_DX_CALL(context.Map(m_bufferPtr.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
             {
                 memcpy(subresource.pData, data.data(), data.size() * m_stride);
             }

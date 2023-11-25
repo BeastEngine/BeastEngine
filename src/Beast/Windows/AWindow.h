@@ -1,6 +1,6 @@
 #pragma once
 #include "Beast/Windows/IWindow.h"
-#include "Beast/Debugging.h"
+#include "Beast/Debug.h"
 
 #include "Beast/Common/Types.h"
 

@@ -3,7 +3,7 @@
 #include "Beast/Graphics/Types.h"
 #include "Beast/Common/Types.h"
 
-#include "Beast/Debugging.h"
+#include "Beast/Debug.h"
 
 #include <vector>
 

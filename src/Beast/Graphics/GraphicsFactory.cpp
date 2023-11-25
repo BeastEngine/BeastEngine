@@ -1,5 +1,5 @@
 #include "Beast/Graphics/GraphicsFactory.h"
-#include "Beast/Common/Exceptions.h"
+#include "Beast/Debug.h"
 
 #ifdef BE_PLATFORM_WINDOWS
     #include "Beast/Graphics/D3D11/Device.h"

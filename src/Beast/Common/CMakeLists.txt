@@ -1,7 +1,7 @@
 add_library(
 	BeastCommon
 	INTERFACE
-		"Exceptions.h"
+		
 		"Helpers.h"
 		"Types.h"
 		"Filesystem/Types.h"

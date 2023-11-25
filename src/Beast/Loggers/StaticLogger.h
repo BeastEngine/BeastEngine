@@ -4,12 +4,17 @@
 #include "Beast/Common/Types.h"
 #include "Beast/Common/Helpers.h"
 
+namespace be
+{
+    class BeastEngine;
+}
+
 namespace be::internals
 {
     using LoggerPtr = Shared<Logger>;
     class StaticLogger final
     {
-        friend class BeastEngine;
+        friend class be::BeastEngine;
 
     public:
         BE_IMPLEMENT_CLASS_NOT_CONSTRUCTIBLE(StaticLogger);

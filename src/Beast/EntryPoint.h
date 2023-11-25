@@ -33,7 +33,7 @@ BE_MAIN()
         application->Run();
     }
     catch (const std::exception& ex)
-    {
+     {
         printf(ex.what());
     }
 

@@ -1,5 +1,5 @@
 #include "Beast/Graphics/D3D11/Context.h"
-#include "Beast/Graphics/D3D11/Asserts.h"
+#include "Beast/Graphics/D3D11/Debug.h"
 #include "Beast/Graphics/D3D11/Device.h"
 
 namespace be::graphics::d3d11
@@ -61,7 +61,7 @@ namespace be::graphics::d3d11
 
     void graphics::d3d11::Context::Present() const noexcept
     {
-        Assert(m_swapChain->Present(1, 0));
+        BE_DX_CALL(m_swapChain->Present(1, 0));
     }
 
     void Context::UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) const

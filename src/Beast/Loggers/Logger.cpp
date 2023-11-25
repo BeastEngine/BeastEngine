@@ -1,6 +1,5 @@
 #include "Beast/Loggers/Logger.h"
-
-#include "Beast/Common/Exceptions.h"
+#include "Beast/Debug.h"
 
 namespace be
 {

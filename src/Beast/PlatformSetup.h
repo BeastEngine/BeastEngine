@@ -62,6 +62,8 @@
     #include <Windows.h>
 #endif
 
+#include "Beast/Debug.h"
+
 namespace be
 {
 #ifndef BE_WINDOW_HANDLE_INSTANCE_TYPE
@@ -72,5 +74,20 @@ namespace be
     #else
         #error "No instance defined for this platform!"
     #endif
+#endif
+
+#ifndef BE_WINAPI_CALL
+    #define BE_WINAPI_CALL(call)                                                                                    \
+        {                                                                                                           \
+            SetLastError(0);                                                                                        \
+            const auto winapiCallResult = call;                                                                     \
+            const auto lastError = GetLastError();                                                                  \
+            if (winapiCallResult == 0 && lastError != 0)                                                            \
+            {                                                                                                       \
+                const std::string errorMessage =                                                                    \
+                    "An error occurred when calling the WinApi function. Error code: " + std::to_string(lastError); \
+                BE_THROW(errorMessage);                                                                             \
+            }                                                                                                       \
+        }
 #endif
 } // namespace be

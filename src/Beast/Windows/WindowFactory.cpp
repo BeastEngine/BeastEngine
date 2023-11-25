@@ -7,7 +7,7 @@
     #include <string>
 #endif
 
-#include "Beast/Common/Exceptions.h"
+#include "Beast/Debug.h"
 
 namespace be::internals
 {

@@ -1,6 +1,6 @@
 #include "Beast/Graphics/2DRenderer.h"
 
-#include "Beast/Assertions.h"
+#include "Beast/Debug.h"
 
 namespace be::graphics
 {
@@ -16,7 +16,7 @@ namespace be::graphics
             },
         };
 
-        m_vertexShader = m_graphics->CreateVertexShader("VertexShader.cso", layout);
+        m_vertexShader = m_graphics->CreateVertexShader("VertexShader.csoo", layout);
         m_pixelShader = m_graphics->CreatePixelShader("PixelShader.cso");
     }
 

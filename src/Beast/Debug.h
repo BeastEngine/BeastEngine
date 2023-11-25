@@ -1,0 +1,129 @@
+#pragma once
+#include "Beast/Loggers/StaticLogger.h"
+
+#include <format>
+
+namespace be::internals
+{
+#ifndef BE_DEBUG_MESSAGE
+    #define BE_DEBUG_MESSAGE(message) "[{}:{}] *** " message " ***", __FILE__, __LINE__
+#endif
+
+#ifndef BE_DEBUG_LOG_INFO
+    #ifdef BE_DEBUGGING_INFO_ENABLED
+        #define BE_DEBUG_LOG_INFO(message, ...) \
+            internals::StaticLogger::LogInfo(BE_DEBUG_MESSAGE(message), __VA_ARGS__);
+    #else
+        #define BE_DEBUG_LOG_INFO(message, ...)
+    #endif
+#endif
+
+#ifndef BE_DEBUG_LOG_WARNING
+    #ifdef BE_DEBUGGING_INFO_ENABLED
+        #define BE_DEBUG_LOG_WARNING(message, ...) \
+            internals::StaticLogger::LogWarning(BE_DEBUG_MESSAGE(message), __VA_ARGS__)
+    #else
+        #define BE_DEBUG_LOG_WARNING(message, ...)
+    #endif
+#endif
+
+#ifndef BE_DEBUG_LOG_ERROR
+    #ifdef BE_DEBUGGING_INFO_ENABLED
+        #define BE_DEBUG_LOG_ERROR(message, ...) \
+            internals::StaticLogger::LogError(message, __VA_ARGS__)
+    #else
+        #define BE_DEBUG_LOG_ERROR(message, ...)
+    #endif
+#endif
+
+#ifndef BE_DEBUG_LOG_FATAL_ERROR
+    #ifdef BE_DEBUGGING_INFO_ENABLED
+        #define BE_DEBUG_LOG_FATAL_ERROR(message, ...) \
+            internals::StaticLogger::LogFatalError(BE_DEBUG_MESSAGE(message), __VA_ARGS__)
+    #else
+        #define BE_DEBUG_LOG_FATAL_ERROR(message, ...)
+    #endif
+#endif
+
+#ifdef BE_DEBUG
+    #define BE_DEBUG_FIELD(field)           field
+    #define BE_DEBUG_EXPRESSION(expression) expression
+#else
+    #define BE_DEBUG_FIELD(field)
+    #define BE_DEBUG_EXPRESSION(expression)
+#endif
+
+#ifndef BE_DEBUG_BREAK
+    #ifdef _MSC_VER
+        #define BE_DEBUG_BREAK() __debugbreak();
+    #else
+        #define BE_DEBUG_BREAK() static_assert(false, "Not supported!");
+    #endif
+#endif
+
+#ifndef BE_CRITICAL_ASSERT
+    #ifdef BE_ASSERTIONS_ENABLED
+        #define BE_CRITICAL_ASSERT(expression)                                                                                \
+            if (expression)                                                                                                   \
+            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */                                    \
+            }                                                                                                                 \
+            else                                                                                                              \
+            {                                                                                                                 \
+                BE_DEBUG_LOG_FATAL_ERROR("The critical '{}' assertion failed! It evaluated to: {}", #expression, expression); \
+                BE_DEBUG_BREAK();                                                                                             \
+            }
+    #else
+        #define BE_CRITICAL_ASSERT(expression)
+    #endif
+#endif
+
+#ifndef BE_ASSERT
+    #ifdef BE_ASSERTIONS_ENABLED
+        #define BE_ASSERT(expression)
+
+    #else
+        #define BE_ASSERT(expression)
+    #endif
+#endif
+
+#ifndef BE_ASSERT_ALWAYS
+    #define BE_ASSERT_ALWAYS(expression)                                                                   \
+        if (expression)                                                                                    \
+        { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */                     \
+        }                                                                                                  \
+        else                                                                                               \
+        {                                                                                                  \
+            BE_DEBUG_LOG_ERROR("The '{}' assertion failed! It evaluated to: {}", #expression, expression); \
+            BE_DEBUG_BREAK();                                                                              \
+        }
+#endif
+
+#ifndef BE_ASSERT_MSG
+    #ifdef BE_ASSERTIONS_ENABLED
+        #define BE_ASSERT_MSG(expression, fmt, ...)                                        \
+            if (expression)                                                                \
+            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */ \
+            }                                                                              \
+            else                                                                           \
+            {                                                                              \
+                BE_DEBUG_LOG_ERROR(fmt, __VA_ARGS__);                                      \
+                BE_DEBUG_BREAK();                                                          \
+            }
+    #else
+        #define BE_ASSERT_MSG(expression, fmt, ...)
+    #endif
+#endif
+
+#ifndef BE_EXCEPTION_MESSAGE
+    #ifdef BE_DEBUG
+        #define BE_EXCEPTION_MESSAGE(message) std::format("{}\nFile: {}\nLine: {}", message, __FILE__, __LINE__)
+    #else
+        #define BE_EXCEPTION_MESSAGE(message) message
+    #endif
+#endif
+
+#ifndef BE_THROW
+    #define BE_THROW(message)        throw std::runtime_error(BE_EXCEPTION_MESSAGE(message))
+    #define BE_THROW_FROM(exception) throw std::runtime_error(BE_EXCEPTION_MESSAGE(exception.what()));
+#endif
+} // namespace be::internals

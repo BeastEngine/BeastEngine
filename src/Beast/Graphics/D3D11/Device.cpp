@@ -12,13 +12,8 @@ namespace be::graphics::d3d11
 {
     static wrl::ComPtr<ID3DBlob> LoadShaderByteCode(const FilesystemPath& shaderFilepath)
     {
-        if (!std::filesystem::exists(shaderFilepath))
-        {
-            throw std::runtime_error("placeholder");
-        }
-
         wrl::ComPtr<ID3DBlob> shaderByteCode;
-        CheckResult(D3DReadFileToBlob(shaderFilepath.wstring().c_str(), &shaderByteCode));
+        BE_DX_CALL(D3DReadFileToBlob(shaderFilepath.wstring().c_str(), &shaderByteCode));
 
         return shaderByteCode;
     }
@@ -85,33 +80,9 @@ namespace be::graphics::d3d11
             nullptr,
             &m_context
         );
-        CheckResult(result);
+        BE_DX_CALL(result);
 
         m_renderContext = MakeUnique<Context>(*this, m_swapChain.Get(), m_context.Get(), CreateRenderTargetView(*m_swapChain.Get()));
-
-        const auto adapters = EnumerateAdapters();
-        for (auto* pAdapter : adapters)
-        {
-            IDXGIOutput* pOutput = NULL;
-
-            CheckResult(pAdapter->EnumOutputs(0, &pOutput));
-            
-            UINT numModes = 0;
-            DXGI_FORMAT format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-
-            // Get the number of elements
-            CheckResult(pOutput->GetDisplayModeList(format, 0, &numModes, NULL));
-
-            std::vector<DXGI_MODE_DESC> displayModes(numModes);
-
-            // Get the list
-            CheckResult(pOutput->GetDisplayModeList(format, 0, &numModes, displayModes.data()));
-
-            for (const auto& mode : displayModes)
-            {
-                BE_DEBUG_LOG_INFO("[width: {}, height: {}]", mode.Width, mode.Height);
-            }
-        }
     }
 
     Device::~Device()
@@ -131,7 +102,7 @@ namespace be::graphics::d3d11
             .StructureByteStride = stride,
         };
         wrl::ComPtr<ID3D11Buffer> bufferPtr;
-        CheckResult(m_device->CreateBuffer(&bufferDescriptor, nullptr, &bufferPtr));
+        BE_DX_CALL(m_device->CreateBuffer(&bufferDescriptor, nullptr, &bufferPtr));
 
         d3d11::VertexBuffer buffer{std::move(bufferPtr), stride};
         graphics::VertexBuffer bufferRef{.id = GenerateUUID4()};
@@ -149,7 +120,7 @@ namespace be::graphics::d3d11
 
         // Create Shader
         {
-            CheckResult(m_device->CreateVertexShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &shaderPtr));
+            BE_DX_CALL(m_device->CreateVertexShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &shaderPtr));
         }
 
         // Create Input Layout
@@ -170,7 +141,7 @@ namespace be::graphics::d3d11
                 });
             }
             
-            CheckResult(m_device->CreateInputLayout(inputElements.data(), static_cast<UINT>(inputElements.size()), shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), &layoutPtr));
+            BE_DX_CALL(m_device->CreateInputLayout(inputElements.data(), static_cast<UINT>(inputElements.size()), shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), &layoutPtr));
         }
 
         d3d11::VertexShader shader{std::move(shaderPtr), std::move(layoutPtr)};
@@ -185,7 +156,7 @@ namespace be::graphics::d3d11
     {
         wrl::ComPtr<ID3D11PixelShader> shaderPtr;
         wrl::ComPtr<ID3DBlob> shaderByteCode = LoadShaderByteCode(filepath);        
-        CheckResult(m_device->CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &shaderPtr));
+        BE_DX_CALL(m_device->CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &shaderPtr));
 
         d3d11::PixelShader shader{std::move(shaderPtr)};
         graphics::PixelShader shaderRef{.id = GenerateUUID4()};
@@ -205,8 +176,8 @@ namespace be::graphics::d3d11
         wrl::ComPtr<ID3D11RenderTargetView> renderTargetView;
 
         wrl::ComPtr<ID3D11Resource> backBuffer = nullptr;
-        CheckResult(swapChain.GetBuffer(0u, __uuidof(ID3D11Resource), &backBuffer));
-        CheckResult(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &renderTargetView));
+        BE_DX_CALL(swapChain.GetBuffer(0u, __uuidof(ID3D11Resource), &backBuffer));
+        BE_DX_CALL(m_device->CreateRenderTargetView(backBuffer.Get(), nullptr, &renderTargetView));
 
         return renderTargetView;
     }
@@ -280,7 +251,7 @@ namespace be::graphics::d3d11
         ////D3D11_SUBRESOURCE_DATA bufferData = {};
         ////bufferData.pSysMem = vertices.data();
 
-        ////CheckResult(m_device->CreateBuffer(&bufferDescriptor, &bufferData, &vertexBuffer));
+        ////BE_DX_CHECK_RESULT(m_device->CreateBuffer(&bufferDescriptor, &bufferData, &vertexBuffer));
         ////const UINT stride = sizeof(Vertex);
         ////const UINT offset = 0u;
         ////m_context->IASetVertexBuffers(0u, 1u, vertexBuffer.GetAddressOf(), &stride, &offset);
@@ -288,9 +259,9 @@ namespace be::graphics::d3d11
         ////// VERTEX SHADER
         ////wrl::ComPtr<ID3D11VertexShader> vShader;
         ////wrl::ComPtr<ID3DBlob> shaderByteCode;
-        ////CheckResult(D3DReadFileToBlob(L"VertexShader.cso", &shaderByteCode));
+        ////BE_DX_CHECK_RESULT(D3DReadFileToBlob(L"VertexShader.cso", &shaderByteCode));
 
-        ////CheckResult(m_device->CreateVertexShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &vShader));
+        ////BE_DX_CHECK_RESULT(m_device->CreateVertexShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &vShader));
         ////m_context->VSSetShader(vShader.Get(), nullptr, 0);
 
         ////D3D11_INPUT_ELEMENT_DESC decs{
@@ -303,14 +274,14 @@ namespace be::graphics::d3d11
         ////};
 
         ////wrl::ComPtr<ID3D11InputLayout> inputLayout;
-        ////CheckResult(m_device->CreateInputLayout(&decs, 1u, shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), &inputLayout));
+        ////BE_DX_CHECK_RESULT(m_device->CreateInputLayout(&decs, 1u, shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), &inputLayout));
         ////m_context->IASetInputLayout(inputLayout.Get());
 
         ////// PIXEL SHADER
         ////wrl::ComPtr<ID3D11PixelShader> pShader;
-        ////CheckResult(D3DReadFileToBlob(L"PixelShader.cso", &shaderByteCode));
+        ////BE_DX_CHECK_RESULT(D3DReadFileToBlob(L"PixelShader.cso", &shaderByteCode));
 
-        ////CheckResult(m_device->CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &pShader));
+        ////BE_DX_CHECK_RESULT(m_device->CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &pShader));
         ////m_context->PSSetShader(pShader.Get(), nullptr, 0u);
 
         ////// RENDER TARGET

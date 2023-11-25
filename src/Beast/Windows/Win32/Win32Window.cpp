@@ -1,28 +1,13 @@
 #ifdef BE_PLATFORM_WINDOWS
     #include "Beast/Windows/Win32/Win32Window.h"
-    #include "Beast/Assertions.h"
+    #include "Beast/Debug.h"
     #include "Beast/Events/Events.h"
 
-    #include "Beast/Common/Exceptions.h"
+    #include "Beast/Debug.h"
     #include <unordered_map>
 
 namespace be::internals
 {
-    #ifndef BE_WINAPI_CALL
-        #define BE_WINAPI_CALL(call)                                                                                    \
-            {                                                                                                           \
-                SetLastError(0);                                                                                        \
-                const auto winapiCallResult = call;                                                                     \
-                const auto lastError = GetLastError();                                                                  \
-                if (winapiCallResult == 0 && lastError != 0)                                                            \
-                {                                                                                                       \
-                    const std::string errorMessage =                                                                    \
-                        "An error occurred when calling the WinApi function. Error code: " + std::to_string(lastError); \
-                    BE_THROW(errorMessage);                                                                             \
-                }                                                                                                       \
-            }
-    #endif
-
     // Mappings between Win32 key codes and Engine's KeyCodes
     // It's an unordered_map instead of the constexpr map, because of its size.
     // Unordered_map is better for a bigger data set frequent lookups.
