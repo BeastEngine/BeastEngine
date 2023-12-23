@@ -368,6 +368,20 @@ namespace be::internals
 
     LRESULT Win32Window::HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const
     {
+        // We could potentially do it like this.
+        /*const auto isButtonDonw = WM_LBUTTONDOWN | WM_RBUTTONDOWN | WM_MBUTTONDOWN | WM_XBUTTONDOWN;
+        if (uMsg & isButtonDonw)
+        {
+            return HandleMouseButtonDownMessages(uMsg, wParam, lParam);
+        }
+
+        const auto isMouseButtonUp = WM_LBUTTONUP | WM_RBUTTONUP | WM_MBUTTONUP | WM_XBUTTONUP;
+        if (uMsg & isMouseButtonUp)
+        {
+            return HandleMouseButtonUpMessages(uMsg, wParam, lParam);
+        }
+        }*/
+
         // Invoke handler defined for this message, or the default one if no defined
         if (m_messageHandlers.contains(uMsg))
         {

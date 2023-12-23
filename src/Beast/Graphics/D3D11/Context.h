@@ -12,9 +12,9 @@ namespace be::graphics::d3d11
     public:
         Context(Device& device, IDXGISwapChain* swapChain, ID3D11DeviceContext* context, wrl::ComPtr<ID3D11RenderTargetView> renderTargetView);
 
-        void Draw(const Pipeline& pipeline) const noexcept override;
-        void Clear(const Color& color) const noexcept override;
-        void Present() const noexcept override;
+        void Draw(const Pipeline& pipeline) const override;
+        void Clear(const Color& color) const override;
+        void Present() const override;
 
         void UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) const override;
 

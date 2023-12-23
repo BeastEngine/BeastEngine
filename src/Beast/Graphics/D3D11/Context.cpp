@@ -9,7 +9,7 @@ namespace be::graphics::d3d11
     {
     }
 
-    void Context::Draw(const Pipeline& pipeline) const noexcept
+    void Context::Draw(const Pipeline& pipeline) const
     {
         // IAStage
         {
@@ -53,13 +53,13 @@ namespace be::graphics::d3d11
         }
     }
 
-    void graphics::d3d11::Context::Clear(const Color& color) const noexcept
+    void graphics::d3d11::Context::Clear(const Color& color) const
     {
         m_context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), nullptr);
         m_context->ClearRenderTargetView(m_renderTargetView.Get(), color.Data());
     }
 
-    void graphics::d3d11::Context::Present() const noexcept
+    void graphics::d3d11::Context::Present() const
     {
         BE_DX_CALL(m_swapChain->Present(1, 0));
     }

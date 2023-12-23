@@ -50,9 +50,9 @@ namespace be::graphics
         BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IRenderContext);
         virtual ~IRenderContext() = default;
 
-        virtual void Draw(const Pipeline& pipeline) const noexcept = 0;
-        virtual void Clear(const Color& color) const noexcept = 0;
-        virtual void Present() const noexcept = 0;
+        virtual void Draw(const Pipeline& pipeline) const= 0;
+        virtual void Clear(const Color& color) const= 0;
+        virtual void Present() const = 0;
 
         virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) const = 0;
     };

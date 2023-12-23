@@ -13,6 +13,10 @@
     #endif
 #endif
 
+#ifdef BE_PLATFORM_WINDOWS
+    #define BE_DISPLAY_ERROR(message)
+#endif
+
 namespace be
 {
     /**
@@ -33,7 +37,7 @@ BE_MAIN()
         application->Run();
     }
     catch (const std::exception& ex)
-     {
+    {
         printf(ex.what());
     }
 
