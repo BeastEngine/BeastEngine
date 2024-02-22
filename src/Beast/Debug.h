@@ -1,4 +1,5 @@
 #pragma once
+#include "Beast/PlatformSetup.h"
 #include "Beast/Loggers/StaticLogger.h"
 
 #include <format>
@@ -125,5 +126,11 @@ namespace be::internals
 #ifndef BE_THROW
     #define BE_THROW(message)        throw std::runtime_error(BE_EXCEPTION_MESSAGE(message))
     #define BE_THROW_FROM(exception) throw std::runtime_error(BE_EXCEPTION_MESSAGE(exception.what()));
+#endif
+
+#ifdef BE_PLATFORM_WINDOWS
+    #define BE_DISPLAY_ERROR(error)                       \
+        std::filesystem::path errorMessage{error.what()}; \
+        MessageBox(NULL, errorMessage.wstring().c_str(), nullptr, MB_OK);
 #endif
 } // namespace be::internals

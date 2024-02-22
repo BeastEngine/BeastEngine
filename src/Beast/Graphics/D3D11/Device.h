@@ -9,6 +9,16 @@
 
 namespace be::graphics::d3d11
 {
+    // TODO: Could we combine this into a single class like this?
+    /**
+     * class Graphics final : public IGraphics, public IRenderContext
+     * {
+     * private:
+     * d3d11::Device m_device;
+     * d3d11::Context m_context;
+     * }
+     */
+
     class Device final : public IGraphics
     {
     public:
@@ -32,9 +42,6 @@ namespace be::graphics::d3d11
         const d3d11::VertexBuffer& GetBuffer(graphics::VertexBuffer bufferRef) const;
         const d3d11::VertexShader& GetShader(graphics::VertexShader shaderRef) const;
         const d3d11::PixelShader& GetShader(graphics::PixelShader shaderRef) const;
-
-        // TODO: Remove
-        void Run() override;
 
     private:
         std::unordered_map<Id, d3d11::VertexBuffer> m_vertexBuffers;

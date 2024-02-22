@@ -143,7 +143,7 @@ namespace be
          * @brief Starts the application.
          * Should contain all the run-time code of the app.
          */
-        virtual void Run() = 0;
+        void Start();
 
         /**
          * @brief Returns engine.
@@ -155,6 +155,9 @@ namespace be
         {
             return *m_engine;
         }
+
+    protected:
+        virtual void Run() = 0;
 
     private:
         be::WindowClosedEventHandler OnWindowClosed()

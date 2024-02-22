@@ -6,14 +6,12 @@
 
 namespace be
 {
-    static const std::string LOGGER_CONSOLE_NAME_PREFIX = "cs_";
     static const std::string LOGGER_FILE_NAME_PREFIX = "fl_";
 
     Shared<Logger> ConsoleLogger::Create(const std::string& name)
     {
-        const auto loggerName = LOGGER_CONSOLE_NAME_PREFIX + name;
-        LoggerImpl logger = spdlog::get(loggerName);
-        logger = (logger == nullptr ? spdlog::stdout_color_mt(loggerName) : logger);
+        LoggerImpl logger = spdlog::get(name);
+        logger = (logger == nullptr ? spdlog::stdout_color_mt(name) : logger);
 
         return MakeShared<Logger>(logger);
     }

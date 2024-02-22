@@ -109,4 +109,16 @@ namespace be
 
         m_window->SetWindowClosedEventHandler(OnWindowClosed());
     }
+
+    void AApplication::Start()
+    {
+        try
+        {
+            Run();
+        }
+        catch (const std::exception& error)
+        {
+            BE_DISPLAY_ERROR(error);
+        }
+    }
 } // namespace be

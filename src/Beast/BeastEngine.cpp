@@ -11,7 +11,7 @@
 
 namespace be
 {
-    static constexpr const char* DEFAULT_LOGGER_NAME = "beast_engine_default_logger";
+    static constexpr const char* DEFAULT_LOGGER_NAME = "be-core";
 
     BeastEngine::BeastEngine(EngineConfig config)
     {

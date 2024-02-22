@@ -64,6 +64,8 @@ public:
     {
         m_window->SetWindowClosedEventHandler(OnWindowClosedCustom());
         m_mouse->SetWheelScrolledListener(OnWheelScrolled());
+
+        GetEngine().PrintInfo();
     }
 
     void Run() override
