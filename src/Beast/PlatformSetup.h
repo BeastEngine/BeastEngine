@@ -90,4 +90,12 @@ namespace be
             }                                                                                                       \
         }
 #endif
+
+#define BE_WINAPI_CALL_NOTHROW(call)                                                                                                                                    \
+    {                                                                                                                                                                   \
+        SetLastError(0);                                                                                                                                                \
+        const auto winapiCallResult = call;                                                                                                                             \
+        const auto lastError = GetLastError();                                                                                                                          \
+        BE_ASSERT_MSG_ALWAYS(winapiCallResult != 0 && lastError == 0, "An error occurred when calling the WinApi function. Error code: {}", std::to_string(lastError)); \
+    }
 } // namespace be

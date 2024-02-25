@@ -31,7 +31,7 @@ namespace be::tests::integration
     private:
         std::wstring GetIdAsWString(Id id)
         {
-            return std::to_wstring(ToUnderlying(id));
+            return std::to_wstring(id.Raw());
         }
     };
 } // namespace be::tests::integration

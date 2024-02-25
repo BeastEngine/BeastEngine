@@ -43,22 +43,6 @@ namespace be::graphics
         DrawCall drawCall;
     };
 
-    class IRenderContext
-    {
-    public:
-        IRenderContext() = default;
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IRenderContext);
-        virtual ~IRenderContext() = default;
-
-        virtual void Draw(const Pipeline& pipeline) const = 0;
-        virtual void Clear(const Color& color) const = 0;
-        virtual void Present() const = 0;
-
-        virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) const = 0;
-    };
-
-    // TODO: Do we really need two different interfaces for IGraphics and IRenderContext?
-    // Maybe we can implement it as one?
     class IGraphics
     {
     public:
@@ -70,12 +54,10 @@ namespace be::graphics
         virtual VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) = 0;
         virtual PixelShader CreatePixelShader(const FilesystemPath& filepath) = 0;
 
-        virtual const IRenderContext& GetContext() const noexcept = 0;
+        virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) = 0;
 
-        /*virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) const = 0;
-
-        virtual void Draw(const Pipeline& pipeline) const = 0;
+        virtual void Draw(const Pipeline& pipeline) = 0;
         virtual void Clear(const Color& color) const = 0;
-        virtual void Present() const = 0;*/
+        virtual void Present() const = 0;
     };
 } // namespace be::graphics

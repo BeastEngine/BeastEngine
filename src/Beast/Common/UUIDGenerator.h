@@ -22,6 +22,6 @@ namespace be
         std::mt19937 generatorEngine(seedSequence);
         uuids::uuid_random_generator uuidGenerator{generatorEngine};
 
-        return Hash(uuidGenerator().as_bytes());
+        return Id{Hash(uuidGenerator().as_bytes())};
     }
 } // namespace be

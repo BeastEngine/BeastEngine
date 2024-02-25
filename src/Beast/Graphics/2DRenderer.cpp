@@ -45,7 +45,6 @@ namespace be::graphics
         {
             const uint32 verticesCount = static_cast<uint32>(m_framePrimitives.size() * 3u);
 
-            const auto& ctx = m_graphics->GetContext();
             std::vector<Vertex> vertices;
             vertices.reserve(verticesCount);
 
@@ -64,7 +63,7 @@ namespace be::graphics
                     .color = primitive.material.color,
                 });
             }
-            ctx.UpdateVertexBuffer(m_buffer, vertices);
+            m_graphics->UpdateVertexBuffer(m_buffer, vertices);
 
             Pipeline pipeline{};
             pipeline.vertexBuffer = m_buffer;
@@ -76,9 +75,9 @@ namespace be::graphics
             //pipeline.OMStage.renderTarget;
             //= // renderTarget;
 
-            ctx.Clear({0.6f, 0.2f, 0.3f, 1.0f});
-            ctx.Draw(pipeline);
-            ctx.Present();
+            m_graphics->Clear({0.6f, 0.2f, 0.3f, 1.0f});
+            m_graphics->Draw(pipeline);
+            m_graphics->Present();
         }
         BE_DEBUG_EXPRESSION(m_hasFrameStarted = false);
         BE_DEBUG_EXPRESSION(m_hasFrameEnded = true);

@@ -2,8 +2,7 @@
 #include "Beast/Debug.h"
 
 #ifdef BE_PLATFORM_WINDOWS
-    #include "Beast/Graphics/D3D11/Device.h"
-    #include "Beast/Graphics/D3D11/Context.h"
+    #include "Beast/Graphics/D3D11/Graphics.h"
 #endif
 
 namespace be::internals
@@ -15,7 +14,7 @@ namespace be::internals
         case be::graphics::RenderingApi::D3D11:
 #ifdef BE_PLATFORM_WINDOWS
         {
-            return MakeUnique<graphics::d3d11::Device>(window);
+            return MakeUnique<graphics::d3d11::Graphics>(window);
         }
 
         break;

@@ -9,9 +9,7 @@
 namespace be
 {
     constexpr inline XXH64_hash_t SEED = 777;
-    enum class Id : XXH64_hash_t
-    {
-    };
+    using HashType = XXH64_hash_t;
 
     /**
      * @brief Hashes given value using XXH64 hash function.
@@ -23,18 +21,13 @@ namespace be
      * @return Hash representation of the given value
      */
     template<typename T>
-    inline Id Hash(T&& valueToHash)
+    inline HashType Hash(T&& valueToHash)
     {
-        return Id{XXH64(valueToHash.data(), valueToHash.size(), SEED)};
+        return XXH64(valueToHash.data(), valueToHash.size(), SEED);
     }
 
-    constexpr inline Id Hash(std::string_view input)
+    constexpr inline HashType Hash(std::string_view input)
     {
-        return Id{xxh64::hash(input.data(), input.size(), SEED)};
-    }
-
-    constexpr inline Id ID(std::string_view id)
-    {
-        return Hash(id);
+        return xxh64::hash(input.data(), input.size(), SEED);
     }
 } // namespace be

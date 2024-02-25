@@ -12,18 +12,16 @@ namespace be::graphics::d3d11
     class VertexBuffer final
     {
     public:
-        VertexBuffer(wrl::ComPtr<ID3D11Buffer> buffer, uint32 stride)
-            : m_bufferPtr(std::move(buffer)), m_stride(stride)
+        VertexBuffer(wrl::ComPtr<ID3D11Buffer> buffer, uint32 stride, uint32 size)
+            : m_bufferPtr(std::move(buffer)), m_stride(stride), m_size(size)
         {
         }
 
-        /*void Bind(ID3D11DeviceContext& context, UINT inputSlot = 0) const
-        {
-            context.IASetVertexBuffers(inputSlot, 1, m_bufferPtr.GetAddressOf(), &m_stride, &m_offset);
-        }*/
-
         void Update(ID3D11DeviceContext& context, std::span<const Vertex> data) const
         {
+            const auto dataSize = data.size() * m_stride;
+            BE_ASSERT_MSG(dataSize <= m_size, "Given data is bigger than the buffer's size! Data size: {} | Buffer size: {}", dataSize, m_size);
+
             D3D11_MAPPED_SUBRESOURCE subresource;
             BE_DX_CALL(context.Map(m_bufferPtr.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
             {
@@ -43,7 +41,8 @@ namespace be::graphics::d3d11
         }
 
     private:
-        uint32 m_stride = sizeof(Vertex);
         wrl::ComPtr<ID3D11Buffer> m_bufferPtr;
+        uint32 m_stride = sizeof(Vertex);
+        uint32 m_size = 0;
     };
 }

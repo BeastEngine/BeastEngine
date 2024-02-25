@@ -24,7 +24,7 @@ namespace be::graphics::d3d11
             context.PSSetShader(m_shader.Get(), nullptr, 0);
         }*/
 
-        ID3D11PixelShader* GetShader() const
+        ID3D11PixelShader* Shader() const
         {
             return m_shader.Get();
         }

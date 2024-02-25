@@ -15,7 +15,7 @@ namespace be::internals
     {
 #ifdef BE_PLATFORM_WINDOWS
         const std::wstring className =
-            std::to_wstring(ToUnderlying(GenerateUUID4())) + L"_BeastEngineWindowClassName";
+            std::to_wstring(GenerateUUID4().Raw()) + L"_BeastEngineWindowClassName";
 
         return MakeUnique<Win32Window>(descriptor, className.c_str());
 #else

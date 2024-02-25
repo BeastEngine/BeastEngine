@@ -11,6 +11,9 @@ namespace be::graphics::d3d11
 {
     namespace wrl = Microsoft::WRL;
 
+    /** *********************************** */
+    /** ***********VERTEX SHADER*********** */
+    /** *********************************** */
     static constexpr DXGI_FORMAT ConvertInputElementFormat(InputLayout::VertexAttribute::Format format)
     {
         switch (format)
@@ -28,23 +31,17 @@ namespace be::graphics::d3d11
     class VertexShader final
     {
     public:
-        VertexShader(wrl::ComPtr<ID3D11VertexShader> shader, wrl::ComPtr<ID3D11InputLayout> inputLayout)
+        VertexShader(wrl::ComPtr<ID3D11VertexShader> shader, wrl::ComPtr<ID3D11InputLayout> inputLayout) noexcept
             : m_shader(std::move(shader)), m_inputLayout(std::move(inputLayout))
         {
         }
 
-        /*void Bind(ID3D11DeviceContext& context)
-        {
-            context.IASetInputLayout(m_inputLayout.Get());
-            context.VSSetShader(m_shader.Get(), nullptr, 0u);
-        }*/
-
-        ID3D11VertexShader* GetShader() const
+        ID3D11VertexShader* Shader() const noexcept
         {
             return m_shader.Get();
         }
 
-        ID3D11InputLayout* GetLayout() const
+        ID3D11InputLayout* Layout() const noexcept
         {
             return m_inputLayout.Get();
         }
@@ -52,5 +49,25 @@ namespace be::graphics::d3d11
     private:
         wrl::ComPtr<ID3D11VertexShader> m_shader;
         wrl::ComPtr<ID3D11InputLayout> m_inputLayout;
+    };
+
+    /** *********************************** */
+    /** ************PIXEL SHADER*********** */
+    /** *********************************** */
+    class PixelShader final
+    {
+    public:
+        explicit PixelShader(wrl::ComPtr<ID3D11PixelShader> shader) noexcept
+            : m_shader(std::move(shader))
+        {
+        }
+
+        ID3D11PixelShader* Shader() const noexcept
+        {
+            return m_shader.Get();
+        }
+
+    private:
+        wrl::ComPtr<ID3D11PixelShader> m_shader;
     };
 } // namespace be::graphics::d3d11

@@ -215,13 +215,8 @@ namespace be::internals
 
     Win32Window::~Win32Window()
     {
-        BE_ASSERT(DestroyWindow(m_hwnd));
-
-        WNDCLASS windowClass = {0};
-        if (GetClassInfo(m_hInstance, WINDOW_CLASS_NAME.c_str(), &windowClass))
-        {
-            BE_ASSERT(UnregisterClass(WINDOW_CLASS_NAME.c_str(), m_hInstance));
-        }
+        BE_WINAPI_CALL_NOTHROW(DestroyWindow(m_hwnd));
+        BE_WINAPI_CALL_NOTHROW(UnregisterClass(WINDOW_CLASS_NAME.c_str(), m_hInstance));
     }
 
     void Win32Window::ProcessInput()

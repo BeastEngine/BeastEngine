@@ -142,7 +142,7 @@ namespace be::tests::integration
 
         static std::string GenerateRandomString()
         {
-            return std::to_string(ToUnderlying(GenerateUUID4()));
+            return GenerateUUID4().ToString();
         }
 
     private:

@@ -1,5 +1,5 @@
 #pragma once
-#include "Beast/Common/Utils/Hasher.h"
+#include "Beast/Common/Id.h"
 
 #include <memory>
 #include <string_view>
@@ -55,8 +55,6 @@ namespace be
     /***********************************************************************/
 
     /*******************************OTHERS**********************************/
-    inline constexpr Id ID_EMPTY = Id{0};
-
     using TimestampDuration = std::chrono::nanoseconds;
     using Timestamp = TimestampDuration::rep;
 

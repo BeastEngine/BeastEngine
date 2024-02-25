@@ -8,8 +8,8 @@ add_library(
 		"UUIDGenerator.h"
 		"Utils/Hasher.h"
 		"Utils/Xxh64.h"
-		"Utils/String.h"
-)
+		
+ "Id.h")
 
 target_include_directories(BeastCommon INTERFACE "${BeastEngine_SOURCE_DIR}/src")
 

@@ -10,8 +10,6 @@
 #include <Beast/Ecs/SystemsScheduler.h>
 #include <Beast/Ecs/Components/Graphics.h>
 
-#include <Beast/Graphics/D3D11/Context.h>
-
 #include <entt/entt.hpp>
 
 #include <iostream>
@@ -26,7 +24,7 @@
 #include <typeinfo>
 #include <typeindex>
 
-constexpr be::Id TEXTURE_ID = be::ID("Path/To/My/Texture");
+constexpr be::Id TEXTURE_ID = be::Id("Path/To/My/Texture");
 
 class Attacher
 {

@@ -114,6 +114,7 @@ namespace be
     {
         try
         {
+            m_engine->PrintInfo();
             Run();
         }
         catch (const std::exception& error)

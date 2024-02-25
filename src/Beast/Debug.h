@@ -78,42 +78,26 @@ namespace be::internals
     #endif
 #endif
 
-#ifndef BE_ASSERT
-    #ifdef BE_ASSERTIONS_ENABLED
-        #define BE_ASSERT(expression)
+#define BE_ASSERT_PRIV_ALWAYS(expression, fmt, ...)                                \
+    if (expression)                                                                \
+    { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */ \
+    }                                                                              \
+    else                                                                           \
+    {                                                                              \
+        BE_DEBUG_LOG_ERROR(fmt, __VA_ARGS__);                                      \
+        BE_DEBUG_BREAK();                                                          \
+    }
 
-    #else
-        #define BE_ASSERT(expression)
-    #endif
+#ifdef BE_ASSERTIONS_ENABLED
+    #define BE_ASSERT_PRIV(expression, fmt, ...) BE_ASSERT_PRIV_ALWAYS(expression, fmt, __VA_ARGS__)
+#else
+    #define BE_ASSERT_PRIV(expression, fmt, ...)
 #endif
 
-#ifndef BE_ASSERT_ALWAYS
-    #define BE_ASSERT_ALWAYS(expression)                                                                   \
-        if (expression)                                                                                    \
-        { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */                     \
-        }                                                                                                  \
-        else                                                                                               \
-        {                                                                                                  \
-            BE_DEBUG_LOG_ERROR("The '{}' assertion failed! It evaluated to: {}", #expression, expression); \
-            BE_DEBUG_BREAK();                                                                              \
-        }
-#endif
-
-#ifndef BE_ASSERT_MSG
-    #ifdef BE_ASSERTIONS_ENABLED
-        #define BE_ASSERT_MSG(expression, fmt, ...)                                        \
-            if (expression)                                                                \
-            { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */ \
-            }                                                                              \
-            else                                                                           \
-            {                                                                              \
-                BE_DEBUG_LOG_ERROR(fmt, __VA_ARGS__);                                      \
-                BE_DEBUG_BREAK();                                                          \
-            }
-    #else
-        #define BE_ASSERT_MSG(expression, fmt, ...)
-    #endif
-#endif
+#define BE_ASSERT(expression)                      BE_ASSERT_PRIV(expression, "The '{}' assertion failed! It evaluated to: {}", #expression, expression)
+#define BE_ASSERT_ALWAYS(expression)               BE_ASSERT_PRIV_ALWAYS(expression, "The '{}' assertion failed! It evaluated to: {}", #expression, expression)
+#define BE_ASSERT_MSG(expression, fmt, ...)        BE_ASSERT_PRIV(expression, fmt, __VA_ARGS__)
+#define BE_ASSERT_MSG_ALWAYS(expression, fmt, ...) BE_ASSERT_PRIV_ALWAYS(expression, fmt, __VA_ARGS__)
 
 #ifndef BE_EXCEPTION_MESSAGE
     #ifdef BE_DEBUG
@@ -123,10 +107,8 @@ namespace be::internals
     #endif
 #endif
 
-#ifndef BE_THROW
-    #define BE_THROW(message)        throw std::runtime_error(BE_EXCEPTION_MESSAGE(message))
-    #define BE_THROW_FROM(exception) throw std::runtime_error(BE_EXCEPTION_MESSAGE(exception.what()));
-#endif
+#define BE_THROW(message)        throw std::runtime_error(BE_EXCEPTION_MESSAGE(message))
+#define BE_THROW_FROM(exception) throw std::runtime_error(BE_EXCEPTION_MESSAGE(exception.what()));
 
 #ifdef BE_PLATFORM_WINDOWS
     #define BE_DISPLAY_ERROR(error)                       \
