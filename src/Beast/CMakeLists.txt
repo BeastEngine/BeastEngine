@@ -50,7 +50,7 @@ add_library(
             
             
             
-            "Graphics/D3D11/Debug.h" "Graphics/D3D11/Buffer.h" "Graphics/D3D11/D3D11.h"  "Graphics/Graphics.h"     "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp" "Ecs/Components/Core.h" "Graphics/2DRenderer.h" "Graphics/2DRenderer.cpp" "Graphics/D3D11/Shader.h" "Graphics/Types.h" "Ecs/Components/Graphics.h" "Graphics/D3D11/PixelShader.h" "Logging.h" "Ecs.h" "Graphics/D3D11/Graphics.h" "Graphics/D3D11/Graphics.cpp"  "Graphics/D3D11/Utils.h" "Graphics/D3D11/Utils.cpp" "Graphics/D3D11/RenderTarget.h")
+            "Graphics/D3D11/Debug.h" "Graphics/D3D11/Buffer.h" "Graphics/D3D11/D3D11.h"  "Graphics/Graphics.h"     "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp" "Ecs/Components/Core.h" "Graphics/2DRenderer.h" "Graphics/2DRenderer.cpp" "Graphics/D3D11/Shader.h" "Graphics/Types.h" "Ecs/Components/Graphics.h"  "Logging.h" "Ecs.h" "Graphics/D3D11/Graphics.h" "Graphics/D3D11/Graphics.cpp"  "Graphics/D3D11/Utils.h" "Graphics/D3D11/Utils.cpp" "Graphics/D3D11/RenderTarget.h")
 target_include_directories(
     BeastCore
         PUBLIC
