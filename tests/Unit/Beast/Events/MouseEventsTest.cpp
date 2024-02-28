@@ -8,7 +8,7 @@ namespace be::tests::unit
     TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializeWithDefaultValues)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_MOVED;
-        const auto expectedCoordinates = IntVec2(0, 0);
+        const auto expectedCoordinates = Vec2i(0, 0);
         const auto expectedScrollValue = 0;
         const auto expectedMouseButton = MouseButtonCode::INVALID;
 
@@ -22,7 +22,7 @@ namespace be::tests::unit
     TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializeWithPassedValues)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_MOVED;
-        const auto expectedCoordinates = IntVec2(10, 0);
+        const auto expectedCoordinates = Vec2i(10, 0);
         const auto expectedScrollValue = 32;
         const auto expectedMouseButton = MouseButtonCode::INVALID;
 
@@ -36,7 +36,7 @@ namespace be::tests::unit
     TEST_F(MouseEventsTest, MovedWillCreateCorrectEvent)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_MOVED;
-        const auto expectedCoordinates = IntVec2(5, 10);
+        const auto expectedCoordinates = Vec2i(5, 10);
 
         const auto expectedScrollValue = 0;
         const auto expectedMouseButton = MouseButtonCode::INVALID;
@@ -52,7 +52,7 @@ namespace be::tests::unit
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_SCROLLED;
         const auto expectedScrollValue = 412;
-        const auto expectedCoordinates = IntVec2(5, 10);
+        const auto expectedCoordinates = Vec2i(5, 10);
 
         const auto expectedMouseButton = MouseButtonCode::INVALID;
 
@@ -66,7 +66,7 @@ namespace be::tests::unit
     TEST_F(MouseEventsTest, ButtonPressedWillCreateCorrectEvent)
     {
         const auto expectedMouseButton = MouseButtonCode::BUTTON_LEFT;
-        const auto expectedCoordinates = IntVec2(532, 131);
+        const auto expectedCoordinates = Vec2i(532, 131);
         const auto expectedType = MouseEventType::EVENT_MOUSE_BUTTON_PRESSED;
 
         const auto expectedScrollValue = 0;
@@ -94,7 +94,7 @@ namespace be::tests::unit
     TEST_F(MouseEventsTest, ButtonReleasedWillCreateCorrectEvent)
     {
         const auto expectedMouseButton = MouseButtonCode::BUTTON_LEFT;
-        const auto expectedCoordinates = IntVec2(532, 131);
+        const auto expectedCoordinates = Vec2i(532, 131);
         const auto expectedType = MouseEventType::EVENT_MOUSE_BUTTON_RELEASED;
 
         const auto expectedScrollValue = 0;

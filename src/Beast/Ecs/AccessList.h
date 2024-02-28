@@ -1,5 +1,5 @@
 #pragma once
-#include <Beast/Ecs/Types.h>
+#include "Beast/Ecs/Types.h"
 
 namespace be
 {

@@ -1,14 +1,17 @@
-#include <Beast/BeastEngine.h>
-#include <Beast/Versions.h>
-#include <Beast/Windows/WindowFactory.h>
-#include <Beast/Loggers/LoggersFactories.h>
-#include <Beast/Loggers/StaticLogger.h>
+#include "Beast/BeastEngine.h"
+#include "Beast/Versions.h"
+#include "Beast/Windows/WindowFactory.h"
+
+#include "Beast/Loggers/LoggersFactories.h"
+#include "Beast/Loggers/StaticLogger.h"
+
+#include "Beast/Graphics/GraphicsFactory.h"
 
 #include <fmt/color.h>
 
 namespace be
 {
-    static constexpr const char* DEFAULT_LOGGER_NAME = "beast_engine_default_logger";
+    static constexpr const char* DEFAULT_LOGGER_NAME = "be-core";
 
     BeastEngine::BeastEngine(EngineConfig config)
     {
@@ -26,6 +29,11 @@ namespace be
     Unique<IWindow> BeastEngine::CreateNewWindow(const WindowDescriptor& descriptor) const
     {
         return m_windowFactory->Create(descriptor);
+    }
+
+    Unique<graphics::IGraphics> BeastEngine::CreateGraphics(const IWindow& window, graphics::RenderingApi api) const
+    {
+        return internals::CreateGraphics(api, window);
     }
 
     void BeastEngine::SetLogger(EngineConfig& config)

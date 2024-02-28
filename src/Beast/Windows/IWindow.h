@@ -1,9 +1,9 @@
 #pragma once
-#include <Beast/PlatformSetup.h>
-#include <Beast/Events/Events.h>
+#include "Beast/PlatformSetup.h"
+#include "Beast/Events/Events.h"
 
-#include <Beast/Common/Types.h>
-#include <Beast/Common/Helpers.h>
+#include "Beast/Common/Types.h"
+#include "Beast/Common/Helpers.h"
 
 namespace be
 {
@@ -28,7 +28,7 @@ namespace be
     {
     public:
         /**
-         * @brief Initializes WindowHandleInstance class with platform specific instance.
+         * @brief Initializes WindowHandleInstanceType class with platform specific instance.
          * 
          * @param instance
          */
@@ -62,8 +62,8 @@ namespace be
         }
 
         std::string title = "BeastEngine";
-        IntVec2 dimensions = {800, 600};
-        IntVec2 position = {0, 0};
+        Vec2i dimensions = {800, 600};
+        Vec2i position = {0, 0};
         WindowStyle style = {WindowStyle::WINDOW_DEFUALT};
         const WindowHandleInstance handleInstance;
     };
@@ -112,6 +112,16 @@ namespace be
          * @see Set*EventsHandler() for reference
          */
         virtual void ProcessInput() = 0;
+
+        /**
+         * @brief Returns handle associated with this window.
+         */
+        virtual WindowHandle GetHandle() const noexcept = 0;
+        
+        /**
+         * @brief Returns current windows size.
+         */
+        virtual const Vec2i& GetDimensions() const noexcept = 0;
     };
     /******************************************************/
     /******************************************************/

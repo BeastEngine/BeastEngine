@@ -1,9 +1,9 @@
 #pragma once
-#include <Beast/Ecs/Types.h>
-#include <Beast/Ecs/World.h>
-#include <Beast/Ecs/View.h>
+#include "Beast/Ecs/Types.h"
+#include "Beast/Ecs/World.h"
+#include "Beast/Ecs/View.h"
 
-#include <Beast/Common/Types.h>
+#include "Beast/Common/Types.h"
 
 #include <entt/process/scheduler.hpp>
 

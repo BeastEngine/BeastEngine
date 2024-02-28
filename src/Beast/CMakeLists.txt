@@ -1,12 +1,13 @@
 add_subdirectory(Common)
+add_subdirectory(Graphics/D3D11/Shaders)
 
 set(
     BEAST_API_FILES
     "Application.h"
-    "Assertions.h"
+    
     "BeastEngine.h"
     "DataStructures.h"
-    "Debugging.h"
+    "Debug.h"
     "Events/Events.h"
     "Events/KeyboardEvents.h"
     "Events/MouseEvents.h"
@@ -33,7 +34,7 @@ set(
     "Windows/Win32/Win32Window.h"
     "Windows/WindowFactory.cpp"
     "Windows/WindowFactory.h"
- "Ecs/World.cpp" "Ecs/SystemsScheduler.cpp")
+  "Ecs/SystemsScheduler.cpp")
 
 if(WIN32)
     list(APPEND BEAST_SOURCES "beastengine.dll.manifest")
@@ -46,7 +47,10 @@ add_library(
         STATIC
             "${BEAST_SOURCES}"
             "${BEAST_API_FILES}"
-)
+            
+            
+            
+            "Graphics/D3D11/Debug.h" "Graphics/D3D11/Buffer.h" "Graphics/D3D11/D3D11.h"  "Graphics/Graphics.h"     "Graphics/GraphicsFactory.h" "Graphics/GraphicsFactory.cpp" "Ecs/Components/Core.h" "Graphics/2DRenderer.h" "Graphics/2DRenderer.cpp" "Graphics/D3D11/Shader.h" "Graphics/Types.h" "Ecs/Components/Graphics.h"  "Logging.h" "Ecs.h" "Graphics/D3D11/Graphics.h" "Graphics/D3D11/Graphics.cpp"  "Graphics/D3D11/Utils.h" "Graphics/D3D11/Utils.cpp" "Graphics/D3D11/RenderTarget.h")
 target_include_directories(
     BeastCore
         PUBLIC
@@ -67,8 +71,9 @@ target_link_libraries(
         EnTT::EnTT
         glm::glm
 )
+add_dependencies(BeastCore BeCoreShaders)
 
-set(BEAST_DEBUGGING_DEFINES)
+set(BEAST_DEBUGGING_DEFINES $<$<CONFIG:Debug>:BE_DEBUG>)
 if (${BE_ENABLE_DEBUG_INFO})
     list(APPEND BEAST_DEBUGGING_DEFINES BE_DEBUGGING_INFO_ENABLED)
 endif()
@@ -79,8 +84,18 @@ endif()
 
 target_compile_definitions(BeastCore PRIVATE ${BEAST_DEBUGGING_DEFINES})
 
+# TODO: Remove when spdlog depends on at least fmt/10.1.1
+target_compile_definitions(BeastCore PUBLIC _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
+
 if(WIN32)
     target_compile_definitions(BeastCore PUBLIC BE_PLATFORM_WINDOWS)
+    target_link_libraries(
+        BeastCore
+        PUBLIC
+            d3d11.lib
+            Rpcrt4.lib
+            D3dcompiler.lib
+    )
 endif()
 
 configure_file(

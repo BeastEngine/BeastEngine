@@ -2,11 +2,13 @@
 #include <Beast/BeastEngine.h>
 #include <Beast/Loggers/LoggersFactories.h>
 #include <Beast/Common/Types.h>
+#include <Beast/Common/Utils/Hasher.h>
 
 #include <Beast/Ecs/Types.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
 #include <Beast/Ecs/SystemsScheduler.h>
+#include <Beast/Ecs/Components/Graphics.h>
 
 #include <entt/entt.hpp>
 
@@ -22,55 +24,32 @@
 #include <typeinfo>
 #include <typeindex>
 
-struct ComponentA
-{
-    unsigned int data = 0;
-};
-
-struct ComponentB
-{
-    unsigned int data = 0;
-};
-
-struct Input
-{
-    be::Mouse& mouse;
-    be::Keyboard& keyboard;
-};
+constexpr be::Id TEXTURE_ID = be::Id("Path/To/My/Texture");
 
 class Attacher
 {
 public:
     struct AccessList : be::BaseAccessList
     {
-        using Add = be::Components<ComponentA, ComponentB>;
+        using Add = be::Components<be::Sprite, be::Transform>;
     };
 
     void Run(const be::View<AccessList>& view)
     {
-        for (auto entity : view)
+        be::uint32 layer = 0;
+        for (std::size_t i = 0; i < 10; ++i)
         {
-            view.AddComponent<ComponentA>(entity, {.data = entt::to_integral(entity)});
-            view.AddComponent<ComponentB>(entity, {.data = entt::to_integral(entity)});
-        }
-    }
-};
+            const auto entity = view.CreateEntity();
+            view.AddComponent(
+                entity,
+                be::Sprite{
+                    .texture{.id = TEXTURE_ID, .uvCoords = {0.0f, 1.0f}},
+                    .material{.color{}},
+                    .layer = be::ToEnum<be::Layer>(layer),
+                }
+            );
 
-class Getter
-{
-public:
-    struct AccessList : be::BaseAccessList
-    {
-        using Get = be::Components<ComponentA>;
-        using Update = be::Components<ComponentB>;
-    };
-
-    void Run(const be::View<AccessList>& view)
-    {
-        for (auto ent : view)
-        {
-            spdlog::info("Component {} for entity {} = {}", typeid(ComponentA).name(), static_cast<be::uint32>(ent), view.GetComponent<ComponentA>(ent).data);
-            spdlog::info("Component {} for entity {} = {}", typeid(ComponentB).name(), static_cast<be::uint32>(ent), ++view.UpdateComponent<ComponentB>(ent).data);
+            layer = (layer + 1) % be::LAYERS_COUNT;
         }
     }
 };
@@ -81,8 +60,10 @@ public:
     BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor)
         : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger"))
     {
-        m_window->SetWindowClosedEventHandler(OnWindowClosed());
+        m_window->SetWindowClosedEventHandler(OnWindowClosedCustom());
         m_mouse->SetWheelScrolledListener(OnWheelScrolled());
+
+        GetEngine().PrintInfo();
     }
 
     void Run() override
@@ -91,16 +72,17 @@ public:
 
         auto& scheduler = m_ecs.scheduler;
 
-        auto group1 = scheduler.CreateGroup();
-        group1.AttachSystem<Getter>();
-
         auto group2 = scheduler.CreateGroup();
         group2.AttachSystem<Attacher>();
 
-        scheduler.Prepare({group2, group1});
-        m_ecs.world.CreateEntity();
+        /*be::Shared<be::graphics::Graphics> graphics = GetEngine().CreateGraphics(be::graphics::RenderingApi::D3D11, *m_window);
+        group2.AttachSystem<Renderer>(graphics);*/
 
-        auto previousCords = m_mouse->GetMousePosition();
+        auto group1 = scheduler.CreateGroup();
+
+        scheduler.Prepare({group2, group1});
+
+        be::Vec2i previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();
 
         while (m_isRunning)
@@ -123,7 +105,7 @@ public:
     }
 
 private:
-    be::WindowClosedEventHandler OnWindowClosed()
+    be::WindowClosedEventHandler OnWindowClosedCustom()
     {
         return [&]() {
             m_isRunning = false;
@@ -142,7 +124,7 @@ private:
     const be::Shared<be::Logger> m_logger = nullptr;
 };
 
-be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
+be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstanceType windowHandleInstance)
 {
     // Configure engine
     auto config = be::EngineConfig();

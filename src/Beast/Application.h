@@ -1,14 +1,14 @@
 #pragma once
-#include <Beast/Events/Events.h>
-#include <Beast/Input/InputCodes.h>
-#include <Beast/Windows/IWindow.h>
-#include <Beast/BeastEngine.h>
+#include "Beast/Events/Events.h"
+#include "Beast/Input/InputCodes.h"
+#include "Beast/Windows/IWindow.h"
+#include "Beast/BeastEngine.h"
 
-#include <Beast/Ecs/Ecs.h>
+#include "Beast/Ecs/Ecs.h"
 
-#include <Beast/Common/Types.h>
-#include <Beast/Common/Helpers.h>
-#include <Beast/Math/Types.h>
+#include "Beast/Common/Types.h"
+#include "Beast/Common/Helpers.h"
+#include "Beast/Math/Types.h"
 
 namespace be
 {
@@ -67,7 +67,7 @@ namespace be
             void ScrollWheel(int16 scrollAmount) noexcept;
 
         private:
-            IntVec2 m_coordinates;
+            Vec2i m_coordinates;
             std::unordered_map<MouseButtonCode, ButtonState> m_buttonsStates;
 
             uint16 m_scrollThreshold = 120;
@@ -143,7 +143,7 @@ namespace be
          * @brief Starts the application.
          * Should contain all the run-time code of the app.
          */
-        virtual void Run() = 0;
+        void Start();
 
         /**
          * @brief Returns engine.
@@ -157,11 +157,23 @@ namespace be
         }
 
     protected:
+        virtual void Run() = 0;
+
+    private:
+        be::WindowClosedEventHandler OnWindowClosed()
+        {
+            return [&]() {
+                m_shouldClose = true;
+            };
+        }
+
+    protected:
         Unique<Mouse> m_mouse = nullptr;
         Unique<Keyboard> m_keyboard = nullptr;
         Unique<IWindow> m_window = nullptr;
 
         Ecs m_ecs;
+        bool m_shouldClose = false;
 
     private:
         Unique<BeastEngine> m_engine;

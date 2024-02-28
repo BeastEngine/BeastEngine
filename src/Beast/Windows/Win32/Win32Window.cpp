@@ -1,28 +1,13 @@
 #ifdef BE_PLATFORM_WINDOWS
-    #include <Beast/Windows/Win32/Win32Window.h>
-    #include <Beast/Assertions.h>
-    #include <Beast/Events/Events.h>
+    #include "Beast/Windows/Win32/Win32Window.h"
+    #include "Beast/Debug.h"
+    #include "Beast/Events/Events.h"
 
-    #include <Beast/Common/Exceptions.h>
+    #include "Beast/Debug.h"
     #include <unordered_map>
 
 namespace be::internals
 {
-    #ifndef BE_WINAPI_CALL
-        #define BE_WINAPI_CALL(call)                                                                                    \
-            {                                                                                                           \
-                SetLastError(0);                                                                                        \
-                const auto winapiCallResult = call;                                                                     \
-                const auto lastError = GetLastError();                                                                  \
-                if (winapiCallResult == 0 && lastError != 0)                                                            \
-                {                                                                                                       \
-                    const std::string errorMessage =                                                                    \
-                        "An error occurred when calling the WinApi function. Error code: " + std::to_string(lastError); \
-                    BE_THROW(errorMessage);                                                                             \
-                }                                                                                                       \
-            }
-    #endif
-
     // Mappings between Win32 key codes and Engine's KeyCodes
     // It's an unordered_map instead of the constexpr map, because of its size.
     // Unordered_map is better for a bigger data set frequent lookups.
@@ -230,13 +215,8 @@ namespace be::internals
 
     Win32Window::~Win32Window()
     {
-        BE_ASSERT(DestroyWindow(m_hwnd));
-
-        WNDCLASS windowClass = {0};
-        if (GetClassInfo(m_hInstance, WINDOW_CLASS_NAME.c_str(), &windowClass))
-        {
-            BE_ASSERT(UnregisterClass(WINDOW_CLASS_NAME.c_str(), m_hInstance));
-        }
+        BE_WINAPI_CALL_NOTHROW(DestroyWindow(m_hwnd));
+        BE_WINAPI_CALL_NOTHROW(UnregisterClass(WINDOW_CLASS_NAME.c_str(), m_hInstance));
     }
 
     void Win32Window::ProcessInput()
@@ -251,9 +231,14 @@ namespace be::internals
         }
     }
 
-    HWND Win32Window::GetNativeHandle() const noexcept
+    HWND Win32Window::GetHandle() const noexcept
     {
         return m_hwnd;
+    }
+
+    const Vec2i& Win32Window::GetDimensions() const noexcept
+    {
+        return m_descriptor.dimensions;
     }
 
     std::wstring Win32Window::ConvertWindowTitle(const std::string& narrowTitle) const
@@ -272,7 +257,7 @@ namespace be::internals
         return WINDOW_STYLES_MAP.At(windowStyle);
     }
 
-    IntVec2 Win32Window::GetWindowDimensions() const
+    Vec2i Win32Window::GetWindowDimensions() const
     {
         if (m_descriptor.style == WindowStyle::WINDOW_FULLSCREEN)
         {
@@ -378,6 +363,20 @@ namespace be::internals
 
     LRESULT Win32Window::HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const
     {
+        // We could potentially do it like this.
+        /*const auto isButtonDonw = WM_LBUTTONDOWN | WM_RBUTTONDOWN | WM_MBUTTONDOWN | WM_XBUTTONDOWN;
+        if (uMsg & isButtonDonw)
+        {
+            return HandleMouseButtonDownMessages(uMsg, wParam, lParam);
+        }
+
+        const auto isMouseButtonUp = WM_LBUTTONUP | WM_RBUTTONUP | WM_MBUTTONUP | WM_XBUTTONUP;
+        if (uMsg & isMouseButtonUp)
+        {
+            return HandleMouseButtonUpMessages(uMsg, wParam, lParam);
+        }
+        }*/
+
         // Invoke handler defined for this message, or the default one if no defined
         if (m_messageHandlers.contains(uMsg))
         {

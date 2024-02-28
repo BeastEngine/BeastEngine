@@ -1,6 +1,8 @@
 #pragma once
-#include <Beast/Ecs/Types.h>
-#include <Beast/Common/Helpers.h>
+#include "Beast/Ecs/Types.h"
+#include "Beast/Ecs/Components/Core.h"
+
+#include "Beast/Common/Helpers.h"
 
 #include <entt/entity/registry.hpp>
 
@@ -39,28 +41,28 @@ namespace be
         template<typename Component>
         constexpr const Component& GetComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Get, Component> || ComponentsHave<BaseAccessList::Update, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Get, std::decay_t<Component>> || ComponentsHave<BaseAccessList::Update, std::decay_t<Component>>, "Component must be in either the AL::Get or AL::Update list!");
             return m_view.get<const Component>(entity);
         }
 
         template<typename Component>
         constexpr Component& UpdateComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Update, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Update, std::decay_t<Component>>, "Component must be in the AL::Update list!");
             return m_view.get<Component>(entity);
         }
 
         template<typename Component>
         constexpr void AddComponent(be::Entity entity, Component&& component) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Add, Component>);
-            m_registry.emplace<Component>(entity, std::move(component));
+            static_assert(ComponentsHave<BaseAccessList::Add, std::decay_t<Component>>, "Component must be in the AL::Add list!");
+            m_registry.emplace<std::decay_t<Component>>(entity, std::forward<Component>(component));
         }
 
         template<typename Component>
         constexpr void RemoveComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Remove, Component>);
+            static_assert(ComponentsHave<BaseAccessList::Remove, std::decay_t<Component>>, "Component must be in the AL::Remove list!");
             m_registry.remove<Component>(entity);
         }
 
@@ -68,6 +70,19 @@ namespace be
         constexpr bool HasComponent(be::Entity entity) const
         {
             return m_registry.try_get<Component>(entity) != nullptr;
+        }
+
+        constexpr be::Entity CreateEntity(be::Transform transform = {}) const
+        {
+            auto entity = m_registry.create();
+            AddComponent<be::Transform>(entity, std::move(transform));
+
+            return entity;
+        }
+
+        constexpr std::size_t EntitiesCount() const
+        {
+            return std::distance(m_view.begin(), m_view.end());
         }
 
     private:

@@ -2,7 +2,7 @@
     #include <TestSetup.h>
 
     #include <Beast/Windows/Win32/Win32Window.h>
-    #include <Beast/Common/IdGenerators/UuId4Generator.h>
+    #include <Beast/Common/UUIDGenerator.h>
 
 namespace be::tests::integration
 {
@@ -20,11 +20,10 @@ namespace be::tests::integration
 
         auto GetWindow()
         {
-            UuId4Generator idGenerator;
-            Id uniqeClassNameId = idGenerator.Generate();
+            Id uniqeClassNameId = GenerateUUID4();
 
             auto window = MakeUnique<be::internals::Win32Window>(GetWindowDescriptor(), GetIdAsWString(uniqeClassNameId).c_str());
-            ShowWindow(window->GetNativeHandle(), SW_SHOWNOACTIVATE);
+            ShowWindow(window->GetHandle(), SW_SHOWNOACTIVATE);
 
             return window;
         }
@@ -32,7 +31,7 @@ namespace be::tests::integration
     private:
         std::wstring GetIdAsWString(Id id)
         {
-            return std::to_wstring(id);
+            return std::to_wstring(id.Raw());
         }
     };
 } // namespace be::tests::integration

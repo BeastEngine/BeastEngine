@@ -1,6 +1,7 @@
-#include <Integration/Beast/BeastEngineTest.h>
+#include "Integration/Beast/BeastEngineTest.h"
 
 #include <Beast/BeastEngine.h>
+#include <Beast/Graphics/GraphicsFactory.h>
 
 namespace be::tests::integration
 {

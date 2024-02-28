@@ -1,7 +1,7 @@
 #pragma once
-#include <Beast/Input/InputCodes.h>
+#include "Beast/Input/InputCodes.h"
 
-#include <Beast/Math/Types.h>
+#include "Beast/Math/Types.h"
 
 namespace be
 {
@@ -26,7 +26,7 @@ namespace be
     class MouseEvent final
     {
     public:
-        constexpr static const IntVec2 DEFAULT_COORDINATES = {0, 0};
+        constexpr static const Vec2i DEFAULT_COORDINATES = {0, 0};
         constexpr static const int16 DEFAULT_SCROLL_VALUE = 0;
 
         /**
@@ -41,7 +41,7 @@ namespace be
          */
         constexpr MouseEvent(
             MouseEventType eventType,
-            IntVec2 mousePosition = DEFAULT_COORDINATES,
+            Vec2i mousePosition = DEFAULT_COORDINATES,
             int16 scrollValues = DEFAULT_SCROLL_VALUE,
             MouseButtonCode buttonCode = MouseButtonCode::INVALID
         ) noexcept
@@ -59,7 +59,7 @@ namespace be
          * @param mousePosition - New position of the mouse cursor (position after mouse was moved)
          * @return 
          */
-        static constexpr auto Moved(IntVec2 mousePosition) noexcept
+        static constexpr auto Moved(Vec2i mousePosition) noexcept
         {
             return MouseEvent(MouseEventType::EVENT_MOUSE_MOVED, std::move(mousePosition));
         }
@@ -72,7 +72,7 @@ namespace be
          * @param mousePosition - Position of the mouse cursor when the event occurred
          * @return 
          */
-        static constexpr auto Scrolled(int16 scrollValue, IntVec2 mousePosition)
+        static constexpr auto Scrolled(int16 scrollValue, Vec2i mousePosition)
         {
             return MouseEvent(MouseEventType::EVENT_MOUSE_SCROLLED, std::move(mousePosition), std::move(scrollValue));
         }
@@ -85,7 +85,7 @@ namespace be
          * @param mousePosition - Position of the mouse cursor when the event occurred
          * @return 
          */
-        static constexpr auto ButtonPressed(MouseButtonCode button, IntVec2 mousePosition)
+        static constexpr auto ButtonPressed(MouseButtonCode button, Vec2i mousePosition)
         {
             return MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_PRESSED, std::move(mousePosition), DEFAULT_SCROLL_VALUE, button);
         }
@@ -110,7 +110,7 @@ namespace be
          * @param mousePosition - Position of the mouse cursor when the event occurred
          * @return 
          */
-        static constexpr auto ButtonReleased(MouseButtonCode button, IntVec2 mousePosition)
+        static constexpr auto ButtonReleased(MouseButtonCode button, Vec2i mousePosition)
         {
             return MouseEvent(MouseEventType::EVENT_MOUSE_BUTTON_RELEASED, std::move(mousePosition), DEFAULT_SCROLL_VALUE, button);
         }
@@ -130,7 +130,7 @@ namespace be
          * 
          * @return
          */
-        constexpr const IntVec2& GetMousePosition() const noexcept
+        constexpr const Vec2i& GetMousePosition() const noexcept
         {
             return m_coordinates;
         }
@@ -159,7 +159,7 @@ namespace be
 
     private:
         MouseEventType m_eventType;
-        IntVec2 m_coordinates = DEFAULT_COORDINATES;
+        Vec2i m_coordinates = DEFAULT_COORDINATES;
         int16 m_scrollValue = DEFAULT_SCROLL_VALUE;
         MouseButtonCode m_buttonCode;
     };

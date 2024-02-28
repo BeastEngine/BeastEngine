@@ -10,6 +10,8 @@ namespace be::tests::unit
     {
     public:
         MOCK_METHOD(void, ProcessInput, (), (override));
+        MOCK_METHOD(WindowHandle, GetHandle, (), (const, noexcept, override));
+        MOCK_METHOD(const Vec2i&, GetDimensions, (), (const, noexcept, override));
     };
 
     class WindowFactoryMock : public IWindowFactory

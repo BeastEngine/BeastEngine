@@ -1,4 +1,4 @@
-#include <Beast/Application.h>
+#include "Beast/Application.h"
 
 namespace be
 {
@@ -106,5 +106,20 @@ namespace be
         m_window = m_engine->CreateNewWindow(mainWindowDescriptor);
         m_mouse = MakeUnique<Mouse>(*m_window);
         m_keyboard = MakeUnique<Keyboard>(*m_window);
+
+        m_window->SetWindowClosedEventHandler(OnWindowClosed());
+    }
+
+    void AApplication::Start()
+    {
+        try
+        {
+            m_engine->PrintInfo();
+            Run();
+        }
+        catch (const std::exception& error)
+        {
+            BE_DISPLAY_ERROR(error);
+        }
     }
 } // namespace be

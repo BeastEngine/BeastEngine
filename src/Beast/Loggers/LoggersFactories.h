@@ -1,8 +1,8 @@
 #pragma once
-#include <Beast/Loggers/Logger.h>
+#include "Beast/Loggers/Logger.h"
 
-#include <Beast/Common/Helpers.h>
-#include <Beast/Common/Filesystem/Types.h>
+#include "Beast/Common/Helpers.h"
+#include "Beast/Common/Filesystem/Types.h"
 
 namespace be
 {
@@ -16,8 +16,8 @@ namespace be
 
         /**
          * @brief Creates Logger instance with appropriate console logger implementation.
-         * Passed name is used to identify logger implementation.
-         * If logger implementation with given name already exists, new Logger object with that implementation is returned.
+         * Passed name is used to identify the logger implementation.
+         * If logger implementation with given name already exists, the implementation is reused.
          * 
          * @param name - Logger implementation string id
          * @return
@@ -37,7 +37,7 @@ namespace be
          * @brief Creates Logger instance with appropriate file logger implementation.
          * Passed name is used to identify logger implementation.
          * Created Logger will log messages into the file represented by the given file path.
-         * If logger implementation with given name already exists, new Logger object with that implementation is returned.
+         * If logger implementation with given name already exists, it's returned.
          * If logger implementation already exists, filePath is ignored, and returned logger operates on the filePath provided during the first creation of the logger with given name.
          * If you want to create logger with the same name, but different filePath, you have to call Destroy() first.
          * @code
