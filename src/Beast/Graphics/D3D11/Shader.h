@@ -23,7 +23,7 @@ namespace be::graphics::d3d11
         case be::graphics::InputLayout::VertexAttribute::Format::Vec2:
             return DXGI_FORMAT::DXGI_FORMAT_R32G32_FLOAT;
         default:
-            BE_DEBUG_LOG_WARNING("Given attribute {} is not recognized a supported d3d11 dxgi format.", ToUnderlying(format));
+            BE_DEBUG_LOG_WARNING("Given attribute {} is not a supported d3d11 dxgi format.", ToUnderlying(format));
             return DXGI_FORMAT::DXGI_FORMAT_UNKNOWN;
         }
     }

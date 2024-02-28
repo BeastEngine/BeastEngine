@@ -39,11 +39,6 @@ namespace be
     public:
         BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(BeastEngine)
 
-        /**
-         * @brief Initializes all engine subsystems using passed configuration.
-         * 
-         * @param config - Engine's subsystems configuration struct
-         */
         BeastEngine(EngineConfig config);
         ~BeastEngine() = default;
 
@@ -66,6 +61,8 @@ namespace be
          * 
          * @param api - Rendering API that should be used underneath. @see graphics::RenderingApi
          * @param window - The windows instance that will be used as a target for rendering
+         * 
+         * @return The new, unique instance of the adapter
          */
         Unique<graphics::IGraphics> CreateGraphics(const IWindow& window, graphics::RenderingApi api = graphics::RenderingApi::D3D11) const;
 

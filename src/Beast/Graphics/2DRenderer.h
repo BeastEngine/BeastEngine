@@ -9,7 +9,7 @@
 
 namespace be::graphics
 {
-    class Renderer2D
+    class Renderer2D final
     {
         struct Primitive
         {

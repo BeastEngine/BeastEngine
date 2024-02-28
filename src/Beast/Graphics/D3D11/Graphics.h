@@ -22,11 +22,11 @@ namespace be::graphics::d3d11
         void UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) override;
         
         void Draw(const Pipeline& pipeline) override;
-        void Clear(const Color& color) const override;
-        void Present() const override;
+        void Clear(const Color& color) override;
+        void Present() override;
 
     private:
-        mutable d3d11::API m_api;
+        d3d11::API m_api;
         d3d11::RenderTarget m_renderTarget;
 
         std::vector<d3d11::VertexBuffer> m_vertexBuffers;

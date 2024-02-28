@@ -57,7 +57,7 @@ namespace be::graphics
         virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) = 0;
 
         virtual void Draw(const Pipeline& pipeline) = 0;
-        virtual void Clear(const Color& color) const = 0;
-        virtual void Present() const = 0;
+        virtual void Clear(const Color& color) = 0;
+        virtual void Present() = 0;
     };
 } // namespace be::graphics

@@ -83,20 +83,6 @@ namespace be
         constexpr std::size_t EntitiesCount() const
         {
             return std::distance(m_view.begin(), m_view.end());
-
-            /*constexpr bool hasSize = requires(const ViewType& view) {
-                view.size();
-            };
-
-            
-            if constexpr (hasSize)
-            {
-                return m_view.size();
-            }
-            else
-            {
-                return m_view.size_hint();
-            }*/
         }
 
     private:

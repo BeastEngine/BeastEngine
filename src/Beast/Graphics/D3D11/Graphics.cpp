@@ -36,12 +36,12 @@ namespace be::graphics::d3d11
 
         return graphics::PixelShader{.id = id};
     }
-    
+
     void Graphics::UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies)
     {
         m_vertexBuffers.at(buffer.id.Raw()).Update(m_api.Context(), verticies);
     }
-    
+
     void Graphics::Draw(const Pipeline& pipeline)
     {
         auto& context = m_api.Context();
@@ -52,7 +52,7 @@ namespace be::graphics::d3d11
             const auto stride = buffer.Stride();
             const uint32 offset = 0;
 
-            context.IASetVertexBuffers(0, 1, buffer.BufferAddress(), &stride, &offset);
+            context.IASetVertexBuffers(0, 1, buffer.Address(), &stride, &offset);
         }
 
         // VSStage
@@ -87,14 +87,14 @@ namespace be::graphics::d3d11
             context.Draw(pipeline.drawCall.vertexCount, pipeline.drawCall.firstVertexIndex);
         }
     }
-    
-    void Graphics::Clear(const Color& color) const
+
+    void Graphics::Clear(const Color& color)
     {
         m_api.Context().OMSetRenderTargets(1, m_renderTarget.Address(), nullptr);
         m_api.Context().ClearRenderTargetView(m_renderTarget.View(), color.Data());
     }
-    
-    void Graphics::Present() const
+
+    void Graphics::Present()
     {
         BE_DX_CALL(m_api.SwapChain().Present(1, 0));
     }

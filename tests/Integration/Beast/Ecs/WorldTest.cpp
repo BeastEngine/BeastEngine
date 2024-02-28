@@ -111,7 +111,7 @@ namespace be::tests::integration
         ASSERT_EQ(0, verifierView.EntitiesCount());
 
         const auto view = sut.CreateView();
-        const auto entity =view.CreateEntity();
+        const auto entity = view.CreateEntity();
 
         ASSERT_EQ(1, verifierView.EntitiesCount());
         ASSERT_TRUE(verifierView.HasComponent<Transform>(entity));

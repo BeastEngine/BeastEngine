@@ -11,20 +11,12 @@ namespace be::internals
     {
         switch (api)
         {
-        case be::graphics::RenderingApi::D3D11:
 #ifdef BE_PLATFORM_WINDOWS
-        {
+        case be::graphics::RenderingApi::D3D11:
             return MakeUnique<graphics::d3d11::Graphics>(window);
-        }
-
-        break;
-#else
-            BE_THROW("Platform not supported! Could not create a graphics adapter!");
 #endif
-        default:
-            break;
         }
 
-        BE_THROW("Given API not supported!");
+        BE_THROW("API not supported! Could not create the graphics adapter!");
     }
-} // namespace be::graphics::internals
+} // namespace be::internals

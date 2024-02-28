@@ -1,6 +1,7 @@
 #include <Beast/Common/Id.h>
 
 #include <gtest/gtest.h>
+#include <unordered_set>
 
 namespace be::tests::unit
 {

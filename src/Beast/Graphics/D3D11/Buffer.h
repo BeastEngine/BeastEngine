@@ -12,7 +12,7 @@ namespace be::graphics::d3d11
     class VertexBuffer final
     {
     public:
-        VertexBuffer(wrl::ComPtr<ID3D11Buffer> buffer, uint32 stride, uint32 size)
+        VertexBuffer(wrl::ComPtr<ID3D11Buffer> buffer, uint32 stride, uint32 size) noexcept
             : m_bufferPtr(std::move(buffer)), m_stride(stride), m_size(size)
         {
         }
@@ -22,27 +22,27 @@ namespace be::graphics::d3d11
             const auto dataSize = data.size() * m_stride;
             BE_ASSERT_MSG(dataSize <= m_size, "Given data is bigger than the buffer's size! Data size: {} | Buffer size: {}", dataSize, m_size);
 
-            D3D11_MAPPED_SUBRESOURCE subresource;
+            D3D11_MAPPED_SUBRESOURCE subresource{};
             BE_DX_CALL(context.Map(m_bufferPtr.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
             {
-                memcpy(subresource.pData, data.data(), data.size() * m_stride);
+                memcpy(subresource.pData, data.data(), dataSize);
             }
             context.Unmap(m_bufferPtr.Get(), 0);
         }
 
-        const uint32 Stride() const
+        const uint32 Stride() const noexcept
         {
             return m_stride;
         }
 
-        ID3D11Buffer* const* BufferAddress() const
+        ID3D11Buffer* const* Address() const noexcept
         {
             return m_bufferPtr.GetAddressOf();
         }
 
     private:
         wrl::ComPtr<ID3D11Buffer> m_bufferPtr;
-        uint32 m_stride = sizeof(Vertex);
+        uint32 m_stride = VERTEX_STRIDE;
         uint32 m_size = 0;
     };
 }

@@ -62,7 +62,7 @@ namespace be
     using UnderlyingType = std::underlying_type_t<Enum>;
 
     /**
-     * Converts given enum into its underlying type.
+     * @brief Converts given enum into its underlying type.
      * 
      * @param enumToConvert
      * @return 
@@ -75,8 +75,8 @@ namespace be
     }
 
     /**
-     * Converts given value into the requested enum. 
-     *  Requested Enum type is provided via template parameter.
+     * @biref Converts given value into the requested enum. 
+     * Requested Enum type is provided via template parameter.
      * 
      * @param valueToConvert
      * @return 

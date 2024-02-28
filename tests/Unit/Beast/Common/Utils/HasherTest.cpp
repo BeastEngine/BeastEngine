@@ -23,7 +23,7 @@ namespace be::tests::unit
             const auto firstHash = be::Hash(input);
             const auto secondHash = be::Hash(input);
 
-            ASSERT_EQ(firstHash, secondHash) << "Hashes for '" << input << "' input don't match!\n"; 
+            ASSERT_EQ(firstHash, secondHash) << "Hashes for '" << input << "' input don't match!\n";
         }
     }
 } // namespace be::tests::unit

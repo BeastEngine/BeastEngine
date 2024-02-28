@@ -118,6 +118,9 @@ namespace be
          */
         virtual WindowHandle GetHandle() const noexcept = 0;
         
+        /**
+         * @brief Returns current windows size.
+         */
         virtual const Vec2i& GetDimensions() const noexcept = 0;
     };
     /******************************************************/

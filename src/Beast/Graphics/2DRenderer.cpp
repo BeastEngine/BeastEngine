@@ -7,7 +7,7 @@ namespace be::graphics
     Renderer2D::Renderer2D(be::Unique<IGraphics> graphics)
         : m_graphics(std::move(graphics))
     {
-        m_buffer = m_graphics->CreateVertexBuffer(sizeof(Vertex), sizeof(Vertex) * 3 * 1000);
+        m_buffer = m_graphics->CreateVertexBuffer(VERTEX_STRIDE, sizeof(Vertex) * 3 * 1000);
         be::graphics::InputLayout layout{
             .vertexAttributes = {
                 {"POSITION", be::graphics::InputLayout::VertexAttribute::Format::Vec2},
@@ -71,9 +71,6 @@ namespace be::graphics
             pipeline.pixelShaderStage.shader = m_pixelShader;
             pipeline.viewport.dimensions = {800.0f, 600.0f};
             pipeline.drawCall.vertexCount = verticesCount;
-
-            //pipeline.OMStage.renderTarget;
-            //= // renderTarget;
 
             m_graphics->Clear({0.6f, 0.2f, 0.3f, 1.0f});
             m_graphics->Draw(pipeline);

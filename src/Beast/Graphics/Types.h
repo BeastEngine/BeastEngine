@@ -24,6 +24,8 @@ namespace be::graphics
         Vec2 uv;
     };
 
+    constexpr inline auto VERTEX_STRIDE = sizeof(Vertex);
+
     enum class RenderingApi
     {
         D3D11,

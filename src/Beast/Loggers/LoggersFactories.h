@@ -16,8 +16,8 @@ namespace be
 
         /**
          * @brief Creates Logger instance with appropriate console logger implementation.
-         * Passed name is used to identify logger implementation.
-         * If logger implementation with given name already exists, it's returned.
+         * Passed name is used to identify the logger implementation.
+         * If logger implementation with given name already exists, the implementation is reused.
          * 
          * @param name - Logger implementation string id
          * @return
