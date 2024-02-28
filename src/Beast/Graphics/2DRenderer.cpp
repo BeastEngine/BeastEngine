@@ -4,10 +4,12 @@
 
 namespace be::graphics
 {
-    Renderer2D::Renderer2D(be::Unique<IGraphics> graphics)
+    Renderer2D::Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites)
         : m_graphics(std::move(graphics))
     {
-        m_buffer = m_graphics->CreateVertexBuffer(VERTEX_STRIDE, sizeof(Vertex) * 3 * 1000);
+        const uint32 vertexCount = sizeof(Vertex) * 3 * maxNumberOfSprites;
+        m_buffer = m_graphics->CreateVertexBuffer(VERTEX_STRIDE, vertexCount);
+
         be::graphics::InputLayout layout{
             .vertexAttributes = {
                 {"POSITION", be::graphics::InputLayout::VertexAttribute::Format::Vec2},
@@ -39,9 +41,9 @@ namespace be::graphics
         m_framePrimitives.emplace_back(std::move(primitive));
     }
 
-    void Renderer2D::EndFrame()
+    void Renderer2D::EndFrame(const Viewport& viewport)
     {
-        BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started before it can be ended!");
+        BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started first, before it can be ended!");
         {
             const uint32 verticesCount = static_cast<uint32>(m_framePrimitives.size() * 3u);
 
@@ -69,7 +71,7 @@ namespace be::graphics
             pipeline.vertexBuffer = m_buffer;
             pipeline.vertexShaderStage.shader = m_vertexShader;
             pipeline.pixelShaderStage.shader = m_pixelShader;
-            pipeline.viewport.dimensions = {800.0f, 600.0f};
+            pipeline.viewport = viewport;
             pipeline.drawCall.vertexCount = verticesCount;
 
             m_graphics->Clear({0.6f, 0.2f, 0.3f, 1.0f});

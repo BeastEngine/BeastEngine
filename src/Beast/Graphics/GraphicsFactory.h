@@ -1,5 +1,5 @@
 #pragma once
-#include "Beast/Graphics/Graphics.h"
+#include "Beast/Graphics/IGraphics.h"
 
 #include "Beast/Windows/IWindow.h"
 #include "Beast/Common/Helpers.h"

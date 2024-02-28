@@ -8,7 +8,7 @@
 #include "Beast/Common/Helpers.h"
 #include "Beast/Common/Types.h"
 
-#include "Beast/Graphics/Graphics.h"
+#include "Beast/Graphics/IGraphics.h"
 
 namespace be
 {

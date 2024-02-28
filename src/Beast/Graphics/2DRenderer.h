@@ -2,7 +2,7 @@
 #include "Beast/Ecs/Components/Core.h"
 #include "Beast/Ecs/Components/Graphics.h"
 
-#include "Beast/Graphics/Graphics.h"
+#include "Beast/Graphics/IGraphics.h"
 #include "Beast/Graphics/Types.h"
 
 #include "Beast/Debug.h"
@@ -19,11 +19,11 @@ namespace be::graphics
         };
 
     public:
-        explicit Renderer2D(be::Unique<IGraphics> graphics);
+        explicit Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites);
 
         void StartFrame();
         void AddSprite(const Transform& transform, const Sprite& sprite);
-        void EndFrame();
+        void EndFrame(const Viewport& viewport);
 
     private:
         be::Unique<IGraphics> m_graphics;

@@ -12,6 +12,11 @@ namespace be
 
 namespace be::graphics
 {
+    struct Viewport
+    {
+        Vec2 dimensions;
+    };
+
     struct Pipeline
     {
         struct VSStage
@@ -22,11 +27,6 @@ namespace be::graphics
         struct PSStage
         {
             PixelShader shader;
-        };
-
-        struct Viewport
-        {
-            Vec2 dimensions;
         };
 
         struct DrawCall
