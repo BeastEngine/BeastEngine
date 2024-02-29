@@ -45,4 +45,4 @@ namespace be::graphics::d3d11
         uint32 m_stride = VERTEX_STRIDE;
         uint32 m_size = 0;
     };
-}
+} // namespace be::graphics::d3d11

@@ -36,11 +36,11 @@ namespace be::tests::unit
 #ifndef TEST_SYSTEM
     #define TEST_SYSTEM(system_class_name)                \
         class system_class_name final : public TestSystem \
-        {                                               \
-        public:                                         \
-            system_class_name(bool& wasCalled)          \
+        {                                                 \
+        public:                                           \
+            system_class_name(bool& wasCalled)            \
                 : TestSystem(wasCalled)                   \
-            {}                                          \
+            {}                                            \
         }
 #endif
 

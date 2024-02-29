@@ -8,4 +8,4 @@
 namespace be::internals
 {
     Unique<graphics::IGraphics> CreateGraphics(graphics::RenderingApi api, const IWindow& window);
-} // namespace be::graphics
+} // namespace be::internals

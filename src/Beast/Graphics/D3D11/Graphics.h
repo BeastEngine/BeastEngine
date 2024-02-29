@@ -20,7 +20,7 @@ namespace be::graphics::d3d11
         graphics::PixelShader CreatePixelShader(const FilesystemPath& filepath) override;
 
         void UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) override;
-        
+
         void Draw(const Pipeline& pipeline) override;
         void Clear(const Color& color) override;
         void Present() override;

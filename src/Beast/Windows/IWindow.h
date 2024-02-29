@@ -117,7 +117,7 @@ namespace be
          * @brief Returns handle associated with this window.
          */
         virtual WindowHandle GetHandle() const noexcept = 0;
-        
+
         /**
          * @brief Returns current windows size.
          */

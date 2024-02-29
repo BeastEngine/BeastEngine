@@ -1,26 +1,20 @@
 add_library(
-	BeastCommon
-	INTERFACE
-		
-		"Helpers.h"
-		"Types.h"
-		"Filesystem/Types.h"
-		"UUIDGenerator.h"
-		"Utils/Hasher.h"
-		"Utils/Xxh64.h"
-		
- "Id.h")
+  BeastCommon
+  INTERFACE
+  "Helpers.h"
+  "Types.h"
+  "Filesystem/Types.h"
+  "UUIDGenerator.h"
+  "Utils/Hasher.h"
+  "Utils/Xxh64.h"
+  "Id.h")
 
-target_include_directories(BeastCommon INTERFACE "${BeastEngine_SOURCE_DIR}/src")
+target_include_directories(BeastCommon
+                           INTERFACE "${BeastEngine_SOURCE_DIR}/src")
 
 find_package(xxHash REQUIRED)
 find_package(stduuid REQUIRED)
-target_link_libraries(
-	BeastCommon
-    INTERFACE
-		xxHash::xxhash
-		stduuid::stduuid
-)
+target_link_libraries(BeastCommon INTERFACE xxHash::xxhash stduuid::stduuid)
 
 be_set_compiler_interface_options(BeastCommon)
 

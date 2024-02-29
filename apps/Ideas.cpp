@@ -5,7 +5,7 @@
     #include <span>
     #include <shared_mutex>
     #include <mutex>
-#include "Beast/Debug.h"
+    #include "Beast/Debug.h"
 
 namespace be
 {

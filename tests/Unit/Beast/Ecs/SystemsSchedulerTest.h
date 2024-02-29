@@ -10,4 +10,4 @@ namespace be::tests::unit
     class SystemsSchedulerTest : public testing::Test
     {
     };
-}
+} // namespace be::tests::unit
