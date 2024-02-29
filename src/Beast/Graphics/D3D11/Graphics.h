@@ -1,5 +1,5 @@
 #pragma once
-#include "Beast/Graphics/Graphics.h"
+#include "Beast/Graphics/IGraphics.h"
 #include "Beast/Graphics/D3D11/D3D11.h"
 #include "Beast/Graphics/D3D11/Buffer.h"
 #include "Beast/Graphics/D3D11/Shader.h"
