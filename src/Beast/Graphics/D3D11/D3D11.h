@@ -36,4 +36,4 @@ namespace be::graphics::d3d11
         wrl::ComPtr<IDXGISwapChain> m_swapChain = nullptr;
         wrl::ComPtr<ID3D11DeviceContext> m_context = nullptr;
     };
-}
+} // namespace be::graphics::d3d11

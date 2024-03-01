@@ -121,7 +121,7 @@ namespace be::graphics::d3d11
 
         return {std::move(shaderPtr), std::move(layoutPtr)};
     }
-    
+
     PixelShader CreatePixelShader(API& api, const FilesystemPath& filepath)
     {
         wrl::ComPtr<ID3D11PixelShader> shaderPtr;

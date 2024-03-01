@@ -1,4 +1,4 @@
-SET(SANDBOX_TARGET_NAME Sandbox)
+set(SANDBOX_TARGET_NAME Sandbox)
 
 set(SANDBOX_INCLUDE_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}")
 set(SANDBOX_SRC_DIR "${${PROJECT_MAIN_NAME}_SOURCE_DIR}")
@@ -11,11 +11,7 @@ target_link_libraries(${SANDBOX_TARGET_NAME} PRIVATE BE::core)
 
 be_set_compiler_options(${SANDBOX_TARGET_NAME})
 
-if (WIN32)
-    # Create WinApi application while using the system console
-    target_link_options(
-        ${SANDBOX_TARGET_NAME}
-        PRIVATE
-            /ENTRY:wWinMainCRTStartup /SUBSYSTEM:CONSOLE
-    )
+if(WIN32)
+  # Create WinApi application while using the system console
+  target_link_options(${SANDBOX_TARGET_NAME} PRIVATE /ENTRY:wWinMainCRTStartup /SUBSYSTEM:CONSOLE)
 endif()

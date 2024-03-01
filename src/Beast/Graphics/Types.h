@@ -63,4 +63,4 @@ namespace be::graphics
     {
         Id id;
     };
-}
+} // namespace be::graphics
