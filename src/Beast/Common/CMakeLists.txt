@@ -7,10 +7,10 @@ add_library(
   "UUIDGenerator.h"
   "Utils/Hasher.h"
   "Utils/Xxh64.h"
-  "Id.h")
+  "Id.h"
+)
 
-target_include_directories(BeastCommon
-                           INTERFACE "${BeastEngine_SOURCE_DIR}/src")
+target_include_directories(BeastCommon INTERFACE "${BeastEngine_SOURCE_DIR}/src")
 
 find_package(xxHash REQUIRED)
 find_package(stduuid REQUIRED)

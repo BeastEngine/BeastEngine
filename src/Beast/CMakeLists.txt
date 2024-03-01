@@ -25,7 +25,8 @@ set(BEAST_API_FILES
     "Ecs/View.h"
     "Ecs/World.h"
     "Ecs/SystemsScheduler.h"
-    "Ecs/Ecs.h")
+    "Ecs/Ecs.h"
+)
 
 set(BEAST_SOURCES
     "Application.cpp"
@@ -36,7 +37,8 @@ set(BEAST_SOURCES
     "Windows/Win32/Win32Window.h"
     "Windows/WindowFactory.cpp"
     "Windows/WindowFactory.h"
-    "Ecs/SystemsScheduler.cpp")
+    "Ecs/SystemsScheduler.cpp"
+)
 
 if(WIN32)
   list(APPEND BEAST_SOURCES "beastengine.dll.manifest")
@@ -66,7 +68,8 @@ add_library(
   "Graphics/D3D11/Graphics.cpp"
   "Graphics/D3D11/Utils.h"
   "Graphics/D3D11/Utils.cpp"
-  "Graphics/D3D11/RenderTarget.h")
+  "Graphics/D3D11/RenderTarget.h"
+)
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)
 
@@ -74,8 +77,7 @@ find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
 find_package(entt REQUIRED)
 find_package(glm REQUIRED)
-target_link_libraries(BeastCore PUBLIC BE::common spdlog::spdlog fmt::fmt
-                                       EnTT::EnTT glm::glm)
+target_link_libraries(BeastCore PUBLIC BE::common spdlog::spdlog fmt::fmt EnTT::EnTT glm::glm)
 add_dependencies(BeastCore BeCoreShaders)
 
 set(BEAST_DEBUGGING_DEFINES $<$<CONFIG:Debug>:BE_DEBUG>)
@@ -90,15 +92,13 @@ endif()
 target_compile_definitions(BeastCore PRIVATE ${BEAST_DEBUGGING_DEFINES})
 
 # TODO: Remove when spdlog depends on at least fmt/10.1.1
-target_compile_definitions(BeastCore
-                           PUBLIC _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
+target_compile_definitions(BeastCore PUBLIC _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
 
 if(WIN32)
   target_compile_definitions(BeastCore PUBLIC BE_PLATFORM_WINDOWS)
   target_link_libraries(BeastCore PUBLIC d3d11.lib Rpcrt4.lib D3dcompiler.lib)
 endif()
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Versions.h.in"
-               "${CMAKE_CURRENT_SOURCE_DIR}/Versions.h")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Versions.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/Versions.h")
 
 add_library(BE::core ALIAS BeastCore)
