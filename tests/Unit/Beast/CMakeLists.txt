@@ -7,14 +7,13 @@ set(BE_TESTS_UNIT_SRC_PREFIX "${BE_TESTS_UNIT_SRC_DIR}/BeastEngine/Unit/")
 set(BE_HEADERS_LIST
     "Events/KeyboardEventsTest.h"
     "Events/MouseEventsTest.h"
-    "BeastEngineTest.h"
+    
     "DataStructuresTests.h"
     "Loggers/ConsoleLoggerTest.h"
     "Loggers/LoggerTest.h"
     "Ecs/SystemsSchedulerTest.cpp"
 )
 set(BE_SRC_LIST
-    "BeastEngineTest.cpp"
     "DataStructuresTests.cpp"
     "Events/KeyboardEventsTest.cpp"
     "Events/MouseEventsTest.cpp"

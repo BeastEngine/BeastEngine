@@ -43,16 +43,16 @@ namespace be::internals
         /**
          * @see IWindow::ProcessInput()
          */
-        void ProcessInput() override;
+        void ProcessInput();
 
         /**
          * @brief Returns WinAPI's window handle.
          * 
          * @return HWND of the window
          */
-        WindowHandle GetHandle() const noexcept override;
+        WindowHandle GetHandle() const noexcept;
 
-        const Vec2i& GetDimensions() const noexcept override;
+        const Vec2i& GetDimensions() const noexcept;
 
     private:
         /**

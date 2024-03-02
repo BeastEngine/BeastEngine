@@ -1,7 +1,7 @@
 #pragma once
 #include "Beast/Events/Events.h"
 #include "Beast/Input/InputCodes.h"
-#include "Beast/Windows/IWindow.h"
+#include "Beast/Windows/Window.h"
 #include "Beast/BeastEngine.h"
 
 #include "Beast/Ecs/Ecs.h"
@@ -25,7 +25,7 @@ namespace be
         class Mouse
         {
         public:
-            Mouse(IWindow& window) noexcept;
+            Mouse(Window& window) noexcept;
 
             void SetWheelScrollThreshold(uint16 threshold) noexcept
             {
@@ -79,7 +79,7 @@ namespace be
         class Keyboard
         {
         public:
-            Keyboard(IWindow& window) noexcept;
+            Keyboard(Window& window) noexcept;
 
             bool IsKeyPressed(KeyCode keyCode) const noexcept
             {
@@ -170,7 +170,7 @@ namespace be
     protected:
         Unique<Mouse> m_mouse = nullptr;
         Unique<Keyboard> m_keyboard = nullptr;
-        Unique<IWindow> m_window = nullptr;
+        Unique<Window> m_window = nullptr;
 
         Ecs m_ecs;
         bool m_shouldClose = false;

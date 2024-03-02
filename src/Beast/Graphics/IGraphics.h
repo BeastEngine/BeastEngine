@@ -7,7 +7,7 @@
 
 namespace be
 {
-    class IWindow;
+    class Window;
 }
 
 namespace be::graphics

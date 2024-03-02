@@ -75,12 +75,15 @@ namespace be
     /**
      * @brief Basic interface for engine's windows.
      */
-    class IWindow
+    class Window
     {
     public:
-        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(IWindow);
-        IWindow() = default;
-        virtual ~IWindow() = default;
+        Window(const WindowDescriptor& windowDescriptor);
+        Window(const Window&) = delete;
+        Window& operator=(const Window&) noexcept = delete;
+        Window(Window&&);
+        Window& operator=(Window&&) noexcept;
+        ~Window();
 
         /**
          * @brief Saves passed handler to be used whenever any type of the KeyboardEvent occurs.
@@ -88,7 +91,7 @@ namespace be
          * 
          * @param handler
          */
-        virtual void SetKeyboardEventsHandler(KeyboardEventHandler handler) = 0;
+        void SetKeyboardEventsHandler(KeyboardEventHandler handler);
 
         /**
          * @brief Saves passed handler to be used whenever any type of the MouseEvent occurs.
@@ -96,14 +99,14 @@ namespace be
          * 
          * @param handler
          */
-        virtual void SetMouseEventsHandler(MouseEventHandler handler) = 0;
+        void SetMouseEventsHandler(MouseEventHandler handler);
 
         /**
          * @brief Saves passed handler to be used whenever WindowClosed event occurs.
          * 
          * @param handler
          */
-        virtual void SetWindowClosedEventHandler(WindowClosedEventHandler handler) = 0;
+        void SetWindowClosedEventHandler(WindowClosedEventHandler handler);
 
         /**
          * @brief Processes messages received from the operating system and converts them into the engine's events.
@@ -111,17 +114,21 @@ namespace be
          * 
          * @see Set*EventsHandler() for reference
          */
-        virtual void ProcessInput() = 0;
+        void ProcessInput();
 
         /**
          * @brief Returns handle associated with this window.
          */
-        virtual WindowHandle GetHandle() const noexcept = 0;
+        WindowHandle GetHandle() const noexcept;
 
         /**
          * @brief Returns current windows size.
          */
-        virtual const Vec2i& GetDimensions() const noexcept = 0;
+        const Vec2i& GetDimensions() const noexcept;
+
+    private:
+        struct Impl;
+        be::Unique<Impl> m_impl = nullptr;
     };
     /******************************************************/
     /******************************************************/

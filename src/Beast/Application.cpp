@@ -4,7 +4,7 @@ namespace be
 {
     /******************************************************************************/
     /********** CREATED FOR TESTING PURPOSES. THIS IS SUBJECT TO CHANGE **********/
-    Mouse::Mouse(IWindow& window) noexcept
+    Mouse::Mouse(Window& window) noexcept
     {
         window.SetMouseEventsHandler(GetEventHandler());
     }
@@ -65,7 +65,7 @@ namespace be
         }
     }
 
-    Keyboard::Keyboard(IWindow& window) noexcept
+    Keyboard::Keyboard(Window& window) noexcept
     {
         window.SetKeyboardEventsHandler(GetEventHandler());
     }

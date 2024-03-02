@@ -1,5 +1,5 @@
 #pragma once
-#include "Beast/Windows/IWindow.h"
+#include "Beast/Windows/Window.h"
 #include "Beast/Debug.h"
 
 #include "Beast/Common/Types.h"
@@ -10,22 +10,20 @@ namespace be
      * @brief Abstract, base class for all windows.
      * It provides its children with basic functionality for setting events handlers, and dispatching those events.
      */
-    class AWindow : public IWindow
+    class AWindow
     {
     public:
-        virtual ~AWindow() = default;
-
-        void SetKeyboardEventsHandler(KeyboardEventHandler handler) override
+        void SetKeyboardEventsHandler(KeyboardEventHandler handler)
         {
             m_keyboardEventsHandler = handler;
         }
 
-        void SetMouseEventsHandler(MouseEventHandler handler) override
+        void SetMouseEventsHandler(MouseEventHandler handler)
         {
             m_mouseEventsHandler = handler;
         }
 
-        void SetWindowClosedEventHandler(WindowClosedEventHandler handler) override
+        void SetWindowClosedEventHandler(WindowClosedEventHandler handler)
         {
             m_windowClosedEventHandler = handler;
         }

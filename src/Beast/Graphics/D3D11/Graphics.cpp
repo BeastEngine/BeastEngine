@@ -8,7 +8,7 @@ namespace be::graphics::d3d11
         return container.at(resourceRef.id.Raw());
     }
 
-    Graphics::Graphics(const IWindow& window)
+    Graphics::Graphics(const Window& window)
         : m_api(CreateAPI(window.GetHandle())), m_renderTarget(d3d11::CreateRenderTarget(m_api))
     {
     }

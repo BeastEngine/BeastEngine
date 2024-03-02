@@ -1,6 +1,5 @@
 #include "Beast/BeastEngine.h"
 #include "Beast/Versions.h"
-#include "Beast/Windows/WindowFactory.h"
 
 #include "Beast/Loggers/LoggersFactories.h"
 #include "Beast/Loggers/StaticLogger.h"
@@ -16,7 +15,6 @@ namespace be
     BeastEngine::BeastEngine(EngineConfig config)
     {
         SetLogger(config);
-        SetWindowFactory(config);
     }
 
     void BeastEngine::PrintInfo() const
@@ -26,12 +24,12 @@ namespace be
         fmt::print("{}Version [{}]\n", engineNameString, versionString);
     }
 
-    Unique<IWindow> BeastEngine::CreateNewWindow(const WindowDescriptor& descriptor) const
+    Unique<Window> BeastEngine::CreateNewWindow(const WindowDescriptor& descriptor) const
     {
-        return m_windowFactory->Create(descriptor);
+        return MakeUnique<Window>(descriptor);
     }
 
-    Unique<graphics::IGraphics> BeastEngine::CreateGraphics(const IWindow& window, graphics::RenderingApi api) const
+    Unique<graphics::IGraphics> BeastEngine::CreateGraphics(const Window& window, graphics::RenderingApi api) const
     {
         return internals::CreateGraphics(api, window);
     }
@@ -45,14 +43,5 @@ namespace be
         }
 
         internals::StaticLogger::SetLogger(std::move(logger));
-    }
-
-    void BeastEngine::SetWindowFactory(EngineConfig& config)
-    {
-        m_windowFactory = std::move(config.windowFactory);
-        if (m_windowFactory == nullptr)
-        {
-            m_windowFactory = MakeUnique<internals::WindowFactory>();
-        }
     }
 } // namespace be
