@@ -1,7 +1,7 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
     #include <Integration/Beast/Windows/Win32/Win32TestSetup.h>
 
-    #include <Beast/Events/Events.h>
+    #include <Beast/Input/Events/Events.h>
 
 namespace be::tests::integration
 {

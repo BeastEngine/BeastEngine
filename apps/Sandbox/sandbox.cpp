@@ -61,7 +61,7 @@ public:
         : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger"))
     {
         m_window->SetWindowClosedEventHandler(OnWindowClosedCustom());
-        m_mouse->SetWheelScrolledListener(OnWheelScrolled());
+        //m_mouse->SetWheelScrolledListener(OnWheelScrolled());
 
         GetEngine().PrintInfo();
     }
@@ -82,7 +82,7 @@ public:
 
         scheduler.Prepare({group2, group1});
 
-        be::Vec2i previousCords = m_mouse->GetMousePosition();
+        /*be::Vec2i previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();
 
         while (m_isRunning)
@@ -101,7 +101,7 @@ public:
             }
 
             scheduler.Update();
-        }
+        }*/
     }
 
 private:

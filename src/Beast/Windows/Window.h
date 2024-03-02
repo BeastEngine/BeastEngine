@@ -1,6 +1,6 @@
 #pragma once
 #include "Beast/PlatformSetup.h"
-#include "Beast/Events/Events.h"
+#include "Beast/Input/Input.h"
 
 #include "Beast/Common/Types.h"
 #include "Beast/Common/Helpers.h"
@@ -125,6 +125,8 @@ namespace be
          * @brief Returns current windows size.
          */
         const Vec2i& GetDimensions() const noexcept;
+
+        const Input& GetInputHandler() const noexcept;
 
     private:
         struct Impl;

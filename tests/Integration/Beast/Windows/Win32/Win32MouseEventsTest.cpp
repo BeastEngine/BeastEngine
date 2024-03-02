@@ -2,7 +2,7 @@
     #include <Integration/Beast/Windows/Win32/Win32MouseEventsTest.h>
 
     #include <Beast/Windows/Win32/Win32Window.h>
-    #include <Beast/Events/Events.h>
+    #include <Beast/Input/Events/Events.h>
 
 namespace be::tests::integration
 {

@@ -1,7 +1,7 @@
 #ifdef BE_PLATFORM_WINDOWS
     #include "Beast/Windows/Win32/Win32Window.h"
     #include "Beast/Debug.h"
-    #include "Beast/Events/Events.h"
+    #include "Beast/Input/Events/Events.h"
 
     #include "Beast/Debug.h"
     #include <unordered_map>
@@ -426,34 +426,34 @@ namespace be::internals
         return 0;
     }
 
-    void Win32Window::ProcessHeldDownMessages() const
+    void Win32Window::ProcessHeldDownMessages()
     {
         // All of those events can occurr at the same time
         // That's why we check for each one individually.
 
         if (IsKeyPressed(VK_LBUTTON))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_LEFT));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON_LEFT);
         }
 
         if (IsKeyPressed(VK_MBUTTON))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_MIDDLE));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON_MIDDLE);
         }
 
         if (IsKeyPressed(VK_RBUTTON))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_RIGHT));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON_RIGHT);
         }
 
         if (IsKeyPressed(VK_XBUTTON1))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON4));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON4);
         }
 
         if (IsKeyPressed(VK_XBUTTON2))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON5));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON5);
         }
     }
 } // namespace be::internals

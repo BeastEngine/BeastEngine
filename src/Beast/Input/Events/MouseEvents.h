@@ -18,6 +18,7 @@ namespace be
     {
         SCROLL_UP,
         SCROLL_DOWN,
+        SCROLL_NONE,
     };
 
     /**

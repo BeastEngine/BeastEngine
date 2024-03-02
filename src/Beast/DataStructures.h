@@ -18,7 +18,7 @@ namespace be
 
         [[nodiscard]] constexpr ValueType At(const KeyType& key) const
         {
-            const auto conditionFunctions = [&key](const auto& currentPair) {
+            const auto conditionFunctions = [&key](const auto& currentPair) constexpr {
                 return currentPair.first == key;
             };
 

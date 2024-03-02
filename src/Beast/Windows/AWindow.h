@@ -43,7 +43,7 @@ namespace be
                 return;
             }
 
-            BE_DEBUG_LOG_WARNING("No handler specified for KeyboardEvents");
+            //BE_DEBUG_LOG_WARNING("No handler specified for KeyboardEvents");
         }
 
         /**
@@ -60,7 +60,7 @@ namespace be
                 return;
             }
 
-            BE_DEBUG_LOG_WARNING("No handler specified for MouseEvents");
+            //BE_DEBUG_LOG_WARNING("No handler specified for MouseEvents");
         }
 
         /**
@@ -75,7 +75,7 @@ namespace be
                 return;
             }
 
-            BE_DEBUG_LOG_WARNING("No handler specified for WindowClosed event");
+            //BE_DEBUG_LOG_WARNING("No handler specified for WindowClosed event");
         }
 
     private:

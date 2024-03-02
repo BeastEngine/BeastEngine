@@ -2,7 +2,7 @@
     #include <Integration/Beast/Windows/Win32/Win32KeyboardEventsTest.h>
 
     #include <Beast/Windows/Win32/Win32Window.h>
-    #include <Beast/Events/Events.h>
+    #include <Beast/Input/Events/Events.h>
 
 namespace be::tests::integration
 {
@@ -144,8 +144,8 @@ namespace be::tests::integration
         KeyboardEventHandler expectedHandler = [&](const KeyboardEvent& event) {
             wasHandlerCalled = true;
 
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetKey());
+            ASSERT_EQ(expectedEventType, event.type);
+            ASSERT_EQ(expectedButtonCode, event.key);
         };
 
         auto sut = GetWindow();
@@ -169,8 +169,8 @@ namespace be::tests::integration
         KeyboardEventHandler expectedHandler = [&](const KeyboardEvent& event) {
             wasHandlerCalled = true;
 
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetKey());
+            ASSERT_EQ(expectedEventType, event.type);
+            ASSERT_EQ(expectedButtonCode, event.key);
         };
 
         auto sut = GetWindow();
@@ -194,8 +194,8 @@ namespace be::tests::integration
         KeyboardEventHandler expectedHandler = [&](const KeyboardEvent& event) {
             wasHandlerCalled = true;
 
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetKey());
+            ASSERT_EQ(expectedEventType, event.type);
+            ASSERT_EQ(expectedButtonCode, event.key);
         };
 
         auto sut = GetWindow();

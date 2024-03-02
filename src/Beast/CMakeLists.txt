@@ -6,9 +6,9 @@ set(BEAST_API_FILES
     "BeastEngine.h"
     "DataStructures.h"
     "Debug.h"
-    "Events/Events.h"
-    "Events/KeyboardEvents.h"
-    "Events/MouseEvents.h"
+    "Input/Events/Events.h"
+    "Input/Events/KeyboardEvents.h"
+    "Input/Events/MouseEvents.h"
     "Input/InputCodes.h"
     "Loggers/Logger.h"
     "Loggers/LoggersFactories.h"
@@ -17,7 +17,6 @@ set(BEAST_API_FILES
     "Versions.h"
     "Windows/AWindow.h"
     "Windows/Window.h"
-    
     "EntryPoint.h"
     "Math/Types.h"
     "Ecs/AccessList.h"
@@ -35,8 +34,6 @@ set(BEAST_SOURCES
     "Loggers/LoggersFactories.cpp"
     "Windows/Win32/Win32Window.cpp"
     "Windows/Win32/Win32Window.h"
-    
-    
     "Ecs/SystemsScheduler.cpp"
 )
 
@@ -69,7 +66,9 @@ add_library(
   "Graphics/D3D11/Utils.h"
   "Graphics/D3D11/Utils.cpp"
   "Graphics/D3D11/RenderTarget.h"
- "Windows/Window.cpp")
+  "Windows/Window.cpp"
+  "Input/Input.h"
+)
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)
 

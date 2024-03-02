@@ -64,4 +64,9 @@ namespace be
     {
         return m_impl->win.GetDimensions();
     }
+
+    const Input& Window::GetInputHandler() const noexcept
+    {
+        return m_impl->win.GetInputHandler();
+    }
 } // namespace be

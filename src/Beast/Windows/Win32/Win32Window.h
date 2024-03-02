@@ -3,6 +3,7 @@
     #include "Beast/Windows/AWindow.h"
     #include "Beast/PlatformSetup.h"
     #include "Beast/DataStructures.h"
+    #include "Beast/Input/Input.h"
 
     #include "Beast/Common/Helpers.h"
     #include <functional>
@@ -53,6 +54,11 @@ namespace be::internals
         WindowHandle GetHandle() const noexcept;
 
         const Vec2i& GetDimensions() const noexcept;
+
+        const Input& GetInputHandler() const noexcept
+        {
+            return m_inputHandler;
+        }
 
     private:
         /**
@@ -193,7 +199,7 @@ namespace be::internals
          * @brief Checks if mouse buttons are held down.
          * Dispatches MouseButtonHeldDownEvent with valid MouseButtonCode if specific button is held down.
          */
-        void ProcessHeldDownMessages() const;
+        void ProcessHeldDownMessages();
 
         /**
          * @brief Returns mouse coordinates as Vec2i extracted from the LPARAM of the WindowProc message.
@@ -243,6 +249,7 @@ namespace be::internals
         HINSTANCE m_hInstance;
         WindowDescriptor m_descriptor;
         std::unordered_map<UINT, MessageHandler> m_messageHandlers;
+        Input m_inputHandler;
     };
 } // namespace be::internals
 

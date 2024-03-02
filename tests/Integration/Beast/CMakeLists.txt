@@ -1,10 +1,8 @@
-set(BE_HEADERS_LIST
-     "Windows/Win32/Win32KeyboardEventsTest.h" "Windows/Win32/Win32MouseEventsTest.h"
-    "Windows/Win32/Win32TestSetup.h" "Windows/Win32/Win32WindowTest.h"
+set(BE_HEADERS_LIST "Windows/Win32/Win32KeyboardEventsTest.h" "Windows/Win32/Win32MouseEventsTest.h"
+                    "Windows/Win32/Win32TestSetup.h" "Windows/Win32/Win32WindowTest.h"
 )
 
 set(BE_SRC_LIST
-    
     "Loggers/FileLoggerTest.cpp"
     "Windows/Win32/Win32KeyboardEventsTest.cpp"
     "Windows/Win32/Win32MouseEventsTest.cpp"
