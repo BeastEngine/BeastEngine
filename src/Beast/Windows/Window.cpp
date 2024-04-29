@@ -35,21 +35,6 @@ namespace be
 
     Window::~Window() = default;
 
-    void Window::SetKeyboardEventsHandler(KeyboardEventHandler handler)
-    {
-        m_impl->win.SetKeyboardEventsHandler(handler);
-    }
-
-    void Window::SetMouseEventsHandler(MouseEventHandler handler)
-    {
-        m_impl->win.SetMouseEventsHandler(handler);
-    }
-
-    void Window::SetWindowClosedEventHandler(WindowClosedEventHandler handler)
-    {
-        m_impl->win.SetWindowClosedEventHandler(handler);
-    }
-
     void Window::ProcessInput()
     {
         m_impl->win.ProcessInput();
@@ -68,5 +53,10 @@ namespace be
     const Input& Window::GetInputHandler() const noexcept
     {
         return m_impl->win.GetInputHandler();
+    }
+
+    bool Window::ShouldClose() const noexcept
+    {
+        return m_impl->win.ShouldClose();
     }
 } // namespace be

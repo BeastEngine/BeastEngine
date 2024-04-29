@@ -1,6 +1,6 @@
 #pragma once
 #ifdef BE_PLATFORM_WINDOWS
-    #include "Beast/Windows/AWindow.h"
+    #include "Beast/Windows/Window.h"
     #include "Beast/PlatformSetup.h"
     #include "Beast/DataStructures.h"
     #include "Beast/Input/Input.h"
@@ -17,7 +17,7 @@ namespace be::internals
     /**
      * @brief Represents Win32 application window.
      */
-    class Win32Window final : public AWindow
+    class Win32Window final
     {
     public:
         BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DELETED(Win32Window);
@@ -58,6 +58,11 @@ namespace be::internals
         const Input& GetInputHandler() const noexcept
         {
             return m_inputHandler;
+        }
+
+        bool ShouldClose() const noexcept
+        {
+            return m_shouldClose;
         }
 
     private:
@@ -127,22 +132,6 @@ namespace be::internals
         static LRESULT CALLBACK WindowProcThunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
         /**
-         * @brief Creates mappings between WinAPI messages and methods responsible for handling them.
-         * Those handlers are later used to handle actual messages posted by OS.
-         */
-        void SetUpMessageHandlers();
-
-        /**
-         * @brief Maps WM_*MOUSEBUTTON* messages to appropriate handlers.
-         */
-        void SetUpMouseMessagesHandlers();
-
-        /**
-         * @brief Maps WM_*KEY* messages to appropriate handlers.
-         */
-        void SetUpKeyboardMessagesHandlers();
-
-        /**
          * @brief Handles all window's messages.
          * If there is a message handler defined for given message, event is processed by that handler.
          * Otherwise, it calls the default handler provided by the WinAPI
@@ -157,43 +146,7 @@ namespace be::internals
          * @param lParam
          * @return 
          */
-        LRESULT HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const;
-
-        /**
-         * @brief Handles WM_*MOUSEBUTTONDOWN WinAPI messages.
-         * Captures mouse cursor.
-         * Retrieves pressed button code and dispatches mouse button events.
-         * 
-         * @param uMsg - WinAPI mouse button code associated with this event for basic mouse buttons.
-         * @param wParam - WinAPI mouse button code associated with this event for additional mouse buttons.
-         * @param lParam - Cursor coordinates
-         * @return Result of message handling
-         */
-        LRESULT HandleMouseButtonDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
-
-        /**
-         * @brief Handles WM_*MOUSEBUTTONUP WinAPI messages.
-         * Captures mouse cursor.
-         * Retrieves pressed button code and dispatches mouse button events.
-         * 
-         * @param uMsg - WinAPI mouse button code associated with this event for basic mouse buttons.
-         * @param wParam - WinAPI mouse button code associated with this event for additional mouse buttons.
-         * @param lParam - Cursor coordinates
-         * @return Result of message handling
-         */
-        LRESULT HandleMouseButtonUpMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
-
-        /**
-         * @brief Handles WM_KEYDOWN WinAPI messages.
-         * Retrieves pressed button code.
-         * Dispatches KeyPressedEvent if given key was pressed in this frame, or KeyHeldDownEvent otherwise.
-         * 
-         * @param uMsg - unused.
-         * @param wParam - WinAPI key code associated with this event.
-         * @param lParam - Information about associated key state
-         * @return Result of message handling
-         */
-        LRESULT HandleKeyDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const;
+        LRESULT HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
         /**
          * @brief Checks if mouse buttons are held down.
@@ -250,6 +203,7 @@ namespace be::internals
         WindowDescriptor m_descriptor;
         std::unordered_map<UINT, MessageHandler> m_messageHandlers;
         Input m_inputHandler;
+        bool m_shouldClose = false;
     };
 } // namespace be::internals
 

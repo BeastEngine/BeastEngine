@@ -50,19 +50,10 @@ namespace be
     protected:
         virtual void Run() = 0;
 
-    private:
-        be::WindowClosedEventHandler OnWindowClosed()
-        {
-            return [&]() {
-                m_shouldClose = true;
-            };
-        }
-
     protected:
         Unique<Window> m_window = nullptr;
 
         Ecs m_ecs;
-        bool m_shouldClose = false;
 
     private:
         Unique<BeastEngine> m_engine;

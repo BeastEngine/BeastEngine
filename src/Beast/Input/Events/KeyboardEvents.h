@@ -60,6 +60,7 @@ namespace be
             return KeyboardEvent(code, KeyboardEventType::EVENT_KEY_RELEASED);
         }
 
+    public:
         const KeyCode key;
         const KeyboardEventType type;
     };

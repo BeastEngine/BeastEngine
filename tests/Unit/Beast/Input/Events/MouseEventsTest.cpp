@@ -1,10 +1,15 @@
-#include <Unit/Beast/Events/MouseEventsTest.h>
-
-#include <Beast/Events/MouseEvents.h>
+#include <Beast/Input/Events/MouseEvents.h>
 #include <Beast/Input/InputCodes.h>
+
+#include <gtest/gtest.h>
 
 namespace be::tests::unit
 {
+    class MouseEventsTest : public ::testing::Test
+    {
+    protected:
+    };
+
     TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializeWithDefaultValues)
     {
         const auto expectedType = MouseEventType::EVENT_MOUSE_MOVED;
@@ -13,10 +18,10 @@ namespace be::tests::unit
         const auto expectedMouseButton = MouseButtonCode::INVALID;
 
         const auto sut = MouseEvent(expectedType);
-        ASSERT_EQ(expectedType, sut.GetType());
-        ASSERT_EQ(expectedCoordinates, sut.GetMousePosition());
-        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
-        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+        ASSERT_EQ(expectedType, sut.type);
+        ASSERT_EQ(expectedCoordinates, sut.coordinates);
+        ASSERT_EQ(expectedScrollValue, sut.scrollValue);
+        ASSERT_EQ(expectedMouseButton, sut.button);
     }
 
     TEST_F(MouseEventsTest, MouseEventConstructorWillProperlyInitializeWithPassedValues)
@@ -27,10 +32,10 @@ namespace be::tests::unit
         const auto expectedMouseButton = MouseButtonCode::INVALID;
 
         const auto sut = MouseEvent(expectedType, expectedCoordinates, expectedScrollValue, expectedMouseButton);
-        ASSERT_EQ(expectedType, sut.GetType());
-        ASSERT_EQ(expectedCoordinates, sut.GetMousePosition());
-        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
-        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+        ASSERT_EQ(expectedType, sut.type);
+        ASSERT_EQ(expectedCoordinates, sut.coordinates);
+        ASSERT_EQ(expectedScrollValue, sut.scrollValue);
+        ASSERT_EQ(expectedMouseButton, sut.button);
     }
 
     TEST_F(MouseEventsTest, MovedWillCreateCorrectEvent)
@@ -42,10 +47,10 @@ namespace be::tests::unit
         const auto expectedMouseButton = MouseButtonCode::INVALID;
 
         const auto sut = MouseEvent::Moved(expectedCoordinates);
-        ASSERT_EQ(expectedType, sut.GetType());
-        ASSERT_EQ(expectedCoordinates, sut.GetMousePosition());
-        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
-        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+        ASSERT_EQ(expectedType, sut.type);
+        ASSERT_EQ(expectedCoordinates, sut.coordinates);
+        ASSERT_EQ(expectedScrollValue, sut.scrollValue);
+        ASSERT_EQ(expectedMouseButton, sut.button);
     }
 
     TEST_F(MouseEventsTest, ScrolledWillCreateCorrectEvent)
@@ -57,10 +62,10 @@ namespace be::tests::unit
         const auto expectedMouseButton = MouseButtonCode::INVALID;
 
         const auto sut = MouseEvent::Scrolled(expectedScrollValue, expectedCoordinates);
-        ASSERT_EQ(expectedType, sut.GetType());
-        ASSERT_EQ(expectedCoordinates, sut.GetMousePosition());
-        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
-        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+        ASSERT_EQ(expectedType, sut.type);
+        ASSERT_EQ(expectedCoordinates, sut.coordinates);
+        ASSERT_EQ(expectedScrollValue, sut.scrollValue);
+        ASSERT_EQ(expectedMouseButton, sut.button);
     }
 
     TEST_F(MouseEventsTest, ButtonPressedWillCreateCorrectEvent)
@@ -72,10 +77,10 @@ namespace be::tests::unit
         const auto expectedScrollValue = 0;
 
         const auto sut = MouseEvent::ButtonPressed(expectedMouseButton, expectedCoordinates);
-        ASSERT_EQ(expectedType, sut.GetType());
-        ASSERT_EQ(expectedCoordinates, sut.GetMousePosition());
-        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
-        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+        ASSERT_EQ(expectedType, sut.type);
+        ASSERT_EQ(expectedCoordinates, sut.coordinates);
+        ASSERT_EQ(expectedScrollValue, sut.scrollValue);
+        ASSERT_EQ(expectedMouseButton, sut.button);
     }
 
     TEST_F(MouseEventsTest, ButtonHeldDownWillCreateCorrectEvent)
@@ -86,9 +91,9 @@ namespace be::tests::unit
         const auto expectedScrollValue = 0;
 
         const auto sut = MouseEvent::ButtonHeldDown(expectedMouseButton);
-        ASSERT_EQ(expectedType, sut.GetType());
-        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
-        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+        ASSERT_EQ(expectedType, sut.type);
+        ASSERT_EQ(expectedScrollValue, sut.scrollValue);
+        ASSERT_EQ(expectedMouseButton, sut.button);
     }
 
     TEST_F(MouseEventsTest, ButtonReleasedWillCreateCorrectEvent)
@@ -100,9 +105,9 @@ namespace be::tests::unit
         const auto expectedScrollValue = 0;
 
         const auto sut = MouseEvent::ButtonReleased(expectedMouseButton, expectedCoordinates);
-        ASSERT_EQ(expectedType, sut.GetType());
-        ASSERT_EQ(expectedCoordinates, sut.GetMousePosition());
-        ASSERT_EQ(expectedScrollValue, sut.GetScrollValue());
-        ASSERT_EQ(expectedMouseButton, sut.GetButton());
+        ASSERT_EQ(expectedType, sut.type);
+        ASSERT_EQ(expectedCoordinates, sut.coordinates);
+        ASSERT_EQ(expectedScrollValue, sut.scrollValue);
+        ASSERT_EQ(expectedMouseButton, sut.button);
     }
 } // namespace be::tests::unit

@@ -86,29 +86,6 @@ namespace be
         ~Window();
 
         /**
-         * @brief Saves passed handler to be used whenever any type of the KeyboardEvent occurs.
-         * @see KeyboardEvent
-         * 
-         * @param handler
-         */
-        void SetKeyboardEventsHandler(KeyboardEventHandler handler);
-
-        /**
-         * @brief Saves passed handler to be used whenever any type of the MouseEvent occurs.
-         * @see MouseEvent
-         * 
-         * @param handler
-         */
-        void SetMouseEventsHandler(MouseEventHandler handler);
-
-        /**
-         * @brief Saves passed handler to be used whenever WindowClosed event occurs.
-         * 
-         * @param handler
-         */
-        void SetWindowClosedEventHandler(WindowClosedEventHandler handler);
-
-        /**
          * @brief Processes messages received from the operating system and converts them into the engine's events.
          * Those events are then being dispatched to the defined handlers.
          * 
@@ -127,6 +104,8 @@ namespace be
         const Vec2i& GetDimensions() const noexcept;
 
         const Input& GetInputHandler() const noexcept;
+
+        bool ShouldClose() const noexcept;
 
     private:
         struct Impl;

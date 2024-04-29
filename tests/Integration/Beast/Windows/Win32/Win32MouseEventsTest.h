@@ -21,7 +21,7 @@ namespace be::tests::integration
     protected:
     };
 
-    struct WindowsMouseButtonEventsTestParams
+    struct WindowsMouseButtonDownEventsTestParams
     {
         uint32 winApiMessageToSend;
         MouseButtonCode expectedButtonCode;
@@ -33,9 +33,17 @@ namespace be::tests::integration
      */
     class WindowsMouseButtonsDownEventsTest
         : public WindowsMouseEventsTest,
-          public ::testing::WithParamInterface<WindowsMouseButtonEventsTestParams>
+          public ::testing::WithParamInterface<WindowsMouseButtonDownEventsTestParams>
     {
     protected:
+    };
+
+    struct WindowsMouseButtonUpEventsTestParams
+    {
+        uint32 initialStateMessage;
+        uint32 winApiMessageToSend;
+        MouseButtonCode expectedButtonCode;
+        WPARAM wParamToSend = NULL;
     };
 
     /**
@@ -43,7 +51,7 @@ namespace be::tests::integration
      */
     class WindowsMouseButtonsUpEventsTest
         : public WindowsMouseEventsTest,
-          public ::testing::WithParamInterface<WindowsMouseButtonEventsTestParams>
+          public ::testing::WithParamInterface<WindowsMouseButtonUpEventsTestParams>
     {
     protected:
     };

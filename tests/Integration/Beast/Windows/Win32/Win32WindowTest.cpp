@@ -20,5 +20,16 @@ namespace be::tests::integration
         ASSERT_NO_THROW(internals::Win32Window(GetWindowDescriptor(), windowClassName)); // Window created and destroyed
         ASSERT_NO_THROW(internals::Win32Window(GetWindowDescriptor(), windowClassName));
     }
+
+    TEST_F(Win32WindowTest, ProcessInputWillProperlyHandleCloseWindowEvent)
+    {
+        auto sut = GetWindow();        
+        ASSERT_FALSE(sut->ShouldClose());
+
+        PostMessage(sut->GetHandle(), WM_CLOSE, NULL, NULL);
+        sut->ProcessInput();
+        
+        ASSERT_TRUE(sut->ShouldClose());
+    }
 } // namespace be::tests::integration
 #endif

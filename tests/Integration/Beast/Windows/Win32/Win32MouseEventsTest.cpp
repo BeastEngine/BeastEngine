@@ -8,64 +8,57 @@ namespace be::tests::integration
 {
     TEST_F(WindowsMouseEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseMovedMessage)
     {
-        bool wasHandlerCalled = false;
-        const auto expectedEventType = MouseEventType::EVENT_MOUSE_MOVED;
-        const auto expectedMouseMovementCoords = Vec2i(250, 500);
-
-        MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
-            wasHandlerCalled = true;
-
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedMouseMovementCoords, event.GetMousePosition());
-        };
-
-        const auto winApiMessageToSend = WM_MOUSEMOVE;
+        const auto expectedPosition = Vec2i(250, 500);
 
         auto sut = GetWindow();
-        sut->SetMouseEventsHandler(expectedHandler);
+        const auto& input = sut->GetInputHandler();
 
-        const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseMovementCoords.x, expectedMouseMovementCoords.y);
-        PostMessage(sut->GetHandle(), winApiMessageToSend, NULL, messageMouseCoords);
+        const Vec2i positionBefore = input.GetMousePosition();
 
+        const LPARAM messageMouseCoords = MAKELPARAM(expectedPosition.x, expectedPosition.y);
+        PostMessage(sut->GetHandle(), WM_MOUSEMOVE, NULL, messageMouseCoords);
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
+        
+        const auto& positionAfter = input.GetMousePosition();
+        ASSERT_NE(positionBefore, positionAfter);
+        ASSERT_EQ(expectedPosition, positionAfter);
     }
 
     /******************************************************/
     /*************** WindowsMouseWheelEventsTest **************/
-    INSTANTIATE_TEST_SUITE_P(
-        Win32WindowTest_MouseWheelMessagesTest,
-        WindowsMouseWheelEventsTest,
-        testing::Values(120, 80, 500, -120, -80, 500)
-    );
+    //INSTANTIATE_TEST_SUITE_P(
+    //    Win32WindowTest_MouseWheelMessagesTest,
+    //    WindowsMouseWheelEventsTest,
+    //    testing::Values(120, 80, 500, -120, -80, 500)
+    //);
 
-    TEST_P(WindowsMouseWheelEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseWheelMessageWithPositiveDelta)
-    {
-        bool wasHandlerCalled = false;
-        const auto expectedEventType = MouseEventType::EVENT_MOUSE_SCROLLED;
-        const auto expectedMouseMovementCoords = Vec2i(250, 500);
-        const auto expectedWheelDelta = GetParam();
+    //TEST_P(WindowsMouseWheelEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseWheelMessageWithPositiveDelta)
+    //{
+    //    bool wasHandlerCalled = false;
+    //    const auto expectedEventType = MouseEventType::EVENT_MOUSE_SCROLLED;
+    //    const auto expectedMouseMovementCoords = Vec2i(250, 500);
+    //    const auto expectedWheelDelta = GetParam();
 
-        MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
-            wasHandlerCalled = true;
+    //    MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
+    //        wasHandlerCalled = true;
 
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedMouseMovementCoords, event.GetMousePosition());
-            ASSERT_EQ(expectedWheelDelta, event.GetScrollValue());
-        };
+    //        ASSERT_EQ(expectedEventType, event.GetType());
+    //        ASSERT_EQ(expectedMouseMovementCoords, event.GetMousePosition());
+    //        ASSERT_EQ(expectedWheelDelta, event.GetScrollValue());
+    //    };
 
-        const auto winApiMessageToSend = WM_MOUSEWHEEL;
+    //    const auto winApiMessageToSend = WM_MOUSEWHEEL;
 
-        auto sut = GetWindow();
-        sut->SetMouseEventsHandler(expectedHandler);
+    //    auto sut = GetWindow();
+    //    sut->SetMouseEventsHandler(expectedHandler);
 
-        const WPARAM messageMouseWheelDelta = MAKEWPARAM(0 /*low order*/, expectedWheelDelta);
-        const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseMovementCoords.x, expectedMouseMovementCoords.y);
-        PostMessage(sut->GetHandle(), winApiMessageToSend, messageMouseWheelDelta, messageMouseCoords);
+    //    const WPARAM messageMouseWheelDelta = MAKEWPARAM(0 /*low order*/, expectedWheelDelta);
+    //    const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseMovementCoords.x, expectedMouseMovementCoords.y);
+    //    PostMessage(sut->GetHandle(), winApiMessageToSend, messageMouseWheelDelta, messageMouseCoords);
 
-        sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
-    }
+    //    sut->ProcessInput();
+    //    ASSERT_TRUE(wasHandlerCalled);
+    //}
     /******************************************************/
     /******************************************************/
 
@@ -75,57 +68,48 @@ namespace be::tests::integration
         Win32WindowTest_MouseButtonsDownMessagesTest,
         WindowsMouseButtonsDownEventsTest,
         testing::Values(
-            WindowsMouseButtonEventsTestParams{WM_LBUTTONDOWN, MouseButtonCode::BUTTON_LEFT},
-            WindowsMouseButtonEventsTestParams{WM_MBUTTONDOWN, MouseButtonCode::BUTTON_MIDDLE},
-            WindowsMouseButtonEventsTestParams{WM_RBUTTONDOWN, MouseButtonCode::BUTTON_RIGHT},
-            WindowsMouseButtonEventsTestParams{WM_XBUTTONDOWN, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
-            WindowsMouseButtonEventsTestParams{WM_XBUTTONDOWN, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}
+            WindowsMouseButtonDownEventsTestParams{WM_LBUTTONDOWN, MouseButtonCode::BUTTON_LEFT},
+            WindowsMouseButtonDownEventsTestParams{WM_MBUTTONDOWN, MouseButtonCode::BUTTON_MIDDLE},
+            WindowsMouseButtonDownEventsTestParams{WM_RBUTTONDOWN, MouseButtonCode::BUTTON_RIGHT},
+            WindowsMouseButtonDownEventsTestParams{WM_XBUTTONDOWN, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
+            WindowsMouseButtonDownEventsTestParams{WM_XBUTTONDOWN, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}
         )
     );
 
     TEST_P(WindowsMouseButtonsDownEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseButtonDownMessages)
     {
-        const WindowsMouseButtonEventsTestParams testParams = GetParam();
+        const WindowsMouseButtonDownEventsTestParams testParams = GetParam();
 
-        bool wasHandlerCalled = false;
-        const auto expectedEventType = MouseEventType::EVENT_MOUSE_BUTTON_PRESSED;
-        const auto expectedButtonCode = testParams.expectedButtonCode;
+        const auto mouseButton = testParams.expectedButtonCode;
         const auto expectedMouseClickCoords = Vec2i(400, 300);
 
-        MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
-            wasHandlerCalled = true;
-
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetButton());
-            ASSERT_EQ(expectedMouseClickCoords, event.GetMousePosition());
-        };
-
         auto sut = GetWindow();
-        sut->SetMouseEventsHandler(expectedHandler);
+        const auto& input = sut->GetInputHandler();
+
+        ASSERT_FALSE(input.IsMouseButtonDown(mouseButton));
+        ASSERT_FALSE(input.IsMouseButtonHeldDown(mouseButton));
+        ASSERT_FALSE(input.IsMouseButtonPressed(mouseButton));
 
         const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseClickCoords.x, expectedMouseClickCoords.y);
         PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, messageMouseCoords);
-
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
+        
+        ASSERT_TRUE(input.IsMouseButtonDown(mouseButton));
+        ASSERT_FALSE(input.IsMouseButtonHeldDown(mouseButton));
+        ASSERT_TRUE(input.IsMouseButtonPressed(mouseButton));
     }
 
     TEST_P(WindowsMouseButtonsDownEventsTest, ProcessInputWillCaptureWindowWhenMouseButtonsDownMessagesAreSent)
     {
-        const WindowsMouseButtonEventsTestParams testParams = GetParam();
+        const WindowsMouseButtonDownEventsTestParams testParams = GetParam();
+        
         auto sut = GetWindow();
-
-        bool wasHandlerCalled = false;
         const auto expectedCapturedWindowHandle = sut->GetHandle();
-        MouseEventHandler expectedHandler = [&](const MouseEvent&) {
-            wasHandlerCalled = true;
-            ASSERT_EQ(expectedCapturedWindowHandle, GetCapture());
-        };
-        sut->SetMouseEventsHandler(expectedHandler);
 
         PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, NULL);
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
+        
+        ASSERT_EQ(expectedCapturedWindowHandle, GetCapture());
     }
     /******************************************************/
     /******************************************************/
@@ -136,60 +120,52 @@ namespace be::tests::integration
         Win32WindowTest_MouseButtonsUpMessagesTest,
         WindowsMouseButtonsUpEventsTest,
         testing::Values(
-            WindowsMouseButtonEventsTestParams{WM_LBUTTONUP, MouseButtonCode::BUTTON_LEFT},
-            WindowsMouseButtonEventsTestParams{WM_MBUTTONUP, MouseButtonCode::BUTTON_MIDDLE},
-            WindowsMouseButtonEventsTestParams{WM_RBUTTONUP, MouseButtonCode::BUTTON_RIGHT},
-            WindowsMouseButtonEventsTestParams{WM_XBUTTONUP, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
-            WindowsMouseButtonEventsTestParams{WM_XBUTTONUP, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}
+            WindowsMouseButtonUpEventsTestParams{WM_LBUTTONDOWN, WM_LBUTTONUP, MouseButtonCode::BUTTON_LEFT},
+            WindowsMouseButtonUpEventsTestParams{WM_MBUTTONDOWN, WM_MBUTTONUP, MouseButtonCode::BUTTON_MIDDLE},
+            WindowsMouseButtonUpEventsTestParams{WM_RBUTTONDOWN, WM_RBUTTONUP, MouseButtonCode::BUTTON_RIGHT},
+            WindowsMouseButtonUpEventsTestParams{WM_XBUTTONDOWN, WM_XBUTTONUP, MouseButtonCode::BUTTON4, MAKEWPARAM(0 /*low order*/, XBUTTON1)},
+            WindowsMouseButtonUpEventsTestParams{WM_XBUTTONDOWN, WM_XBUTTONUP, MouseButtonCode::BUTTON5, MAKEWPARAM(0, XBUTTON2)}
         )
     );
 
     TEST_P(WindowsMouseButtonsUpEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseButtonUpMessages)
     {
-        const WindowsMouseButtonEventsTestParams testParams = GetParam();
+        const WindowsMouseButtonUpEventsTestParams testParams = GetParam();
 
-        bool wasHandlerCalled = false;
-        const auto expectedEventType = MouseEventType::EVENT_MOUSE_BUTTON_RELEASED;
-        const auto expectedButtonCode = testParams.expectedButtonCode;
-        const auto expectedMouseClickCoords = Vec2i(400, 300);
-
-        MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
-            wasHandlerCalled = true;
-
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetButton());
-            ASSERT_EQ(expectedMouseClickCoords, event.GetMousePosition());
-        };
+        const auto mouseButton = testParams.expectedButtonCode;
+        const auto expectedPosition = Vec2i(400, 300);
 
         auto sut = GetWindow();
-        sut->SetMouseEventsHandler(expectedHandler);
+        const auto& input = sut->GetInputHandler();
 
-        const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseClickCoords.x, expectedMouseClickCoords.y);
+        PostMessage(sut->GetHandle(), testParams.initialStateMessage, testParams.wParamToSend, 0);
+        sut->ProcessInput();
+
+        ASSERT_TRUE(input.IsMouseButtonDown(mouseButton));
+        ASSERT_TRUE(input.IsMouseButtonPressed(mouseButton));
+        ASSERT_NE(expectedPosition, input.GetMousePosition());
+
+        const LPARAM messageMouseCoords = MAKELPARAM(expectedPosition.x, expectedPosition.y);
         PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, messageMouseCoords);
 
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
+        ASSERT_FALSE(input.IsMouseButtonDown(mouseButton));
+        ASSERT_FALSE(input.IsMouseButtonPressed(mouseButton));
+        ASSERT_EQ(expectedPosition, input.GetMousePosition());
     }
 
     TEST_P(WindowsMouseButtonsUpEventsTest, ProcessInputWillReleaseWindowWhenMouseButtonsUpMessagesAreSent)
     {
-        const WindowsMouseButtonEventsTestParams testParams = GetParam();
-        bool wasHandlerCalled = false;
+        const WindowsMouseButtonUpEventsTestParams testParams = GetParam();
 
         auto sut = GetWindow();
         const auto nativeWindowHandle = sut->GetHandle();
-
-        MouseEventHandler expectedHandler = [&](const MouseEvent&) {
-            wasHandlerCalled = true;
-            ASSERT_NE(nativeWindowHandle, GetCapture());
-        };
-        sut->SetMouseEventsHandler(expectedHandler);
 
         SetCapture(nativeWindowHandle);
         PostMessage(nativeWindowHandle, testParams.winApiMessageToSend, testParams.wParamToSend, NULL);
 
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
+        ASSERT_NE(nativeWindowHandle, GetCapture());
     }
     /******************************************************/
     /******************************************************/

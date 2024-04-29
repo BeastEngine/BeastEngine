@@ -6,8 +6,6 @@ namespace be
     {
         m_engine = MakeUnique<BeastEngine>(std::move(engineConfig));
         m_window = m_engine->CreateNewWindow(mainWindowDescriptor);
-
-        m_window->SetWindowClosedEventHandler(OnWindowClosed());
     }
 
     void AApplication::Start()

@@ -1,18 +1,23 @@
-#include <Unit/Beast/Events/KeyboardEventsTest.h>
-
-#include <Beast/Events/KeyboardEvents.h>
+#include <Beast/Input/Events/KeyboardEvents.h>
 #include <Beast/Input/InputCodes.h>
+
+#include <gtest/gtest.h>
 
 namespace be::tests::unit
 {
+    class KeyboardEventsTest : public ::testing::Test
+    {
+    protected:
+    };
+
     TEST_F(KeyboardEventsTest, KeyboardEventConstructorWillProperlyInitializeWithGivenValues)
     {
         const auto expectedKeyCode = KeyCode::INVALID;
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_PRESSED;
 
         const auto sut = KeyboardEvent(expectedKeyCode, expectedEventType);
-        ASSERT_EQ(expectedKeyCode, sut.GetKey());
-        ASSERT_EQ(expectedEventType, sut.GetType());
+        ASSERT_EQ(expectedKeyCode, sut.key);
+        ASSERT_EQ(expectedEventType, sut.type);
     }
 
     TEST_F(KeyboardEventsTest, KeyPressedWillCreateCorrectEvent)
@@ -21,8 +26,8 @@ namespace be::tests::unit
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_PRESSED;
 
         const auto sut = KeyboardEvent::KeyPressed(expectedKeyCode);
-        ASSERT_EQ(expectedKeyCode, sut.GetKey());
-        ASSERT_EQ(expectedEventType, sut.GetType());
+        ASSERT_EQ(expectedKeyCode, sut.key);
+        ASSERT_EQ(expectedEventType, sut.type);
     }
 
     TEST_F(KeyboardEventsTest, KeyHeldDownWillCreateCorrectEvent)
@@ -31,8 +36,8 @@ namespace be::tests::unit
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_HELD_DOWN;
 
         const auto sut = KeyboardEvent::KeyHeldDown(expectedKeyCode);
-        ASSERT_EQ(expectedKeyCode, sut.GetKey());
-        ASSERT_EQ(expectedEventType, sut.GetType());
+        ASSERT_EQ(expectedKeyCode, sut.key);
+        ASSERT_EQ(expectedEventType, sut.type);
     }
 
     TEST_F(KeyboardEventsTest, KeyReleasedWillCreateCorrectEvent)
@@ -41,7 +46,7 @@ namespace be::tests::unit
         const auto expectedEventType = KeyboardEventType::EVENT_KEY_RELEASED;
 
         const auto sut = KeyboardEvent::KeyReleased(expectedKeyCode);
-        ASSERT_EQ(expectedKeyCode, sut.GetKey());
-        ASSERT_EQ(expectedEventType, sut.GetType());
+        ASSERT_EQ(expectedKeyCode, sut.key);
+        ASSERT_EQ(expectedEventType, sut.type);
     }
 } // namespace be::tests::unit
