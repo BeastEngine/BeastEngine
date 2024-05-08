@@ -22,36 +22,6 @@ namespace be
     /******************* WINDOW PARAMS ********************/
 
     /**
-     * @brief Wrapper for platform specific window handle.
-     */
-    class WindowHandleInstance final
-    {
-    public:
-        /**
-         * @brief Initializes WindowHandleInstanceType class with platform specific instance.
-         * 
-         * @param instance
-         */
-        WindowHandleInstance(WindowHandleInstanceType instance)
-            : m_instance(instance)
-        {
-        }
-
-        /**
-         * @brief Returns platform specific instance.
-         * 
-         * @return 
-         */
-        WindowHandleInstanceType Get() const
-        {
-            return m_instance;
-        }
-
-    private:
-        WindowHandleInstanceType m_instance;
-    };
-
-    /**
      * @brief Contains configuration options for windows.
      */
     struct WindowDescriptor
@@ -67,13 +37,15 @@ namespace be
         WindowStyle style = {WindowStyle::WINDOW_DEFUALT};
         const WindowHandleInstance handleInstance;
     };
+
     /******************************************************/
     /******************************************************/
 
     /******************************************************/
-    /**************** INTERFACE DEFINITION ****************/
+    /****************** CLASS DEFINITION ******************/
+
     /**
-     * @brief Basic interface for engine's windows.
+     * @brief BeastEngine window.
      */
     class Window
     {
@@ -103,14 +75,21 @@ namespace be
          */
         const Vec2i& GetDimensions() const noexcept;
 
+        /**
+         * @brief Returns underlying input handler that processes this window's system messages.
+         */
         const Input& GetInputHandler() const noexcept;
 
+        /**
+         * @brief Returns info if window closing was requested.
+         */
         bool ShouldClose() const noexcept;
 
     private:
         struct Impl;
         be::Unique<Impl> m_impl = nullptr;
     };
+
     /******************************************************/
     /******************************************************/
 } // namespace be

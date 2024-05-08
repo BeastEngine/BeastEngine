@@ -108,7 +108,7 @@ private:
     const be::Shared<be::Logger> m_logger = nullptr;
 };
 
-be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstanceType windowHandleInstance)
+be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
 {
     // Configure engine
     auto config = be::EngineConfig();

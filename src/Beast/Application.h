@@ -1,6 +1,4 @@
 #pragma once
-#include "Beast/Input/Events/Events.h"
-#include "Beast/Input/InputCodes.h"
 #include "Beast/Windows/Window.h"
 #include "Beast/BeastEngine.h"
 

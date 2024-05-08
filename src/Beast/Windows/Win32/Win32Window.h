@@ -31,7 +31,7 @@ namespace be::internals
          * @param windowDescriptor - Struct containing details about window
          * @param windowClassName - Unique name of the WinAPI class to register for this window
          */
-        Win32Window(const WindowDescriptor& windowDescriptor, const std::wstring_view windowClassName);
+        Win32Window(const WindowDescriptor& windowDescriptor, std::wstring_view windowClassName);
 
         /**
          * @brief Destroys WinAPI's window and unregisters its class. Deletes HWND.

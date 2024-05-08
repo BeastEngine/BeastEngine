@@ -179,8 +179,8 @@ namespace be::internals
         },
     };
 
-    Win32Window::Win32Window(const WindowDescriptor& windowDescriptor, const std::wstring_view windowClassName)
-        : WINDOW_CLASS_NAME(windowClassName), m_hInstance(windowDescriptor.handleInstance.Get()), m_descriptor(windowDescriptor)
+    Win32Window::Win32Window(const WindowDescriptor& windowDescriptor, std::wstring_view windowClassName)
+        : WINDOW_CLASS_NAME(windowClassName), m_hInstance(windowDescriptor.handleInstance), m_descriptor(windowDescriptor)
     {
         WNDCLASS wc = {0};
         wc.lpfnWndProc = WindowProcSetup;
