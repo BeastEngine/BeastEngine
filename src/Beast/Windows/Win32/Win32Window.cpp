@@ -239,6 +239,16 @@ namespace be::internals
         return m_descriptor.dimensions;
     }
 
+    const Input& Win32Window::GetInputHandler() const noexcept
+    {
+        return m_inputHandler;
+    }
+
+    bool Win32Window::ShouldClose() const noexcept
+    {
+        return m_shouldClose;
+    }
+
     std::wstring Win32Window::ConvertWindowTitle(const std::string& narrowTitle) const
     {
         const auto wcharBufferSize = MultiByteToWideChar(CP_UTF8, 0, narrowTitle.c_str(), -1, nullptr, 0);
@@ -362,6 +372,13 @@ namespace be::internals
         case WM_MOUSEMOVE:
             m_inputHandler.OnMouseMoved(GetMouseCoordinates(lParam));
             return 0;
+        case WM_SIZE:
+        {
+            UINT width = LOWORD(lParam);
+            UINT height = HIWORD(lParam);
+            m_descriptor.dimensions = {width, height};
+            return 0;
+        }
         case WM_CLOSE:
             m_shouldClose = true;
             return 0;

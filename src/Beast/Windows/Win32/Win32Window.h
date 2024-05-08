@@ -53,17 +53,20 @@ namespace be::internals
          */
         WindowHandle GetHandle() const noexcept;
 
+        /**
+         * Returns current window size.
+         */
         const Vec2i& GetDimensions() const noexcept;
 
-        const Input& GetInputHandler() const noexcept
-        {
-            return m_inputHandler;
-        }
+        /**
+         * @brief Returns underlying input handler.
+         */
+        const Input& GetInputHandler() const noexcept;
 
-        bool ShouldClose() const noexcept
-        {
-            return m_shouldClose;
-        }
+        /**
+         * @brief Returns true if WM_CLOSE message was recevied by the window, and false otherwise.
+         */
+        bool ShouldClose() const noexcept;
 
     private:
         /**
