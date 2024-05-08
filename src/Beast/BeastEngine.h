@@ -1,7 +1,6 @@
 #pragma once
 #include "Beast/Loggers/Logger.h"
-#include "Beast/Windows/IWindow.h"
-#include "Beast/Windows/IWindowFactory.h"
+#include "Beast/Windows/Window.h"
 
 #include "Beast/Ecs/Ecs.h"
 
@@ -22,12 +21,6 @@ namespace be
          * If set to nullptr, engine will create ConsoleLogger by default.
          */
         Shared<Logger> logger = nullptr;
-
-        /**
-         * @brief IWindowFactory implementation that will be used to create windows by the engine.
-         * If set to nullptr, the default engine's implementation will be used.
-         */
-        Unique<IWindowFactory> windowFactory = nullptr;
     };
 
     /**
@@ -53,7 +46,7 @@ namespace be
          * @param descriptor
          * @return UniquePointer to the created window
          */
-        Unique<IWindow> CreateNewWindow(const WindowDescriptor& descriptor) const;
+        Unique<Window> CreateNewWindow(const WindowDescriptor& descriptor) const;
 
         /**
          * @brief Creates an instance of the Graphics Adapter implementation of the given \p api for given \p window.
@@ -64,13 +57,9 @@ namespace be
          * 
          * @return The new, unique instance of the adapter
          */
-        Unique<graphics::IGraphics> CreateGraphics(const IWindow& window, graphics::RenderingApi api = graphics::RenderingApi::D3D11) const;
+        Unique<graphics::IGraphics> CreateGraphics(const Window& window, graphics::RenderingApi api = graphics::RenderingApi::D3D11) const;
 
     private:
         void SetLogger(EngineConfig& config);
-        void SetWindowFactory(EngineConfig& config);
-
-    private:
-        Unique<IWindowFactory> m_windowFactory = nullptr;
     };
 } // namespace be

@@ -60,8 +60,7 @@ public:
     BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor)
         : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger"))
     {
-        m_window->SetWindowClosedEventHandler(OnWindowClosedCustom());
-        m_mouse->SetWheelScrolledListener(OnWheelScrolled());
+        //m_mouse->SetWheelScrolledListener(OnWheelScrolled());
 
         GetEngine().PrintInfo();
     }
@@ -82,7 +81,7 @@ public:
 
         scheduler.Prepare({group2, group1});
 
-        be::Vec2i previousCords = m_mouse->GetMousePosition();
+        /*be::Vec2i previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();
 
         while (m_isRunning)
@@ -101,22 +100,7 @@ public:
             }
 
             scheduler.Update();
-        }
-    }
-
-private:
-    be::WindowClosedEventHandler OnWindowClosedCustom()
-    {
-        return [&]() {
-            m_isRunning = false;
-        };
-    }
-
-    be::MouseWheelScrolledListener OnWheelScrolled()
-    {
-        return [](be::WheelScrollDirection direction) {
-            std::cout << "Mouse scrolled " << (direction == be::WheelScrollDirection::SCROLL_UP ? "UP" : "DOWN") << "\n";
-        };
+        }*/
     }
 
 private:
@@ -124,7 +108,7 @@ private:
     const be::Shared<be::Logger> m_logger = nullptr;
 };
 
-be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstanceType windowHandleInstance)
+be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
 {
     // Configure engine
     auto config = be::EngineConfig();

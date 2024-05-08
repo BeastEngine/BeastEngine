@@ -1,7 +1,7 @@
 #ifdef BE_PLATFORM_WINDOWS
     #include "Beast/Windows/Win32/Win32Window.h"
     #include "Beast/Debug.h"
-    #include "Beast/Events/Events.h"
+    #include "Beast/Input/Events/Events.h"
 
     #include "Beast/Debug.h"
     #include <unordered_map>
@@ -179,11 +179,9 @@ namespace be::internals
         },
     };
 
-    Win32Window::Win32Window(const WindowDescriptor& windowDescriptor, const std::wstring_view windowClassName)
-        : WINDOW_CLASS_NAME(windowClassName), m_hInstance(windowDescriptor.handleInstance.Get()), m_descriptor(windowDescriptor)
+    Win32Window::Win32Window(const WindowDescriptor& windowDescriptor, std::wstring_view windowClassName)
+        : WINDOW_CLASS_NAME(windowClassName), m_hInstance(windowDescriptor.handleInstance), m_descriptor(windowDescriptor)
     {
-        SetUpMessageHandlers();
-
         WNDCLASS wc = {0};
         wc.lpfnWndProc = WindowProcSetup;
         wc.hInstance = m_hInstance;
@@ -241,6 +239,16 @@ namespace be::internals
         return m_descriptor.dimensions;
     }
 
+    const Input& Win32Window::GetInputHandler() const noexcept
+    {
+        return m_inputHandler;
+    }
+
+    bool Win32Window::ShouldClose() const noexcept
+    {
+        return m_shouldClose;
+    }
+
     std::wstring Win32Window::ConvertWindowTitle(const std::string& narrowTitle) const
     {
         const auto wcharBufferSize = MultiByteToWideChar(CP_UTF8, 0, narrowTitle.c_str(), -1, nullptr, 0);
@@ -293,7 +301,7 @@ namespace be::internals
 
         // Get ptr to Win32Window instance from winapi window creation data
         const CREATESTRUCTW* const windowParams = reinterpret_cast<CREATESTRUCTW*>(lParam);
-        const Win32Window* const owningWindow = static_cast<Win32Window*>(windowParams->lpCreateParams);
+        Win32Window* owningWindow = static_cast<Win32Window*>(windowParams->lpCreateParams);
 
         // Store Win32Window instance in the winapi user data
         BE_WINAPI_CALL(SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(owningWindow)));
@@ -307,153 +315,106 @@ namespace be::internals
 
     LRESULT Win32Window::WindowProcThunk(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        const Win32Window* const window = reinterpret_cast<Win32Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+        Win32Window* window = reinterpret_cast<Win32Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
         return window->HandleWindowMessages(hWnd, uMsg, wParam, lParam);
     }
 
-    void Win32Window::SetUpMessageHandlers()
+    LRESULT Win32Window::HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        SetUpMouseMessagesHandlers();
-        SetUpKeyboardMessagesHandlers();
+        switch (uMsg)
+        {
+        case WM_LBUTTONDOWN:
+        case WM_RBUTTONDOWN:
+        case WM_MBUTTONDOWN:
+        case WM_XBUTTONDOWN:
+        {
+            // Capture cursor so even if it goes out of window's border, messages are still received
+            SetCapture(m_hwnd);
 
-        m_messageHandlers[WM_CLOSE] = [&](UINT, WPARAM, LPARAM) {
-            DispatchWindowClosedEvent();
-            PostQuitMessage(0);
+            const auto buttonCode = (uMsg == WM_XBUTTONDOWN) ? GET_XBUTTON_WPARAM(wParam) : uMsg;
+            m_inputHandler.OnMouseButtonPressed(MOUSE_BUTTONS_CODES_MAP.At(buttonCode), GetMouseCoordinates(lParam));
 
             return 0;
-        };
-    }
-
-    void Win32Window::SetUpMouseMessagesHandlers()
-    {
-        static constexpr const std::array<UINT, 4> buttonDownKeys = {WM_LBUTTONDOWN, WM_RBUTTONDOWN, WM_MBUTTONDOWN, WM_XBUTTONDOWN};
-        for (const UINT key : buttonDownKeys)
-        {
-            m_messageHandlers[key] = [&](auto&&... args) { return HandleMouseButtonDownMessages(args...); };
         }
-
-        static constexpr const std::array<UINT, 5> buttonUpKeys = {WM_LBUTTONUP, WM_LBUTTONUP, WM_RBUTTONUP, WM_MBUTTONUP, WM_XBUTTONUP};
-        for (const UINT key : buttonUpKeys)
+        case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
+        case WM_MBUTTONUP:
+        case WM_XBUTTONUP:
         {
-            m_messageHandlers[key] = [&](auto&&... args) { return HandleMouseButtonUpMessages(args...); };
-        }
+            // Release cursor
+            ReleaseCapture();
 
-        m_messageHandlers[WM_MOUSEMOVE] = [&](UINT, WPARAM, LPARAM lParam) {
-            DispatchEvent(MouseEvent::Moved(GetMouseCoordinates(lParam)));
+            const auto buttonCode = (uMsg == WM_XBUTTONUP) ? GET_XBUTTON_WPARAM(wParam) : uMsg;
+            m_inputHandler.OnMouseButtonReleased(MOUSE_BUTTONS_CODES_MAP.At(buttonCode), GetMouseCoordinates(lParam));
+
             return 0;
-        };
+        }
+        case WM_KEYDOWN:
+        {
+            const auto keyCode = KEY_CODES_MAP.at(wParam);
+            if (IsKeyHeldDown(lParam))
+            {
+                m_inputHandler.OnKeyHeldDown(keyCode);
+            }
+            else
+            {
+                m_inputHandler.OnKeyPressed(keyCode);
+            }
 
-        m_messageHandlers[WM_MOUSEWHEEL] = [&](UINT, WPARAM wParam, LPARAM lParam) {
-            DispatchEvent(MouseEvent::Scrolled(GET_WHEEL_DELTA_WPARAM(wParam), GetMouseCoordinates(lParam)));
             return 0;
-        };
-    }
-
-    void Win32Window::SetUpKeyboardMessagesHandlers()
-    {
-        m_messageHandlers[WM_KEYDOWN] = [&](auto&&... args) {
-            return HandleKeyDownMessages(args...);
-        };
-
-        m_messageHandlers[WM_KEYUP] = [&](UINT, WPARAM wParam, LPARAM) {
-            DispatchEvent(KeyboardEvent::KeyReleased(KEY_CODES_MAP.at(wParam)));
+        }
+        case WM_KEYUP:
+            m_inputHandler.OnKeyReleased(KEY_CODES_MAP.at(wParam));
             return 0;
-        };
+        case WM_MOUSEWHEEL:
+            m_inputHandler.OnMouseWheelScrolled(GET_WHEEL_DELTA_WPARAM(wParam));
+            return 0;
+        case WM_MOUSEMOVE:
+            m_inputHandler.OnMouseMoved(GetMouseCoordinates(lParam));
+            return 0;
+        case WM_SIZE:
+        {
+            UINT width = LOWORD(lParam);
+            UINT height = HIWORD(lParam);
+            m_descriptor.dimensions = {width, height};
+            return 0;
+        }
+        case WM_CLOSE:
+            m_shouldClose = true;
+            return 0;
+        default:
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
+        }
     }
 
-    LRESULT Win32Window::HandleWindowMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) const
-    {
-        // We could potentially do it like this.
-        /*const auto isButtonDonw = WM_LBUTTONDOWN | WM_RBUTTONDOWN | WM_MBUTTONDOWN | WM_XBUTTONDOWN;
-        if (uMsg & isButtonDonw)
-        {
-            return HandleMouseButtonDownMessages(uMsg, wParam, lParam);
-        }
-
-        const auto isMouseButtonUp = WM_LBUTTONUP | WM_RBUTTONUP | WM_MBUTTONUP | WM_XBUTTONUP;
-        if (uMsg & isMouseButtonUp)
-        {
-            return HandleMouseButtonUpMessages(uMsg, wParam, lParam);
-        }
-        }*/
-
-        // Invoke handler defined for this message, or the default one if no defined
-        if (m_messageHandlers.contains(uMsg))
-        {
-            return m_messageHandlers.at(uMsg)(uMsg, wParam, lParam);
-        }
-
-        return DefWindowProc(hWnd, uMsg, wParam, lParam);
-    }
-
-    LRESULT Win32Window::HandleMouseButtonDownMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
-    {
-        // Capture cursor so even if it goes out of window's border, messages are still received
-        SetCapture(m_hwnd);
-
-        const auto buttonCode = (uMsg == WM_XBUTTONDOWN) ? GET_XBUTTON_WPARAM(wParam) : uMsg;
-        DispatchEvent(MouseEvent::ButtonPressed(MOUSE_BUTTONS_CODES_MAP.At(buttonCode), GetMouseCoordinates(lParam)));
-
-        // Message successfully handled
-        return 0;
-    }
-
-    LRESULT Win32Window::HandleMouseButtonUpMessages(UINT uMsg, WPARAM wParam, LPARAM lParam) const
-    {
-        // Release cursor
-        ReleaseCapture();
-
-        const auto buttonCode = (uMsg == WM_XBUTTONUP) ? GET_XBUTTON_WPARAM(wParam) : uMsg;
-        DispatchEvent(MouseEvent::ButtonReleased(MOUSE_BUTTONS_CODES_MAP.At(buttonCode), GetMouseCoordinates(lParam)));
-
-        // Message successfully handled
-        return 0;
-    }
-
-    LRESULT Win32Window::HandleKeyDownMessages(UINT, WPARAM wParam, LPARAM lParam) const
-    {
-        const auto keyCode = KEY_CODES_MAP.at(wParam);
-        if (IsKeyHeldDown(lParam))
-        {
-            DispatchEvent(KeyboardEvent::KeyHeldDown(keyCode));
-        }
-        else
-        {
-            DispatchEvent(KeyboardEvent::KeyPressed(keyCode));
-        }
-
-        // Message successfully handled
-        return 0;
-    }
-
-    void Win32Window::ProcessHeldDownMessages() const
+    void Win32Window::ProcessHeldDownMessages()
     {
         // All of those events can occurr at the same time
         // That's why we check for each one individually.
 
         if (IsKeyPressed(VK_LBUTTON))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_LEFT));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON_LEFT);
         }
 
         if (IsKeyPressed(VK_MBUTTON))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_MIDDLE));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON_MIDDLE);
         }
 
         if (IsKeyPressed(VK_RBUTTON))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON_RIGHT));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON_RIGHT);
         }
 
         if (IsKeyPressed(VK_XBUTTON1))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON4));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON4);
         }
 
         if (IsKeyPressed(VK_XBUTTON2))
         {
-            DispatchEvent(MouseEvent::ButtonHeldDown(MouseButtonCode::BUTTON5));
+            m_inputHandler.OnMouseButtonHeldDown(MouseButtonCode::BUTTON5);
         }
     }
 } // namespace be::internals

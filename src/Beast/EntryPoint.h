@@ -7,7 +7,7 @@
 #ifndef BE_MAIN
     #ifdef BE_PLATFORM_WINDOWS
         #define BE_MAIN()                 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int)
-        #define BE_WINDOW_HANDLE_INSTANCE be::WindowHandleInstanceType(hInstance)
+        #define BE_WINDOW_HANDLE_INSTANCE hInstance
     #else
         #define BE_MAIN() int main(int argc, char** argv)
     #endif
@@ -19,10 +19,10 @@ namespace be
      * @brief Creates AApplication instance.
      * Definition of this function must be provided by the user of the engine!
      * 
-     * @param WindowHandleInstanceType - Handle to be used as parent window handle provided by the OS
+     * @param windowHandleInstance - Handle to be used as parent window handle provided by the OS
      * @return Pointer to the implementation of the AApplication instance
      */
-    extern Unique<AApplication> CreateApplication(WindowHandleInstanceType windowHandleInstance);
+    extern Unique<AApplication> CreateApplication(WindowHandleInstance windowHandleInstance);
 } // namespace be
 
 BE_MAIN()

@@ -2,7 +2,7 @@
     #include <Integration/Beast/Windows/Win32/Win32KeyboardEventsTest.h>
 
     #include <Beast/Windows/Win32/Win32Window.h>
-    #include <Beast/Events/Events.h>
+    #include <Beast/Input/Events/Events.h>
 
 namespace be::tests::integration
 {
@@ -133,80 +133,47 @@ namespace be::tests::integration
         )
     );
 
-    TEST_P(KeyboardEventsTest, ProcessInputWillProperlyHandleAndDispatchKeyPressedMessages)
+    TEST_P(KeyboardEventsTest, ProcessInputWillProperlyHandleKeyPressednAndReleasedMessages)
     {
         const WindowsKeyboardEventsTestParams testParams = GetParam();
-
-        bool wasHandlerCalled = false;
-        const auto expectedEventType = KeyboardEventType::EVENT_KEY_PRESSED;
-        const auto expectedButtonCode = testParams.expectedKeyCode;
-
-        KeyboardEventHandler expectedHandler = [&](const KeyboardEvent& event) {
-            wasHandlerCalled = true;
-
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetKey());
-        };
+        const auto keyCode = testParams.expectedKeyCode;
 
         auto sut = GetWindow();
-        sut->SetKeyboardEventsHandler(expectedHandler);
+        const auto& input = sut->GetInputHandler();
 
         // Send WM_KEYDOWN WinAPI message
         PostMessage(sut->GetHandle(), WM_KEYDOWN, testParams.virtualKeyCode, NULL);
-
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
-    }
 
-    TEST_P(KeyboardEventsTest, ProcessInputWillProperlyHandleAndDispatchKeyReleasedMessages)
-    {
-        const WindowsKeyboardEventsTestParams testParams = GetParam();
-
-        bool wasHandlerCalled = false;
-        const auto expectedEventType = KeyboardEventType::EVENT_KEY_RELEASED;
-        const auto expectedButtonCode = testParams.expectedKeyCode;
-
-        KeyboardEventHandler expectedHandler = [&](const KeyboardEvent& event) {
-            wasHandlerCalled = true;
-
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetKey());
-        };
-
-        auto sut = GetWindow();
-        sut->SetKeyboardEventsHandler(expectedHandler);
+        ASSERT_TRUE(input.IsKeyPressed(keyCode));
+        ASSERT_TRUE(input.IsKeyDown(keyCode));
+        ASSERT_FALSE(input.IsKeyHeldDown(keyCode));
 
         // Send WM_KEYUP WinAPI message
         PostMessage(sut->GetHandle(), WM_KEYUP, testParams.virtualKeyCode, NULL);
 
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
+        ASSERT_FALSE(input.IsKeyPressed(keyCode));
+        ASSERT_FALSE(input.IsKeyDown(keyCode));
+        ASSERT_FALSE(input.IsKeyHeldDown(keyCode));
     }
 
-    TEST_P(KeyboardEventsTest, ProcessInputWillProperlyHandleAndDispatchKeyHeldDownMessages)
+    TEST_P(KeyboardEventsTest, ProcessInputWillProperlyHandleKeyHeldDownMessages)
     {
         const WindowsKeyboardEventsTestParams testParams = GetParam();
-
-        bool wasHandlerCalled = false;
-        const auto expectedEventType = KeyboardEventType::EVENT_KEY_HELD_DOWN;
-        const auto expectedButtonCode = testParams.expectedKeyCode;
-
-        KeyboardEventHandler expectedHandler = [&](const KeyboardEvent& event) {
-            wasHandlerCalled = true;
-
-            ASSERT_EQ(expectedEventType, event.GetType());
-            ASSERT_EQ(expectedButtonCode, event.GetKey());
-        };
+        const auto keyCode = testParams.expectedKeyCode;
 
         auto sut = GetWindow();
-        sut->SetKeyboardEventsHandler(expectedHandler);
 
         // Send WM_KEYDOWN WinAPI message
         LPARAM keyDownRepeated = (static_cast<LPARAM>(1) << 30); // Bit 30 set to 1 defines that the key was previously pressed
         PostMessage(sut->GetHandle(), WM_KEYDOWN, testParams.virtualKeyCode, keyDownRepeated);
 
         sut->ProcessInput();
-        ASSERT_TRUE(wasHandlerCalled);
+        const auto& input = sut->GetInputHandler();
+        ASSERT_FALSE(input.IsKeyPressed(keyCode));
+        ASSERT_TRUE(input.IsKeyHeldDown(keyCode));
+        ASSERT_TRUE(input.IsKeyDown(keyCode));
     }
 } // namespace be::tests::integration
 #endif

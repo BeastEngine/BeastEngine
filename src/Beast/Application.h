@@ -1,7 +1,5 @@
 #pragma once
-#include "Beast/Events/Events.h"
-#include "Beast/Input/InputCodes.h"
-#include "Beast/Windows/IWindow.h"
+#include "Beast/Windows/Window.h"
 #include "Beast/BeastEngine.h"
 
 #include "Beast/Ecs/Ecs.h"
@@ -12,115 +10,6 @@
 
 namespace be
 {
-    /******************************************************************************/
-    /********** CREATED FOR TESTING PURPOSES. THIS IS SUBJECT TO CHANGE **********/
-    namespace
-    {
-        struct ButtonState
-        {
-            bool isPressed = false;
-            bool isHeldDown = false;
-        };
-
-        class Mouse
-        {
-        public:
-            Mouse(IWindow& window) noexcept;
-
-            void SetWheelScrollThreshold(uint16 threshold) noexcept
-            {
-                m_scrollThreshold = threshold;
-            }
-
-            void SetWheelScrolledListener(MouseWheelScrolledListener listener) noexcept
-            {
-                m_mouseScrolledListener = listener;
-            }
-
-            bool IsButtonPressed(MouseButtonCode buttonCode) const noexcept
-            {
-                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
-                {
-                    return buttonState->second.isPressed;
-                }
-
-                return false;
-            }
-
-            bool IsButtonHeldDown(MouseButtonCode buttonCode) const noexcept
-            {
-                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
-                {
-                    return buttonState->second.isHeldDown;
-                }
-
-                return false;
-            }
-
-            const auto& GetMousePosition() const noexcept
-            {
-                return m_coordinates;
-            }
-
-        private:
-            MouseEventHandler GetEventHandler() noexcept;
-            void ScrollWheel(int16 scrollAmount) noexcept;
-
-        private:
-            Vec2i m_coordinates;
-            std::unordered_map<MouseButtonCode, ButtonState> m_buttonsStates;
-
-            uint16 m_scrollThreshold = 120;
-            int16 m_currentScrollValue = 0;
-
-            MouseWheelScrolledListener m_mouseScrolledListener;
-        };
-
-        class Keyboard
-        {
-        public:
-            Keyboard(IWindow& window) noexcept;
-
-            bool IsKeyPressed(KeyCode keyCode) const noexcept
-            {
-                if (const auto buttonState = m_buttonsStates.find(keyCode); buttonState != m_buttonsStates.end())
-                {
-                    return buttonState->second.isPressed;
-                }
-
-                return false;
-            }
-
-            bool IsKeyHeldDown(KeyCode buttonCode) const noexcept
-            {
-                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
-                {
-                    return buttonState->second.isHeldDown;
-                }
-
-                return false;
-            }
-
-            bool IsKeyDown(KeyCode buttonCode) const noexcept
-            {
-                if (const auto buttonState = m_buttonsStates.find(buttonCode); buttonState != m_buttonsStates.end())
-                {
-                    return buttonState->second.isHeldDown || buttonState->second.isPressed;
-                }
-
-                return false;
-            }
-
-        private:
-            KeyboardEventHandler GetEventHandler() noexcept;
-
-        private:
-            std::unordered_map<KeyCode, ButtonState> m_buttonsStates;
-        };
-    } // namespace
-    /******************************************************************************/
-    /******************************************************************************/
-
     /**
      * @brief Abstract class representing single instace of the Application.
      * Its purpose is to initialize and handle the engine.
@@ -159,21 +48,10 @@ namespace be
     protected:
         virtual void Run() = 0;
 
-    private:
-        be::WindowClosedEventHandler OnWindowClosed()
-        {
-            return [&]() {
-                m_shouldClose = true;
-            };
-        }
-
     protected:
-        Unique<Mouse> m_mouse = nullptr;
-        Unique<Keyboard> m_keyboard = nullptr;
-        Unique<IWindow> m_window = nullptr;
+        Unique<Window> m_window = nullptr;
 
         Ecs m_ecs;
-        bool m_shouldClose = false;
 
     private:
         Unique<BeastEngine> m_engine;

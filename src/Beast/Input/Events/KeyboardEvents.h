@@ -13,7 +13,7 @@ namespace be
     /**
      * @brief Stores single keybord event data.
      */
-    class KeyboardEvent final
+    struct KeyboardEvent final
     {
     public:
         /**
@@ -23,7 +23,7 @@ namespace be
          * @param eventType - Type of triggered event
          */
         constexpr KeyboardEvent(KeyCode keyCode, KeyboardEventType eventType) noexcept
-            : m_keyCode(keyCode), m_type(eventType)
+            : key(keyCode), type(eventType)
         {
         }
 
@@ -60,29 +60,8 @@ namespace be
             return KeyboardEvent(code, KeyboardEventType::EVENT_KEY_RELEASED);
         }
 
-        /**
-         * @brief Returns key code of this event.
-         * 
-         * @return
-         */
-        KeyCode
-            GetKey() const noexcept
-        {
-            return m_keyCode;
-        }
-
-        /**
-         * @brief Returns type of this event.
-         * 
-         * @return
-         */
-        KeyboardEventType GetType() const noexcept
-        {
-            return m_type;
-        }
-
-    private:
-        KeyCode m_keyCode;
-        KeyboardEventType m_type;
+    public:
+        const KeyCode key;
+        const KeyboardEventType type;
     };
 } // namespace be

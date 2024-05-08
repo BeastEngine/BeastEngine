@@ -5,14 +5,14 @@
 #include "Beast/Graphics/D3D11/Shader.h"
 #include "Beast/Graphics/D3D11/RenderTarget.h"
 
-#include "Beast/Windows/IWindow.h"
+#include "Beast/Windows/Window.h"
 
 namespace be::graphics::d3d11
 {
     class Graphics final : public IGraphics
     {
     public:
-        explicit Graphics(const IWindow& window);
+        explicit Graphics(const Window& window);
 
     private:
         graphics::VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) override;

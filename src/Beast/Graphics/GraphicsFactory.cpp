@@ -7,7 +7,7 @@
 
 namespace be::internals
 {
-    Unique<graphics::IGraphics> CreateGraphics(graphics::RenderingApi api, const IWindow& window)
+    Unique<graphics::IGraphics> CreateGraphics(graphics::RenderingApi api, const Window& window)
     {
         switch (api)
         {
