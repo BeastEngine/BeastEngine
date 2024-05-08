@@ -18,49 +18,11 @@ namespace be::tests::integration
         const LPARAM messageMouseCoords = MAKELPARAM(expectedPosition.x, expectedPosition.y);
         PostMessage(sut->GetHandle(), WM_MOUSEMOVE, NULL, messageMouseCoords);
         sut->ProcessInput();
-        
+
         const auto& positionAfter = input.GetMousePosition();
         ASSERT_NE(positionBefore, positionAfter);
         ASSERT_EQ(expectedPosition, positionAfter);
     }
-
-    /******************************************************/
-    /*************** WindowsMouseWheelEventsTest **************/
-    //INSTANTIATE_TEST_SUITE_P(
-    //    Win32WindowTest_MouseWheelMessagesTest,
-    //    WindowsMouseWheelEventsTest,
-    //    testing::Values(120, 80, 500, -120, -80, 500)
-    //);
-
-    //TEST_P(WindowsMouseWheelEventsTest, ProcessInputWillProperlyHandleAndDispatchMouseWheelMessageWithPositiveDelta)
-    //{
-    //    bool wasHandlerCalled = false;
-    //    const auto expectedEventType = MouseEventType::EVENT_MOUSE_SCROLLED;
-    //    const auto expectedMouseMovementCoords = Vec2i(250, 500);
-    //    const auto expectedWheelDelta = GetParam();
-
-    //    MouseEventHandler expectedHandler = [&](const MouseEvent& event) {
-    //        wasHandlerCalled = true;
-
-    //        ASSERT_EQ(expectedEventType, event.GetType());
-    //        ASSERT_EQ(expectedMouseMovementCoords, event.GetMousePosition());
-    //        ASSERT_EQ(expectedWheelDelta, event.GetScrollValue());
-    //    };
-
-    //    const auto winApiMessageToSend = WM_MOUSEWHEEL;
-
-    //    auto sut = GetWindow();
-    //    sut->SetMouseEventsHandler(expectedHandler);
-
-    //    const WPARAM messageMouseWheelDelta = MAKEWPARAM(0 /*low order*/, expectedWheelDelta);
-    //    const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseMovementCoords.x, expectedMouseMovementCoords.y);
-    //    PostMessage(sut->GetHandle(), winApiMessageToSend, messageMouseWheelDelta, messageMouseCoords);
-
-    //    sut->ProcessInput();
-    //    ASSERT_TRUE(wasHandlerCalled);
-    //}
-    /******************************************************/
-    /******************************************************/
 
     /******************************************************/
     /************ WindowsMouseButtonsDownEventsTest ************/
@@ -93,7 +55,7 @@ namespace be::tests::integration
         const LPARAM messageMouseCoords = MAKELPARAM(expectedMouseClickCoords.x, expectedMouseClickCoords.y);
         PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, messageMouseCoords);
         sut->ProcessInput();
-        
+
         ASSERT_TRUE(input.IsMouseButtonDown(mouseButton));
         ASSERT_FALSE(input.IsMouseButtonHeldDown(mouseButton));
         ASSERT_TRUE(input.IsMouseButtonPressed(mouseButton));
@@ -102,13 +64,13 @@ namespace be::tests::integration
     TEST_P(WindowsMouseButtonsDownEventsTest, ProcessInputWillCaptureWindowWhenMouseButtonsDownMessagesAreSent)
     {
         const WindowsMouseButtonDownEventsTestParams testParams = GetParam();
-        
+
         auto sut = GetWindow();
         const auto expectedCapturedWindowHandle = sut->GetHandle();
 
         PostMessage(sut->GetHandle(), testParams.winApiMessageToSend, testParams.wParamToSend, NULL);
         sut->ProcessInput();
-        
+
         ASSERT_EQ(expectedCapturedWindowHandle, GetCapture());
     }
     /******************************************************/

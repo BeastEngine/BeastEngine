@@ -140,7 +140,7 @@ namespace be::tests::integration
 
         auto sut = GetWindow();
         const auto& input = sut->GetInputHandler();
-        
+
         // Send WM_KEYDOWN WinAPI message
         PostMessage(sut->GetHandle(), WM_KEYDOWN, testParams.virtualKeyCode, NULL);
         sut->ProcessInput();

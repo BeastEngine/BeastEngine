@@ -122,7 +122,6 @@ namespace be
         const MouseButtonCode button;
     };
 
-
     /**
      * @brief Represents a single mouse wheel event.
      */

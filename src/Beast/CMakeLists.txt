@@ -15,7 +15,6 @@ set(BEAST_API_FILES
     "Loggers/StaticLogger.h"
     "PlatformSetup.h"
     "Versions.h"
-    
     "Windows/Window.h"
     "EntryPoint.h"
     "Math/Types.h"

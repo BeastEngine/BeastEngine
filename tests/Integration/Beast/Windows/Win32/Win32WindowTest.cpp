@@ -23,12 +23,12 @@ namespace be::tests::integration
 
     TEST_F(Win32WindowTest, ProcessInputWillProperlyHandleCloseWindowEvent)
     {
-        auto sut = GetWindow();        
+        auto sut = GetWindow();
         ASSERT_FALSE(sut->ShouldClose());
 
         PostMessage(sut->GetHandle(), WM_CLOSE, NULL, NULL);
         sut->ProcessInput();
-        
+
         ASSERT_TRUE(sut->ShouldClose());
     }
 } // namespace be::tests::integration
