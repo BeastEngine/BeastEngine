@@ -16,9 +16,10 @@ namespace be
     {
         friend class World;
 
-    private:
+    public:
         using AL = BaseAccessList;
 
+    private:
         using Get = AL::Get;
         using Update = AL::Update;
         using Add = AL::Add;

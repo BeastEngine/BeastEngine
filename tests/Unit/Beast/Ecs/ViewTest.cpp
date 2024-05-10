@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-namespace be::tests::integration
+namespace be::tests::unit
 {
     struct TestComponent1
     {

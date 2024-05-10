@@ -8,8 +8,8 @@ set(BE_SRC_LIST
     "Windows/Win32/Win32MouseEventsTest.cpp"
     "Windows/Win32/Win32WindowTest.cpp"
     "main.cpp"
-    "Ecs/WorldTest.cpp"
-    "Ecs/ViewTest.cpp"
+    "../../Unit/Beast/Ecs/WorldTest.cpp"
+    "../../Unit/Beast/Ecs/ViewTest.cpp"
 )
 
 add_executable(BeastCoreIntegration "${BE_SRC_LIST}" "${BE_HEADERS_LIST}")

@@ -12,7 +12,7 @@ add_executable(
   "Loggers/ConsoleLoggerTest.cpp"
   "Loggers/LoggerTest.cpp"
   "main.cpp"
-  "Ecs/SystemsSchedulerTest.h"
+  
   "DataStructuresTests.h"
   "Loggers/ConsoleLoggerTest.h"
   "Loggers/LoggerTest.h"

@@ -1,11 +1,19 @@
-#include <Unit/Beast/Ecs/SystemsSchedulerTest.h>
-
 #include <Beast/Ecs/SystemsScheduler.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
 
+#include <gtest/gtest.h>
+
 namespace be::tests::unit
 {
+    class SystemsSchedulerGroupTest : public testing::Test
+    {
+    };
+
+    class SystemsSchedulerTest : public testing::Test
+    {
+    };
+
     struct MyComponent
     {
         int value = 0;
@@ -119,5 +127,88 @@ namespace be::tests::unit
 
         auto group2 = scheduler.CreateGroup();
         ASSERT_THROW(group2.AttachSystem<TestSystem1>(true), std::runtime_error);
+    }
+
+    struct PlayerTag
+    {
+    };
+
+    struct BulletTag
+    {
+    };
+
+    class MultiViewTestSystem final
+    {
+    public:
+        struct CreateTransformAL : be::BaseAccessList
+        {
+            using Add = be::Components<be::Transform, BulletTag>;
+        };
+
+        struct GetTransformAL : be::BaseAccessList
+        {
+            using Get = be::Components<be::Transform, PlayerTag>;
+        };
+
+        MultiViewTestSystem(bool& wasCalled)
+            : m_wasCalled(wasCalled)
+        {}
+
+        void Run(const be::View<CreateTransformAL>& createView, const be::View<GetTransformAL>& getView)
+        {
+            for (const be::Entity entity : getView)
+            {
+                const auto& transform = getView.GetComponent<be::Transform>(entity);
+
+                const auto bulletEntity = createView.CreateEntity(transform);
+                createView.AddTag<BulletTag>(bulletEntity);
+            }
+
+            m_wasCalled = true;
+        }
+
+    private:
+        bool& m_wasCalled;
+    };
+
+    TEST_F(SystemsSchedulerTest, WillProperlyScheduleSystemWithMultipleViews)
+    {
+        // Create player entity
+        struct CreatePlayerAL : be::BaseAccessList
+        {
+            using Add = be::Components<be::Transform, PlayerTag>;
+        };
+
+        struct GetBulletAL : be::BaseAccessList
+        {
+            using Get = be::Components<be::Transform, BulletTag>;
+        };
+
+        bool wasCalled = false;
+        be::Transform expectedTransform{.position = {123.0f, -1232.0f}};
+
+        be::World world{};
+
+        const auto playerView = world.CreateView<CreatePlayerAL>();
+        const auto playerEntity = playerView.CreateEntity(expectedTransform);
+        playerView.AddTag<PlayerTag>(playerEntity);
+
+        be::SystemsScheduler scheduler{world};
+        auto group = scheduler.CreateGroup();
+        group.AttachSystem<MultiViewTestSystem>(std::ref(wasCalled));
+
+        scheduler.Prepare({group});
+
+        const auto bulletView = world.CreateView<GetBulletAL>();
+        ASSERT_EQ(0, bulletView.EntitiesCount());
+
+        scheduler.Update();
+        ASSERT_EQ(1, bulletView.EntitiesCount());
+
+        const be::Entity bulletEntity = *bulletView.begin();
+        const auto& actualTransform = bulletView.GetComponent<be::Transform>(bulletEntity);
+
+        ASSERT_EQ(expectedTransform.position, actualTransform.position);
+        ASSERT_TRUE(wasCalled);
     }
 } // namespace be::tests::unit
