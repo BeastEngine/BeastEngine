@@ -1023,4 +1023,4 @@ namespace be::tests::unit
             ASSERT_EQ(2, view.EntitiesCount<TestTag1>());
         }
     } // namespace view_tags
-}; // namespace be::tests::integration
+}; // namespace be::tests::unit

@@ -116,4 +116,4 @@ namespace be::tests::unit
         ASSERT_EQ(1, verifierView.EntitiesCount());
         ASSERT_TRUE(verifierView.HasComponent<Transform>(entity));
     }
-} // namespace be::tests::integration
+} // namespace be::tests::unit

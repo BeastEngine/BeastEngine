@@ -12,7 +12,6 @@ add_executable(
   "Loggers/ConsoleLoggerTest.cpp"
   "Loggers/LoggerTest.cpp"
   "main.cpp"
-  
   "DataStructuresTests.h"
   "Loggers/ConsoleLoggerTest.h"
   "Loggers/LoggerTest.h"

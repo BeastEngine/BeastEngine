@@ -61,8 +61,9 @@ namespace be
                 }
             }
 
+            // TODO: Add support for const system functions
             template<typename System, typename... Views>
-            static void PrepareSystem(Unique<System> system, TaskRunner& runner, void(System::*fn)(Views...))
+            static void PrepareSystem(Unique<System> system, TaskRunner& runner, void (System::*fn)(Views...))
             {
                 auto task = [system = std::move(system)](uint32, void* data, auto, auto) {
                     auto* world = reinterpret_cast<World*>(data);
