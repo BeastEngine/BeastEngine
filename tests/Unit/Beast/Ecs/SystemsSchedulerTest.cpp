@@ -173,7 +173,6 @@ namespace be::tests::unit
 
     TEST_F(SystemsSchedulerTest, WillProperlyScheduleSystemWithMultipleViews)
     {
-        // Create player entity
         struct CreatePlayerAL : be::BaseAccessList
         {
             using Add = be::Components<be::Transform, PlayerTag>;

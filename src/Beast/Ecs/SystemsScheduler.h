@@ -14,11 +14,6 @@
 
 namespace be
 {
-    template<typename T>
-    concept ecs_system = requires {
-        std::is_same<typename T::AccessList, be::BaseAccessList>::value;
-    };
-
     class SystemsScheduler final
     {
         using TaskRunner = entt::scheduler;

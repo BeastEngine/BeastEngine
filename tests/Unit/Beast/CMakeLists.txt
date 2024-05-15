@@ -19,6 +19,8 @@ add_executable(
   "Common/Utils/HasherTest.cpp"
   "Common/IdTest.cpp"
   "Input/InputTest.cpp"
+  "Ecs/WorldTest.cpp"
+  "Ecs/ViewTest.cpp"
 )
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
 
