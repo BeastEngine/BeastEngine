@@ -4,6 +4,10 @@
 
 #include <gtest/gtest.h>
 
+#include <vector>
+#include <typeinfo>
+#include <typeindex>
+
 namespace be::tests::unit
 {
     class SystemsSchedulerGroupTest : public testing::Test
@@ -209,5 +213,120 @@ namespace be::tests::unit
 
         ASSERT_EQ(expectedTransform.position, actualTransform.position);
         ASSERT_TRUE(wasCalled);
+    }
+
+    template<typename T>
+    concept IsView = requires {
+        std::is_same<typename std::decay_t<T>::AL, be::BaseAccessList>::value;
+    };
+
+    using ComponentId = std::type_index;
+
+    class SystemFunction
+    {
+    public:
+        template<typename... Views>
+        void Process()
+        {
+            if constexpr (IsView<Views...>)
+            {
+                ProcessImpl<Views...>();
+            }
+        }
+
+    private:
+        template<typename ViewT> requires IsView<ViewT>
+        void ProcessImpl()
+        {
+            using ViewType = typename std::decay_t<ViewT>;
+
+            using Get = ViewType::AL::Get;
+            using Update = ViewType::AL::Update;
+            using Add = ViewType::AL::Add;
+            using Remove = ViewType::AL::Remove;
+
+            ProcessComponents(Get{}, m_getComponents);
+            ProcessComponents(Update{}, m_updateComponents);
+            ProcessComponents(Add{}, m_addComponents);
+            ProcessComponents(Remove{}, m_removeComponents);
+        }
+
+        template<typename... Components>
+        void ProcessComponents(be::Components<Components...> types, std::vector<ComponentId>& components)
+        {
+            if constexpr (types.size != 0)
+            {
+                components.emplace_back(std::type_index(typeid(Components))...);
+            }
+        }
+
+    public:
+        std::vector<ComponentId> m_getComponents;
+        std::vector<ComponentId> m_updateComponents;
+        std::vector<ComponentId> m_addComponents;
+        std::vector<ComponentId> m_removeComponents;
+    };
+
+    class SystemsSchedulerWIP
+    {
+    public:
+        template<typename... Views>
+        using NonMemberFn = void (*)(Views...);
+
+        template<typename... Views>
+        void RegisterFunction(NonMemberFn<Views...>)
+        {
+            SystemFunction newFunction{};
+            newFunction.Process<Views...>();
+
+            m_functions.push_back(std::move(newFunction));
+        }
+
+    public:
+        std::vector<SystemFunction> m_functions;
+    };
+
+    struct GetAL : be::BaseAccessList
+    {
+        using Get = be::Components<be::Transform>;
+    };
+    static void getFunction(const be::View<GetAL>&)
+    {
+    }
+
+    struct UpdateAL : be::BaseAccessList
+    {
+        using Update = be::Components<be::Transform>;
+    };
+    static void updateFunction(const be::View<UpdateAL>&) {}
+
+    struct AddAL : be::BaseAccessList
+    {
+        using Add = be::Components<be::Transform>;
+    };
+    static void addFunction(const be::View<AddAL>&) {}
+
+    struct RemoveAL : be::BaseAccessList
+    {
+        using Remove = be::Components<be::Transform>;
+    };
+    static void removeFunction (const be::View<RemoveAL>&) {}
+
+    TEST_F(SystemsSchedulerTest, AutomaticScheduling)
+    {
+        SystemsSchedulerWIP scheduler{};
+        scheduler.RegisterFunction(getFunction);
+        scheduler.RegisterFunction(updateFunction);
+        scheduler.RegisterFunction(addFunction);
+        scheduler.RegisterFunction(removeFunction);
+
+        for (const auto& function : scheduler.m_functions)
+        {
+            const auto n2 = function;
+        }
+
+        /*scheduler.Prepare();
+        scheduler.Run();
+        scheduler.Update();*/
     }
 } // namespace be::tests::unit
