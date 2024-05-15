@@ -14,11 +14,6 @@
 
 namespace be
 {
-    template<typename T>
-    concept ecs_system = requires {
-        std::is_same<typename T::AccessList, be::BaseAccessList>::value;
-    };
-
     class SystemsScheduler final
     {
         using TaskRunner = entt::scheduler;
@@ -31,7 +26,7 @@ namespace be
             using PrepareSystemFunc = std::function<void(TaskRunner&)>;
 
         public:
-            template<ecs_system System, typename... Args>
+            template<typename System, typename... Args>
             void AttachSystem(Args&&... args)
             {
                 const auto& id = typeid(System);
@@ -42,7 +37,7 @@ namespace be
 
                 m_systemsRegistry.insert(id);
                 PrepareSystemFunc prepareFunction = [this, ... args = std::forward<Args>(args)](TaskRunner& runner) mutable {
-                    PrepareSystem(MakeUnique<System>(args...), runner);
+                    PrepareSystem<System>(MakeUnique<System>(args...), runner, &System::Run);
                 };
 
                 m_prepareFunctions.push_back(std::move(prepareFunction));
@@ -61,14 +56,13 @@ namespace be
                 }
             }
 
-            template<ecs_system System>
-            static void PrepareSystem(Unique<System> system, TaskRunner& runner)
+            // TODO: Add support for const system functions
+            template<typename System, typename... Views>
+            static void PrepareSystem(Unique<System> system, TaskRunner& runner, void (System::*fn)(Views...))
             {
                 auto task = [system = std::move(system)](uint32, void* data, auto, auto) {
                     auto* world = reinterpret_cast<World*>(data);
-                    const auto view = world->CreateView<System::AccessList>();
-
-                    system->Run(view);
+                    system->Run(world->CreateView<typename std::decay_t<Views>::AL>()...);
                 };
                 runner.attach(std::move(task));
             }

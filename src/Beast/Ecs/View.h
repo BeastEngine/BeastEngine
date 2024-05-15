@@ -16,9 +16,10 @@ namespace be
     {
         friend class World;
 
-    private:
+    public:
         using AL = BaseAccessList;
 
+    private:
         using Get = AL::Get;
         using Update = AL::Update;
         using Add = AL::Add;
@@ -72,6 +73,26 @@ namespace be
             return m_registry.try_get<Component>(entity) != nullptr;
         }
 
+        template<typename Tag>
+        constexpr void AddTag(be::Entity entity) const
+        {
+            static_assert(ComponentsHave<BaseAccessList::Add, std::decay_t<Tag>>, "Tag must be in the AL::Add list!");
+            m_registry.emplace<std::decay_t<Tag>>(entity);
+        }
+
+        template<typename Tag>
+        constexpr void RemoveTag(be::Entity entity) const
+        {
+            static_assert(ComponentsHave<BaseAccessList::Remove, std::decay_t<Tag>>, "Tag must be in the AL::Remove list!");
+            m_registry.remove<Tag>(entity);
+        }
+
+        template<typename Tag>
+        constexpr bool HasTag(be::Entity entity) const
+        {
+            return m_registry.all_of<Tag>(entity);
+        }
+
         constexpr be::Entity CreateEntity(be::Transform transform = {}) const
         {
             auto entity = m_registry.create();
@@ -83,6 +104,13 @@ namespace be
         constexpr std::size_t EntitiesCount() const
         {
             return std::distance(m_view.begin(), m_view.end());
+        }
+
+        template<typename Component>
+        constexpr std::size_t EntitiesCount() const
+        {
+            const auto view = m_registry.view<Component>();
+            return std::distance(view.begin(), view.end());
         }
 
     private:

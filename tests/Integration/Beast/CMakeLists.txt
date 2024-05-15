@@ -2,14 +2,8 @@ set(BE_HEADERS_LIST "Windows/Win32/Win32KeyboardEventsTest.h" "Windows/Win32/Win
                     "Windows/Win32/Win32TestSetup.h" "Windows/Win32/Win32WindowTest.h"
 )
 
-set(BE_SRC_LIST
-    "Loggers/FileLoggerTest.cpp"
-    "Windows/Win32/Win32KeyboardEventsTest.cpp"
-    "Windows/Win32/Win32MouseEventsTest.cpp"
-    "Windows/Win32/Win32WindowTest.cpp"
-    "main.cpp"
-    "Ecs/WorldTest.cpp"
-    "Ecs/ViewTest.cpp"
+set(BE_SRC_LIST "Loggers/FileLoggerTest.cpp" "Windows/Win32/Win32KeyboardEventsTest.cpp"
+                "Windows/Win32/Win32MouseEventsTest.cpp" "Windows/Win32/Win32WindowTest.cpp" "main.cpp"
 )
 
 add_executable(BeastCoreIntegration "${BE_SRC_LIST}" "${BE_HEADERS_LIST}")

@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-namespace be::tests::integration
+namespace be::tests::unit
 {
     class WorldTest : public testing::Test
     {
@@ -116,4 +116,4 @@ namespace be::tests::integration
         ASSERT_EQ(1, verifierView.EntitiesCount());
         ASSERT_TRUE(verifierView.HasComponent<Transform>(entity));
     }
-} // namespace be::tests::integration
+} // namespace be::tests::unit
