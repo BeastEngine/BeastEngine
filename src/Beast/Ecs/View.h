@@ -42,28 +42,28 @@ namespace be
         template<typename Component>
         constexpr const Component& GetComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Get, std::decay_t<Component>> || ComponentsHave<BaseAccessList::Update, std::decay_t<Component>>, "Component must be in either the AL::Get or AL::Update list!");
+            static_assert(ComponentsHave<Get, std::decay_t<Component>> || ComponentsHave<Update, std::decay_t<Component>>, "Component must be in either the AL::Get or AL::Update list!");
             return m_view.get<const Component>(entity);
         }
 
         template<typename Component>
         constexpr Component& UpdateComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Update, std::decay_t<Component>>, "Component must be in the AL::Update list!");
+            static_assert(ComponentsHave<Update, std::decay_t<Component>>, "Component must be in the AL::Update list!");
             return m_view.get<Component>(entity);
         }
 
         template<typename Component>
         constexpr void AddComponent(be::Entity entity, Component&& component) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Add, std::decay_t<Component>>, "Component must be in the AL::Add list!");
+            static_assert(ComponentsHave<Add, std::decay_t<Component>>, "Component must be in the AL::Add list!");
             m_registry.emplace<std::decay_t<Component>>(entity, std::forward<Component>(component));
         }
 
         template<typename Component>
         constexpr void RemoveComponent(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Remove, std::decay_t<Component>>, "Component must be in the AL::Remove list!");
+            static_assert(ComponentsHave<Remove, std::decay_t<Component>>, "Component must be in the AL::Remove list!");
             m_registry.remove<Component>(entity);
         }
 
@@ -76,14 +76,14 @@ namespace be
         template<typename Tag>
         constexpr void AddTag(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Add, std::decay_t<Tag>>, "Tag must be in the AL::Add list!");
+            static_assert(ComponentsHave<Add, std::decay_t<Tag>>, "Tag must be in the AL::Add list!");
             m_registry.emplace<std::decay_t<Tag>>(entity);
         }
 
         template<typename Tag>
         constexpr void RemoveTag(be::Entity entity) const
         {
-            static_assert(ComponentsHave<BaseAccessList::Remove, std::decay_t<Tag>>, "Tag must be in the AL::Remove list!");
+            static_assert(ComponentsHave<Remove, std::decay_t<Tag>>, "Tag must be in the AL::Remove list!");
             m_registry.remove<Tag>(entity);
         }
 
