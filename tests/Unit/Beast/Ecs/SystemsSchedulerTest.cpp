@@ -1,6 +1,7 @@
 #include <Beast/Ecs/SystemsScheduler.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
+#include <Beast/Ecs/Components/Graphics.h>
 
 #include <gtest/gtest.h>
 
@@ -236,6 +237,7 @@ namespace be::tests::unit
         {
             ComponentId id;
             ComponentAccess access;
+            std::string name;
 
             bool operator==(const Component& rhs) const
             {
@@ -255,18 +257,16 @@ namespace be::tests::unit
             return systemFunction;
         }
 
-        template<WorldView ViewT>
+        template<WorldView... Views>
         void Process()
         {
-            using ViewType = typename std::decay_t<ViewT>;
-
-            using Get = ViewType::AL::Get;
-            using Update = ViewType::AL::Update;
-            using Add = ViewType::AL::Add;
-            using Remove = ViewType::AL::Remove;
+            using Get = typename entt::type_list_unique_t<entt::type_list_cat_t<typename std::decay_t<Views>::AL::Get...>>;
+            using Update = typename entt::type_list_unique_t<entt::type_list_cat_t<typename std::decay_t<Views>::AL::Update...>>;
+            using Add = typename entt::type_list_unique_t<entt::type_list_cat_t<typename std::decay_t<Views>::AL::Add...>>;
+            using Remove = typename entt::type_list_unique_t<entt::type_list_cat_t<typename std::decay_t<Views>::AL::Remove...>>;
 
             // The order is important, because we don't want duplicates of the components
-            // (which can happen if we have multiple views) and we also want to make sure that the components in case of duplicates,
+            // (which can happen if we have multiple views) and we also want to make sure that the components - in case of duplicates -
             // end up in the most "restricting" access list.
             ProcessComponents(Remove{}, ComponentAccess::REMOVE);
             ProcessComponents(Add{}, ComponentAccess::ADD);
@@ -274,20 +274,19 @@ namespace be::tests::unit
             ProcessComponents(Get{}, ComponentAccess::GET);
         }
 
-        template<typename... Components>
-        void ProcessComponents(be::Components<Components...> types, ComponentAccess access)
+        template<typename... ComponentsT>
+        void ProcessComponents(be::Components<ComponentsT...> types, ComponentAccess access)
         {
             if constexpr (types.size != 0)
             {
-                AddComponent({std::type_index(typeid(Components))..., access});
+                (AddComponent({std::type_index(typeid(ComponentsT)), access, typeid(ComponentsT).name()}), ...);
             }
         }
 
         void SortComponents()
         {
             // We sort the components so that we have components from least restricing to most restricing (GET -> REMOVE).
-            // This way we can quickly stop processing the functions dependencies.
-
+            // This way we can quickly stop processing the functions dependencies when creating dependencies graph.
             std::sort(m_components.begin(), m_components.end(), [](const Component& lhs, const Component& rhs) {
                 return lhs.access < rhs.access;
             });
@@ -309,7 +308,7 @@ namespace be::tests::unit
 
     public:
         std::string_view m_name;
-        Wrapper m_function;
+        Wrapper m_implementation;
 
         std::vector<SystemFunction*> m_dependencies;
         std::vector<SystemFunction*> m_dependants;
@@ -357,6 +356,11 @@ namespace be::tests::unit
                     m_starterFunctions.push_back(&lhsFunction);
                 }
             }
+
+            if (m_starterFunctions.empty())
+            {
+                throw std::runtime_error("No started functions!");
+            }
         }
 
     private:
@@ -383,7 +387,7 @@ namespace be::tests::unit
         {
             using Access = SystemFunction::ComponentAccess;
 
-            // If RHS has it in any list except for GET, make it a dependency.
+            // If RHS has it in any list except for GET, make it our dependency.
             if (lhsAccess == Access::GET)
             {
                 if (rhsAccess != Access::GET)
@@ -435,6 +439,7 @@ namespace be::tests::unit
                     // Right Hand Side depends on us adding the component. It needs to depend on us.
                     rhs->AddDependency(lhs);
                 }
+
                 return true;
             }
 
@@ -457,25 +462,47 @@ namespace be::tests::unit
         using Type = be::Components<be::Transform>; \
     };
 
-    BE_SINGLE_COMPONENT_AL(Get);
-    static void getFunction(const be::View<ALGet>&) {}
+    static const SystemFunction* GetFunction(std::span<const SystemFunction* const> source, std::string_view functionToFind)
+    {
+        const auto foundIt = std::find_if(source.begin(), source.end(), [functionToFind](const SystemFunction* dependency) {
+            return dependency->m_name == functionToFind;
+        });
 
-    BE_SINGLE_COMPONENT_AL(Update);
-    static void updateFunction(const be::View<ALUpdate>&) {}
+        return foundIt == source.end() ? nullptr : *foundIt;
+    }
 
-    BE_SINGLE_COMPONENT_AL(Add);
-    static void addFunction(const be::View<ALAdd>&) {}
+    static bool HasDependant(const SystemFunction* function, std::string_view expectedDependant)
+    {
+        return GetFunction(function->m_dependants, expectedDependant) != nullptr;
+    }
 
-    BE_SINGLE_COMPONENT_AL(Remove);
-    static void removeFunction(const be::View<ALRemove>&) {}
+    static bool HasDependency(const SystemFunction* function, std::string_view expectedDependency)
+    {
+        return GetFunction(function->m_dependencies, expectedDependency) != nullptr;
+    }
 
     TEST_F(SystemsSchedulerTest, AutomaticScheduling)
     {
+        struct Functions
+        {
+            BE_SINGLE_COMPONENT_AL(Get);
+            static void getFunction(const be::View<ALGet>&) {}
+
+            BE_SINGLE_COMPONENT_AL(Update);
+            static void updateFunction(const be::View<ALUpdate>&) {}
+
+            BE_SINGLE_COMPONENT_AL(Add);
+            static void addFunction(const be::View<ALAdd>&) {}
+
+            BE_SINGLE_COMPONENT_AL(Remove);
+            static void removeFunction(const be::View<ALRemove>&) {}
+        };
+
         SystemsSchedulerWIP scheduler{};
-        scheduler.RegisterFunction("getFunction", getFunction);
-        scheduler.RegisterFunction("updateFunction", updateFunction);
-        scheduler.RegisterFunction("addFunction", addFunction);
-        scheduler.RegisterFunction("removeFunction", removeFunction);
+        scheduler.RegisterFunction("getFunction", Functions::getFunction);
+        scheduler.RegisterFunction("updateFunction", Functions::updateFunction);
+        scheduler.RegisterFunction("addFunction", Functions::addFunction);
+        scheduler.RegisterFunction("removeFunction", Functions::removeFunction);
 
         scheduler.Prepare();
 
@@ -485,8 +512,146 @@ namespace be::tests::unit
         ASSERT_TRUE(starterFn->m_dependencies.size() == 0);
         ASSERT_TRUE(starterFn->m_dependants.size() == 3);
 
-        /*scheduler.Prepare();
-        scheduler.Run();
-        scheduler.Update();*/
+        ASSERT_TRUE(HasDependant(starterFn, "updateFunction"));
+        ASSERT_TRUE(HasDependant(starterFn, "addFunction"));
+        ASSERT_TRUE(HasDependant(starterFn, "getFunction"));
+
+        const auto* addFn = GetFunction(starterFn->m_dependants, "addFunction");
+        ASSERT_TRUE(HasDependency(addFn, "removeFunction"));
+        ASSERT_TRUE(HasDependant(addFn, "updateFunction"));
+        ASSERT_TRUE(HasDependant(addFn, "getFunction"));
+
+        const auto* updateFn = GetFunction(addFn->m_dependants, "updateFunction");
+
+        ASSERT_TRUE(HasDependency(updateFn, "addFunction"));
+        ASSERT_TRUE(HasDependency(updateFn, "removeFunction"));
+        ASSERT_TRUE(HasDependant(updateFn, "getFunction"));
+
+        const auto* getFn = GetFunction(updateFn->m_dependants, "getFunction");
+        ASSERT_TRUE(getFn->m_dependants.empty());
+        ASSERT_TRUE(HasDependency(getFn, "removeFunction"));
+        ASSERT_TRUE(HasDependency(getFn, "addFunction"));
+        ASSERT_TRUE(HasDependency(getFn, "updateFunction"));
+    }
+
+    TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillReturnErrorWhenCannotSortFunctions)
+    {
+        /**
+         * I want to test if preparing the schedule succeeds. The scheduler::Prepare() function should return `optional` or `expected` with schedule that can be run.
+         * If there are circular dependencies inside the schedule, it should fail. It could also just throw an exception on failure, as this seems like a fatal error, that prevents the program from running.
+         * Ok, so an exception is the way to go for that.
+         * 
+         * Now, the question is how to detect a circular dependency and how to prepare the test case for that.
+         * It should be quite simple.
+         * A circular dependency can happen when function A depends on a result of function B which depends on a result of function A. This is the simplest scenario.
+         * A more complicated scenario includes a non-direct circular dependency. For example, function A depends on function B which depends on function C which depends on function A.
+         * 
+         * Let's try this out.
+         */
+
+        struct Component1
+        {
+        };
+
+        struct Functions
+        {
+            struct AAL : be::BaseAccessList
+            {
+                using Update = be::Components<Component1>;
+                using Get = be::Components<be::Transform>;
+            };
+            static void FunctionA(const be::View<AAL>&) {}
+
+            struct BAL : be::BaseAccessList
+            {
+                using Get = be::Components<Component1>;
+                using Update = be::Components<be::Transform>;
+            };
+            static void FunctionB(const be::View<BAL>&) {}
+        };
+
+        SystemsSchedulerWIP sut{};
+
+        sut.RegisterFunction("functionA", Functions::FunctionA);
+        sut.RegisterFunction("functionB", Functions::FunctionB);
+
+        ASSERT_THROW(sut.Prepare(), std::runtime_error);
+    }
+
+    TEST_F(SystemsSchedulerTest, AutomaticScheduling_RealWorldScenario)
+    {
+        struct Player
+        {
+        };
+
+        struct Mover
+        {
+        };
+
+        struct Bullet
+        {
+        };
+
+        class PlayerSpawner final
+        {
+        public:
+            struct AccessList : be::BaseAccessList
+            {
+                using Add = be::Components<Player, Mover, be::Transform, be::Sprite>;
+            };
+
+            static void Run(const be::View<AccessList>&) {}
+        };
+
+        class PlayerMover final
+        {
+        public:
+            struct AccessList : be::BaseAccessList
+            {
+                using Update = be::Components<Mover, be::Transform>;
+                using Get = be::Components<Player>;
+            };
+
+            static void Run(const be::View<AccessList>&) {}
+        };
+
+        class PlayerShooter final
+        {
+        public:
+            struct GetPlayerDetailsAL : be::BaseAccessList
+            {
+                using Get = be::Components<Player, Mover, be::Transform>;
+            };
+
+            struct SpawnBulletAL : be::BaseAccessList
+            {
+                using Add = be::Components<Bullet, be::Transform, be::Sprite>;
+            };
+            static void Run(const be::View<GetPlayerDetailsAL>&, const be::View<SpawnBulletAL>&) {}
+        };
+
+        class BulletMover final
+        {
+        public:
+            struct AccessList : be::BaseAccessList
+            {
+                using Update = be::Components<be::Transform>;
+                using Get = be::Components<Bullet>;
+            };
+
+            static void Run(const be::View<AccessList>&) {}
+        };
+
+        // TODO: Debug this
+        // I believe the order should be:
+        // PlayerSpawner -> PlayerMover/PlayerShooter -> BulletMover
+
+        SystemsSchedulerWIP sut{};
+        sut.RegisterFunction("PlayerSpawner", PlayerSpawner::Run);
+        sut.RegisterFunction("PlayerMover", PlayerMover::Run);
+        sut.RegisterFunction("PlayerShooter", PlayerShooter::Run);
+        sut.RegisterFunction("BulletMover", BulletMover::Run);
+
+        sut.Prepare();
     }
 } // namespace be::tests::unit
