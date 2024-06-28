@@ -332,6 +332,14 @@ namespace be::tests::unit
             }
         }
 
+        /**
+         * @brief A BFS implementation that searches for a weak dependency in the graph of this function.
+         * When dependency is found, it is removed from the list of weak dependencies, as this means there's already an indirect
+         * connection between this function and that dependency.
+         * 
+         * Otherwise, there has to be a strong dependency between them, as they cannot run at the same time.
+         * In that case, we simply convert the weak dependency into a strong dependency.
+         */
         void ResolveWeakDependencies()
         {
             if (m_weakDependencies.empty())
@@ -339,16 +347,14 @@ namespace be::tests::unit
                 return;
             }
 
-            // For each of the weak dependencies:
-            // Check if it is in our graph.
             for (size_t i = 0; i < m_weakDependencies.size(); ++i)
             {
-                auto* weakDependency = m_weakDependencies[i];
-                const auto removeWeakDependency = [&]() {
+                const auto removeWeakDependency = [this](size_t i) {
                     m_weakDependencies[i] = m_weakDependencies.back();
                     m_weakDependencies.pop_back();
                 };
-
+                
+                auto* weakDependency = m_weakDependencies[i];
                 bool dependencyRemoved = false;
 
                 std::unordered_set<SystemFunction*> visited{};
@@ -364,11 +370,11 @@ namespace be::tests::unit
                     }
                     visited.insert(function);
 
-                    // If one of the functions in our dependencies chain has our weak dependency as an edge,
+                    // If one of the functions in the graph we're in has our weak dependency as an edge,
                     // remove our weak dependency as there's already an indirect edge via one of our direct edges.
                     if (function == weakDependency)
                     {
-                        removeWeakDependency();
+                        removeWeakDependency(i);
                         dependencyRemoved = true;
                         break;
                     }
@@ -384,11 +390,11 @@ namespace be::tests::unit
                     }
                 }
 
+                // Weak dependency not found in the graph. We need to decide manually
                 if (!dependencyRemoved)
                 {
-                    // Weak dependency not found in the graph. We need to decide manually
                     weakDependency->AddDependency(this);
-                    removeWeakDependency();
+                    removeWeakDependency(i);
                 }
             }
         }
@@ -451,11 +457,6 @@ namespace be::tests::unit
             return FunctionRelation::DEPENDANT;
         }
 
-        bool HasEdge(const SystemFunction* searchedFunction) const
-        {
-            return std::find(m_dependencies.begin(), m_dependencies.end(), searchedFunction) != m_dependencies.end() || std::find(m_dependants.begin(), m_dependants.end(), searchedFunction) != m_dependencies.end();
-        }
-
     public:
         std::string_view m_name;
         Wrapper m_implementation;
@@ -509,7 +510,7 @@ namespace be::tests::unit
             }
 
             ResolveWeakDependencies();
-            SetStarterFunctions();
+            SetUpStarterFunctions();
         }
 
     private:
@@ -557,74 +558,6 @@ namespace be::tests::unit
             }
         }
 
-        bool HaveDependencies(SystemFunction* lhs, SystemFunction::ComponentAccess lhsAccess, SystemFunction* rhs, SystemFunction::ComponentAccess rhsAccess)
-        {
-            using Access = SystemFunction::ComponentAccess;
-
-            // If RHS has it in any list except for GET, make it our dependency.
-            if (lhsAccess == Access::GET)
-            {
-                if (rhsAccess != Access::GET)
-                {
-                    // Right Hand Side modifes the component, hance, we depend on it, no need to check other components.
-                    lhs->AddDependency(rhs);
-                    return true;
-                }
-
-                // Right Hand Side also GET the component, so we don't need to depend on each other.
-                return false;
-            }
-
-            // If RHS has it in REMOVE or ADD, make it a dependency.
-            // Otherwise, make a dependant.
-            if (lhsAccess == Access::UPDATE)
-            {
-                if (rhsAccess == Access::GET)
-                {
-                    // Right Hand Side reads the component we're modifying, it has to be our dependant.
-                    rhs->AddDependency(lhs);
-                    return true;
-                }
-
-                if (rhsAccess == Access::UPDATE)
-                {
-                    // Right Hand Side also updates the component we're updating. Let's make RHS a dependant.
-                    // For components with the same access (except GET), we make RHS dependant of the LHS by default.
-                    rhs->AddDependency(lhs);
-                    return true;
-                }
-
-                // Right Hand Side adds or removes the component. We need to depend on it.
-                lhs->AddDependency(rhs);
-                return true;
-            }
-
-            // If RHS has it in REMOVE, make it a dependency.
-            // Otherwise, make a dependant.
-            if (lhsAccess == Access::ADD)
-            {
-                if (rhsAccess == Access::REMOVE)
-                {
-                    // Right Hand Side removes the component we're adding. We need to depend on it.
-                    lhs->AddDependency(rhs);
-                }
-                else
-                {
-                    // Right Hand Side depends on us adding the component. It needs to depend on us.
-                    rhs->AddDependency(lhs);
-                }
-
-                return true;
-            }
-
-            // For REMOVE, make RHS a dependant.
-            // For components with the same access (except GET), we make RHS dependant of the LHS by default.
-
-            // We have the component in REMOVE list at this point, so make RHS a dependant.
-            lhs->AddDependency(rhs);
-            return true;
-        }
-
         void ResolveWeakDependencies()
         {
             for (auto& function : m_functions)
@@ -633,7 +566,7 @@ namespace be::tests::unit
             }
         }
 
-        void SetStarterFunctions()
+        void SetUpStarterFunctions()
         {
             for (size_t i = 0; i < m_starterFunctions.size(); ++i)
             {
@@ -796,6 +729,35 @@ namespace be::tests::unit
                 using Add = be::Components<Player, Mover, be::Transform, be::Sprite>;
             };
             static void PlayerSpawner(const be::View<PlayerSpawnerAL>&) {}
+
+            /**
+             * TODO: Swapping Mover's and Transform's position in the access list changes the schedule, which is not good.
+             * This is the special case where it's not obvious which function should be run first.
+             * So, I think we should check the relations and always use the strongest.
+             * So if at one point, Shooter depends on Mover on the Update, but then, it turns out that Mover depends on Shooter on the Add,
+             * then the latter should be chosen as it is a "stronger" relation.
+             * 
+             * Another important question is if it should actually be allowed to have the same component in two different access lists?
+             * Perhaps this is a sign of a bad code?
+             * The mover here could technically iterate over entities from the Get view and create new entities using the Spawn view, which could - in theory - modify the Get view.
+             * I think to make sure this doesn't happen, we should prohibit that. Essentially, we want combine all Access Lists and make sure there aren't any duplicates.
+             * This would happen on the compilation of `RegisterFunction` call I believe.
+             * 
+             * I think we should also allow adding/removing the component when it's in the Update list. This way, we can make those access lists much easier, because we can combine
+             * the GetPlayerDetailsAL and SpawnBulletAL into a single AL like this:
+             * struct SpawnBulletsAL
+             * {
+             *  using Add = be::Components<Bullet, be::Sprite>;
+             *  using Update = be::Components<be::Transform>;
+             *  using Get = be::Components<Player, Mover>; // This should also be replaced with Required in the future
+             * };
+             * 
+             * And now, the dependencies are clear. It depends on the spawner via Player, Mover and Transform.
+             * And int also depends strongly on the PlayerMover via Mover component.
+             * This is a clean dependency chain, and lets us avoid two functions strongly referancing each-other. So this can potentially also be a fix to our problem where two functions strongly depend on each other on the same level.
+             * This also seems to make more sense, as we not necessarily need to restrict the operations so much. We really care about writes not happening simutainously, but we can use Add and Remove to just add stronger ordering guarantess.
+             * Phew... There's a lot(!!!) to think about with all this.
+             */
 
             struct PlayerMoverAL : be::BaseAccessList
             {
