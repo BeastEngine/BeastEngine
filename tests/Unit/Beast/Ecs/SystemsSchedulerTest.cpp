@@ -267,9 +267,6 @@ namespace be::tests::unit
             using Add = typename entt::type_list_unique_t<entt::type_list_cat_t<typename std::decay_t<Views>::AL::Add...>>;
             using Remove = typename entt::type_list_unique_t<entt::type_list_cat_t<typename std::decay_t<Views>::AL::Remove...>>;
 
-            // The order is important, because we don't want duplicates of the components
-            // (which can happen if we have multiple views) and we also want to make sure that the components - in case of duplicates -
-            // end up in the most "restricting" access list.
             ProcessComponents(Remove{}, ComponentAccess::REMOVE);
             ProcessComponents(Add{}, ComponentAccess::ADD);
             ProcessComponents(Update{}, ComponentAccess::UPDATE);
@@ -297,8 +294,8 @@ namespace be::tests::unit
         enum class FunctionRelation
         {
             NONE,
-            DEPENDENCY,
-            DEPENDANT,
+            PARENT,
+            CHILD,
             WEAK_DEPENDENCY,
         };
 
@@ -313,10 +310,10 @@ namespace be::tests::unit
             return EvaluateRelation(component.access, foundComponent->access);
         }
 
-        void AddDependency(SystemFunction* function)
+        void AddParent(SystemFunction* parentFunction)
         {
-            m_dependencies.push_back(function);
-            function->m_dependants.push_back(this);
+            m_parents.push_back(parentFunction);
+            parentFunction->m_children.push_back(this);
         }
 
         void AddWeakDependency(SystemFunction* function)
@@ -329,6 +326,10 @@ namespace be::tests::unit
             if (std::find(m_components.begin(), m_components.end(), component) == m_components.end())
             {
                 m_components.emplace_back(std::move(component));
+            }
+            else
+            {
+                throw std::runtime_error("Components not unique");
             }
         }
 
@@ -353,7 +354,7 @@ namespace be::tests::unit
                     m_weakDependencies[i] = m_weakDependencies.back();
                     m_weakDependencies.pop_back();
                 };
-                
+
                 auto* weakDependency = m_weakDependencies[i];
                 bool dependencyRemoved = false;
 
@@ -379,21 +380,21 @@ namespace be::tests::unit
                         break;
                     }
 
-                    for (auto* dependency : function->m_dependencies)
+                    for (auto* parent : function->m_parents)
                     {
-                        queue.push(dependency);
+                        queue.push(parent);
                     }
 
-                    for (auto* dependant : function->m_dependants)
+                    for (auto* child : function->m_children)
                     {
-                        queue.push(dependant);
+                        queue.push(child);
                     }
                 }
 
                 // Weak dependency not found in the graph. We need to decide manually
                 if (!dependencyRemoved)
                 {
-                    weakDependency->AddDependency(this);
+                    AddParent(weakDependency);
                     removeWeakDependency(i);
                 }
             }
@@ -417,52 +418,54 @@ namespace be::tests::unit
                 return FunctionRelation::WEAK_DEPENDENCY;
             }
 
-            // If RHS has it in any list except for GET, make it our dependency.
+            // At this point, we know for sure that lhsAccess and rhsAccess are NOT the same.
+
+            // If we have it in GET, we need to depend on the RHS function,
+            // because it means it has it in a higher access list, thus it modifies the component
             if (lhsAccess == Access::GET)
             {
                 // Right Hand Side modifes the component, hance, we depend on it.
-                return FunctionRelation::DEPENDENCY;
+                return FunctionRelation::PARENT;
             }
 
-            // If RHS has it in REMOVE or ADD, make it a dependency.
-            // Otherwise, make a dependant.
+            // If RHS has it in REMOVE or ADD, make it our parent.
+            // Otherwise, make it our child.
             if (lhsAccess == Access::UPDATE)
             {
                 if (rhsAccess == Access::GET)
                 {
-                    // Right Hand Side reads the component we're modifying, it has to be our dependant.
-                    return FunctionRelation::DEPENDANT;
+                    // Right Hand Side reads the component we're modifying, it has to be our child.
+                    return FunctionRelation::CHILD;
                 }
 
                 // Right Hand Side adds or removes the component. We need to depend on it.
-                return FunctionRelation::DEPENDENCY;
+                return FunctionRelation::PARENT;
             }
 
-            // If RHS has it in REMOVE, make it a dependency.
-            // Otherwise, make a dependant.
+            // If RHS has it in REMOVE, make it a parent.
+            // Otherwise, make it a child.
             if (lhsAccess == Access::ADD)
             {
                 if (rhsAccess == Access::REMOVE)
                 {
                     // Right Hand Side removes the component we're adding. We need to depend on it.
-                    return FunctionRelation::DEPENDENCY;
+                    return FunctionRelation::PARENT;
                 }
 
                 // Right Hand Side depends on us adding the component. It needs to depend on us.
-                return FunctionRelation::DEPENDANT;
+                return FunctionRelation::CHILD;
             }
 
-            // For REMOVE, make RHS a dependant.
-            // We have the component in REMOVE list at this point, so make RHS a dependant.
-            return FunctionRelation::DEPENDANT;
+            // We have the component in REMOVE list at this point, so make RHS a child.
+            return FunctionRelation::CHILD;
         }
 
     public:
         std::string_view m_name;
         Wrapper m_implementation;
 
-        std::vector<SystemFunction*> m_dependencies;
-        std::vector<SystemFunction*> m_dependants;
+        std::vector<SystemFunction*> m_parents;
+        std::vector<SystemFunction*> m_children;
         std::vector<SystemFunction*> m_weakDependencies;
 
         std::vector<Component> m_components;
@@ -503,7 +506,7 @@ namespace be::tests::unit
                     CheckDependencies(lhsFunction, m_functions[j]);
                 }
 
-                if (lhsFunction.m_dependencies.empty())
+                if (lhsFunction.m_parents.empty())
                 {
                     m_starterFunctions.push_back(&lhsFunction);
                 }
@@ -539,18 +542,20 @@ namespace be::tests::unit
                 currentRelation = relation;
             }
 
+            // TODO: Here we also need to make sure that there's only one-way dependency, so that we can always clearly define the dependency and the dependant
+
             if (currentRelation == Relation::NONE)
             {
                 return;
             }
 
-            if (currentRelation == Relation::DEPENDENCY)
+            if (currentRelation == Relation::PARENT)
             {
-                lhs.AddDependency(&rhs);
+                lhs.AddParent(&rhs);
             }
-            else if (currentRelation == Relation::DEPENDANT)
+            else if (currentRelation == Relation::CHILD)
             {
-                rhs.AddDependency(&lhs);
+                rhs.AddParent(&lhs);
             }
             else
             {
@@ -571,7 +576,7 @@ namespace be::tests::unit
             for (size_t i = 0; i < m_starterFunctions.size(); ++i)
             {
                 auto* starterFn = m_starterFunctions[i];
-                if (!starterFn->m_dependencies.empty())
+                if (!starterFn->m_parents.empty())
                 {
                     m_starterFunctions[i] = m_starterFunctions.back();
                     m_starterFunctions.pop_back();
@@ -597,21 +602,37 @@ namespace be::tests::unit
 
     static const SystemFunction* GetFunction(std::span<const SystemFunction* const> source, std::string_view functionToFind)
     {
-        const auto foundIt = std::find_if(source.begin(), source.end(), [functionToFind](const SystemFunction* dependency) {
-            return dependency->m_name == functionToFind;
+        const auto foundIt = std::find_if(source.begin(), source.end(), [functionToFind](const SystemFunction* function) {
+            return function->m_name == functionToFind;
         });
 
         return foundIt == source.end() ? nullptr : *foundIt;
     }
 
-    static bool HasDependant(const SystemFunction* function, std::string_view expectedDependant)
+    static bool HasChild(const SystemFunction* function, std::string_view expectedChild)
     {
-        return GetFunction(function->m_dependants, expectedDependant) != nullptr;
+        return GetFunction(function->m_children, expectedChild) != nullptr;
     }
 
-    static bool HasDependency(const SystemFunction* function, std::string_view expectedDependency)
+    static bool HasParent(const SystemFunction* function, std::string_view expectedParent)
     {
-        return GetFunction(function->m_dependencies, expectedDependency) != nullptr;
+        return GetFunction(function->m_parents, expectedParent) != nullptr;
+    }
+
+    static void ShuffleFunctions(SystemsSchedulerWIP& scheduler)
+    {
+        auto& functions = scheduler.m_functions;
+
+        // Shuffle the functions to make sure the order of registration doesn't matter
+        std::random_device rd{};
+        std::default_random_engine rng{rd()};
+        std::shuffle(functions.begin(), functions.end(), rng);
+
+        for (size_t i = 0; i < functions.size(); ++i)
+        {
+            const auto& fn = functions[i];
+            std::cout << "Function " << i << " " << fn.m_name << "\n";
+        }
     }
 
     TEST_F(SystemsSchedulerTest, AutomaticScheduling)
@@ -631,40 +652,41 @@ namespace be::tests::unit
             static void removeFunction(const be::View<ALRemove>&) {}
         };
 
-        SystemsSchedulerWIP scheduler{};
-        scheduler.RegisterFunction("getFunction", Functions::getFunction);
-        scheduler.RegisterFunction("updateFunction", Functions::updateFunction);
-        scheduler.RegisterFunction("addFunction", Functions::addFunction);
-        scheduler.RegisterFunction("removeFunction", Functions::removeFunction);
+        SystemsSchedulerWIP sut{};
+        sut.RegisterFunction("getFunction", Functions::getFunction);
+        sut.RegisterFunction("updateFunction", Functions::updateFunction);
+        sut.RegisterFunction("addFunction", Functions::addFunction);
+        sut.RegisterFunction("removeFunction", Functions::removeFunction);
+        ShuffleFunctions(sut);
 
-        scheduler.Prepare();
+        sut.Prepare();
 
-        ASSERT_TRUE(scheduler.m_starterFunctions.size() == 1);
-        auto* starterFn = scheduler.m_starterFunctions[0];
+        ASSERT_TRUE(sut.m_starterFunctions.size() == 1);
+        auto* starterFn = sut.m_starterFunctions[0];
         ASSERT_EQ("removeFunction", starterFn->m_name);
-        ASSERT_TRUE(starterFn->m_dependencies.size() == 0);
-        ASSERT_TRUE(starterFn->m_dependants.size() == 3);
+        ASSERT_TRUE(starterFn->m_parents.size() == 0);
+        ASSERT_TRUE(starterFn->m_children.size() == 3);
 
-        ASSERT_TRUE(HasDependant(starterFn, "updateFunction"));
-        ASSERT_TRUE(HasDependant(starterFn, "addFunction"));
-        ASSERT_TRUE(HasDependant(starterFn, "getFunction"));
+        ASSERT_TRUE(HasChild(starterFn, "updateFunction"));
+        ASSERT_TRUE(HasChild(starterFn, "addFunction"));
+        ASSERT_TRUE(HasChild(starterFn, "getFunction"));
 
-        const auto* addFn = GetFunction(starterFn->m_dependants, "addFunction");
-        ASSERT_TRUE(HasDependency(addFn, "removeFunction"));
-        ASSERT_TRUE(HasDependant(addFn, "updateFunction"));
-        ASSERT_TRUE(HasDependant(addFn, "getFunction"));
+        const auto* addFn = GetFunction(starterFn->m_children, "addFunction");
+        ASSERT_TRUE(HasParent(addFn, "removeFunction"));
+        ASSERT_TRUE(HasChild(addFn, "updateFunction"));
+        ASSERT_TRUE(HasChild(addFn, "getFunction"));
 
-        const auto* updateFn = GetFunction(addFn->m_dependants, "updateFunction");
+        const auto* updateFn = GetFunction(addFn->m_children, "updateFunction");
 
-        ASSERT_TRUE(HasDependency(updateFn, "addFunction"));
-        ASSERT_TRUE(HasDependency(updateFn, "removeFunction"));
-        ASSERT_TRUE(HasDependant(updateFn, "getFunction"));
+        ASSERT_TRUE(HasParent(updateFn, "addFunction"));
+        ASSERT_TRUE(HasParent(updateFn, "removeFunction"));
+        ASSERT_TRUE(HasChild(updateFn, "getFunction"));
 
-        const auto* getFn = GetFunction(updateFn->m_dependants, "getFunction");
-        ASSERT_TRUE(getFn->m_dependants.empty());
-        ASSERT_TRUE(HasDependency(getFn, "removeFunction"));
-        ASSERT_TRUE(HasDependency(getFn, "addFunction"));
-        ASSERT_TRUE(HasDependency(getFn, "updateFunction"));
+        const auto* getFn = GetFunction(updateFn->m_children, "getFunction");
+        ASSERT_TRUE(getFn->m_children.empty());
+        ASSERT_TRUE(HasParent(getFn, "removeFunction"));
+        ASSERT_TRUE(HasParent(getFn, "addFunction"));
+        ASSERT_TRUE(HasParent(getFn, "updateFunction"));
     }
 
     TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillReturnErrorWhenCannotSortFunctions)
@@ -753,7 +775,7 @@ namespace be::tests::unit
              * };
              * 
              * And now, the dependencies are clear. It depends on the spawner via Player, Mover and Transform.
-             * And int also depends strongly on the PlayerMover via Mover component.
+             * And it also depends strongly on the PlayerMover via Mover component.
              * This is a clean dependency chain, and lets us avoid two functions strongly referancing each-other. So this can potentially also be a fix to our problem where two functions strongly depend on each other on the same level.
              * This also seems to make more sense, as we not necessarily need to restrict the operations so much. We really care about writes not happening simutainously, but we can use Add and Remove to just add stronger ordering guarantess.
              * Phew... There's a lot(!!!) to think about with all this.
@@ -766,15 +788,13 @@ namespace be::tests::unit
             };
             static void PlayerMover(const be::View<PlayerMoverAL>&) {}
 
-            struct GetPlayerDetailsAL : be::BaseAccessList
+            struct SpawnBulletsAL : be::BaseAccessList
             {
-                using Get = be::Components<Player, Mover, be::Transform>;
+                using Add = be::Components<Bullet, be::Sprite>;
+                using Update = be::Components<be::Transform>;
+                using Get = be::Components<Player, Mover>;
             };
-            struct SpawnBulletAL : be::BaseAccessList
-            {
-                using Add = be::Components<Bullet, be::Transform, be::Sprite>;
-            };
-            static void PlayerShooter(const be::View<GetPlayerDetailsAL>&, const be::View<SpawnBulletAL>&) {}
+            static void PlayerShooter(const be::View<SpawnBulletsAL>&) {}
 
             struct BulletMoverAL : be::BaseAccessList
             {
@@ -791,6 +811,7 @@ namespace be::tests::unit
         sut.RegisterFunction("PlayerMover", Functions::PlayerMover);
         sut.RegisterFunction("PlayerShooter", Functions::PlayerShooter);
         sut.RegisterFunction("BulletMover", Functions::BulletMover);
+        ShuffleFunctions(sut);
 
         sut.Prepare();
 
@@ -799,35 +820,38 @@ namespace be::tests::unit
          * Essentially the schedule should look like this:
          *          |-> PlayerSpawner <-|
          *          |         |         | 
+         *          |   PlayerMover     |
+         *          |         |         |
          *          |   PlayerShooter   |
-         *          |   /           \   |
-         *      BulletMover ------ PlayerMover
+         *          |         |         |
+         *          |    BulletMover    |
          */
 
         ASSERT_EQ(1, sut.m_starterFunctions.size());
         auto* starterFn = sut.m_starterFunctions[0];
         ASSERT_EQ("PlayerSpawner", starterFn->m_name);
-        ASSERT_TRUE(starterFn->m_dependencies.size() == 0);
-        ASSERT_TRUE(starterFn->m_dependants.size() == 3);
+        ASSERT_TRUE(starterFn->m_parents.size() == 0);
+        ASSERT_TRUE(starterFn->m_children.size() == 3);
 
-        ASSERT_TRUE(HasDependant(starterFn, "PlayerMover"));
-        ASSERT_TRUE(HasDependant(starterFn, "PlayerShooter"));
-        ASSERT_TRUE(HasDependant(starterFn, "BulletMover"));
+        ASSERT_TRUE(HasChild(starterFn, "PlayerMover"));
+        ASSERT_TRUE(HasChild(starterFn, "PlayerShooter"));
+        ASSERT_TRUE(HasChild(starterFn, "BulletMover"));
 
-        const auto* playerMover = GetFunction(starterFn->m_dependants, "PlayerMover");
-        ASSERT_TRUE(playerMover->m_dependencies.size() == 2);
-        ASSERT_TRUE(HasDependency(playerMover, "PlayerSpawner"));
-        ASSERT_TRUE(HasDependency(playerMover, "PlayerShooter"));
+        const auto* playerMover = GetFunction(starterFn->m_children, "PlayerMover");
+        ASSERT_TRUE(playerMover->m_parents.size() == 1);
+        ASSERT_TRUE(HasParent(playerMover, "PlayerSpawner"));
 
-        const auto* playerShooter = GetFunction(starterFn->m_dependants, "PlayerShooter");
+        const auto* playerShooter = GetFunction(starterFn->m_children, "PlayerShooter");
 
-        ASSERT_TRUE(playerShooter->m_dependencies.size() == 1);
-        ASSERT_TRUE(HasDependency(playerShooter, "PlayerSpawner"));
+        ASSERT_TRUE(playerShooter->m_parents.size() == 2);
+        ASSERT_TRUE(HasParent(playerShooter, "PlayerSpawner"));
+        ASSERT_TRUE(HasParent(playerShooter, "PlayerMover"));
 
-        const auto* bulletMover = GetFunction(starterFn->m_dependants, "BulletMover");
+        const auto* bulletMover = GetFunction(starterFn->m_children, "BulletMover");
 
-        ASSERT_TRUE(HasDependency(bulletMover, "PlayerSpawner"));
-        ASSERT_TRUE(HasDependency(bulletMover, "PlayerShooter"));
+        ASSERT_EQ(2, bulletMover->m_parents.size());
+        ASSERT_TRUE(HasParent(bulletMover, "PlayerSpawner"));
+        ASSERT_TRUE(HasParent(bulletMover, "PlayerShooter"));
     }
 
     TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillResolveWeakDependencyViaIndirectStrongDependency)
@@ -870,17 +894,7 @@ namespace be::tests::unit
         sut.RegisterFunction("FnB", Functions::FnB);
         sut.RegisterFunction("FnC", Functions::FnC);
         sut.RegisterFunction("FnD", Functions::FnD);
-
-        // Shuffle the functions to make sure the order of registration doesn't matter
-        auto rd = std::random_device{};
-        auto rng = std::default_random_engine{rd()};
-        std::shuffle(sut.m_functions.begin(), sut.m_functions.end(), rng);
-
-        for (size_t i = 0; i < sut.m_functions.size(); ++i)
-        {
-            const auto& fn = sut.m_functions[i];
-            std::cout << "Function " << i << " " << fn.m_name << "\n";
-        }
+        ShuffleFunctions(sut);
 
         sut.Prepare();
         ASSERT_EQ(1, sut.m_starterFunctions.size());
@@ -888,37 +902,37 @@ namespace be::tests::unit
         auto* starterFn = sut.m_starterFunctions[0];
         ASSERT_EQ("FnA", starterFn->m_name);
 
-        ASSERT_EQ(0, starterFn->m_dependencies.size());
-        ASSERT_EQ(2, starterFn->m_dependants.size());
+        ASSERT_EQ(0, starterFn->m_parents.size());
+        ASSERT_EQ(2, starterFn->m_children.size());
 
-        ASSERT_TRUE(HasDependant(starterFn, "FnC"));
-        ASSERT_TRUE(HasDependant(starterFn, "FnD"));
+        ASSERT_TRUE(HasChild(starterFn, "FnC"));
+        ASSERT_TRUE(HasChild(starterFn, "FnD"));
 
-        ASSERT_FALSE(HasDependant(starterFn, "FnB"));
-        ASSERT_FALSE(HasDependency(starterFn, "FnB"));
+        ASSERT_FALSE(HasChild(starterFn, "FnB"));
+        ASSERT_FALSE(HasParent(starterFn, "FnB"));
 
         ASSERT_EQ(0, starterFn->m_weakDependencies.size());
 
-        auto* fnC = GetFunction(starterFn->m_dependants, "FnC");
-        ASSERT_TRUE(HasDependant(fnC, "FnD"));
-        ASSERT_TRUE(fnC->m_dependants.size() == 1);
-        ASSERT_TRUE(HasDependency(fnC, "FnA"));
+        auto* fnC = GetFunction(starterFn->m_children, "FnC");
+        ASSERT_TRUE(HasChild(fnC, "FnD"));
+        ASSERT_TRUE(fnC->m_children.size() == 1);
+        ASSERT_TRUE(HasParent(fnC, "FnA"));
 
-        auto* fnD = GetFunction(fnC->m_dependants, "FnD");
-        ASSERT_TRUE(HasDependant(fnD, "FnB"));
-        ASSERT_EQ(1, fnD->m_dependants.size());
-        ASSERT_TRUE(HasDependency(fnD, "FnA"));
+        auto* fnD = GetFunction(fnC->m_children, "FnD");
+        ASSERT_TRUE(HasChild(fnD, "FnB"));
+        ASSERT_EQ(1, fnD->m_children.size());
+        ASSERT_TRUE(HasParent(fnD, "FnA"));
 
-        auto* fnB = GetFunction(fnD->m_dependants, "FnB");
-        ASSERT_EQ(0, fnB->m_dependants.size());
-        ASSERT_EQ(1, fnB->m_dependencies.size());
-        ASSERT_TRUE(HasDependency(fnB, "FnD"));
+        auto* fnB = GetFunction(fnD->m_children, "FnB");
+        ASSERT_EQ(0, fnB->m_children.size());
+        ASSERT_EQ(1, fnB->m_parents.size());
+        ASSERT_TRUE(HasParent(fnB, "FnD"));
 
-        ASSERT_FALSE(HasDependency(fnB, "FnA"));
-        ASSERT_FALSE(HasDependant(fnB, "FnA"));
+        ASSERT_FALSE(HasParent(fnB, "FnA"));
+        ASSERT_FALSE(HasChild(fnB, "FnA"));
     }
 
-    TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillIgnoreWeakDependencyIfItsNotInTheGraph)
+    TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillChooseTheFirstFunctionAsDependantIfItsWeakDependencyIsNotInTheGraph)
     {
         struct Functions
         {
@@ -957,31 +971,74 @@ namespace be::tests::unit
         sut.RegisterFunction("FnB", Functions::FnB);
         sut.RegisterFunction("FnC", Functions::FnC);
         sut.RegisterFunction("FnD", Functions::FnD);
+        ShuffleFunctions(sut);
 
-        // In this case, the order of registration actually matters as both functions have the same number of dependencies, so the first one in the list is going to be chosen.
+        // In this case, the order of registration actually matters as both FnA and FnB (which are weak dependencies) functions have the same number of dependencies,
+        // so the first one in the list is going to be chosen as the dependant.
+        std::string resolvedDependant = "";
+        std::string resolvedDependency = "";
+        for (const auto& function : sut.m_functions)
+        {
+            if (function.m_name == "FnA")
+            {
+                resolvedDependant = "FnA";
+                resolvedDependency = "FnB";
+
+                break;
+            }
+
+            if (function.m_name == "FnB")
+            {
+                resolvedDependant = "FnB";
+                resolvedDependency = "FnA";
+
+                break;
+            }
+        }
 
         sut.Prepare();
         ASSERT_EQ(1, sut.m_starterFunctions.size());
 
         auto* starterFn = sut.m_starterFunctions[0];
-        ASSERT_EQ("FnA", starterFn->m_name);
+        ASSERT_EQ(resolvedDependency, starterFn->m_name);
 
-        ASSERT_EQ(0, starterFn->m_dependencies.size());
-        ASSERT_EQ(3, starterFn->m_dependants.size());
+        ASSERT_EQ(0, starterFn->m_parents.size());
+        ASSERT_EQ(3, starterFn->m_children.size());
 
-        ASSERT_TRUE(HasDependant(starterFn, "FnB"));
-        ASSERT_TRUE(HasDependant(starterFn, "FnC"));
-        ASSERT_TRUE(HasDependant(starterFn, "FnD"));
+        ASSERT_TRUE(HasChild(starterFn, resolvedDependant));
+        ASSERT_TRUE(HasChild(starterFn, "FnC"));
+        ASSERT_TRUE(HasChild(starterFn, "FnD"));
 
-        ASSERT_FALSE(HasDependency(starterFn, "FnB"));
+        ASSERT_FALSE(HasParent(starterFn, resolvedDependant));
 
         ASSERT_EQ(0, starterFn->m_weakDependencies.size());
 
-        auto* fnB = GetFunction(starterFn->m_dependants, "FnB");
-        ASSERT_EQ(0, fnB->m_dependants.size());
-        ASSERT_EQ(1, fnB->m_dependencies.size());
-        ASSERT_TRUE(HasDependency(fnB, "FnA"));
+        auto* dependantFn = GetFunction(starterFn->m_children, resolvedDependant);
+        ASSERT_EQ(0, dependantFn->m_children.size());
+        ASSERT_EQ(1, dependantFn->m_parents.size());
+        ASSERT_TRUE(HasParent(dependantFn, resolvedDependency));
 
         // TODO: Add test case to make sure that the function with less dependencies is chosen as the first one.
+    }
+
+    TEST_F(SystemsSchedulerTest, RegisterFunction_WillThrowIfAccessListHasSameComponentWithMultipleAccesses)
+    {
+        struct Functions
+        {
+            struct Component
+            {};
+
+            struct AccessList : be::BaseAccessList
+            {
+                using Get = be::Components<Component>;
+                using Update = be::Components<Component>;
+            };
+
+            static void Run(const be::View<AccessList>&){};
+        };
+
+        SystemsSchedulerWIP sut{};
+
+        ASSERT_THROW(sut.RegisterFunction("Functions::Run", Functions::Run), std::runtime_error);
     }
 } // namespace be::tests::unit
