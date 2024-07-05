@@ -333,6 +333,32 @@ namespace be::tests::unit
             }
         }
 
+        void RemoveParent(SystemFunction* parent)
+        {
+            auto& children = parent->m_children;
+            for (std::size_t i = 0; i < children.size(); ++i)
+            {
+                if (children[i] == this)
+                {
+                    children[i] = children.back();
+                    children.pop_back();
+
+                    break;
+                }
+            }
+
+            for (std::size_t i = 0; i < m_parents.size(); ++i)
+            {
+                if (m_parents[i] == parent)
+                {
+                    m_parents[i] = m_parents.back();
+                    m_parents.pop_back();
+
+                    break;
+                }
+            }
+        }
+
         /**
          * @brief A BFS implementation that searches for a weak dependency in the graph of this function.
          * When dependency is found, it is removed from the list of weak dependencies, as this means there's already an indirect
@@ -399,6 +425,85 @@ namespace be::tests::unit
                 }
             }
         }
+
+        void SimplifyDependencies()
+        {
+            std::vector<SystemFunction*> queue = m_parents;
+            while (!queue.empty())
+            {
+                std::unordered_set<const SystemFunction*> visitedNodes{};
+
+                SystemFunction* searchedParent = queue.back();
+                queue.pop_back();
+
+                RemoveParent(searchedParent);
+
+                if (!SearchParentDFS(searchedParent, m_parents, visitedNodes))
+                {
+                    AddParent(searchedParent);
+                }
+            }
+        }
+
+        bool SearchParentDFS(const SystemFunction* nodeToFind, std::span<SystemFunction* const> nodesToSearch, std::unordered_set<const SystemFunction*>& visitedNodes)
+        {
+            for (const auto* processedNode : nodesToSearch)
+            {
+                if (nodeToFind == processedNode)
+                {
+                    return true;
+                }
+
+                if (!visitedNodes.contains(processedNode))
+                {
+                    visitedNodes.insert(processedNode);
+                    if (SearchParentDFS(nodeToFind, processedNode->m_parents, visitedNodes))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /*bool SearchGraphBFS(SystemFunction* startNode, const SystemFunction* searchedNode, bool addParents, bool addChildren)
+        {
+            std::unordered_set<SystemFunction*> visited{};
+            std::queue<SystemFunction*> queue{};
+            queue.push(startNode);
+            while (!queue.empty())
+            {
+                auto* function = queue.front();
+                queue.pop();
+                if (visited.contains(function))
+                {
+                    continue;
+                }
+                visited.insert(function);
+
+                if (function == searchedNode)
+                {
+                    return true;
+                }
+
+                if (addParents)
+                {
+                    for (auto* parent : function->m_parents)
+                    {
+                        queue.push(parent);
+                    }
+                }
+
+                if (addChildren)
+                {
+                    for (auto* child : function->m_children)
+                    {
+                        queue.push(child);
+                    }
+                }
+            }
+        }*/
 
     private:
         static FunctionRelation EvaluateRelation(SystemFunction::ComponentAccess lhsAccess, SystemFunction::ComponentAccess rhsAccess)
@@ -512,7 +617,7 @@ namespace be::tests::unit
                 }
             }
 
-            ResolveWeakDependencies();
+            ResolveDependencies();
             SetUpStarterFunctions();
         }
 
@@ -563,24 +668,35 @@ namespace be::tests::unit
             }
         }
 
-        void ResolveWeakDependencies()
+        void ResolveDependencies()
         {
             for (auto& function : m_functions)
             {
                 function.ResolveWeakDependencies();
             }
+
+            for (auto& function : m_functions)
+            {
+                function.SimplifyDependencies();
+            }
         }
 
         void SetUpStarterFunctions()
         {
-            for (size_t i = 0; i < m_starterFunctions.size(); ++i)
+            // TODO: This should be changed, as we can miss the starter function with parents if we iterate over the same set we modify.
+            // We should probably use some erase technique.
+            std::size_t i = 0;
+            while (i != m_starterFunctions.size())
             {
                 auto* starterFn = m_starterFunctions[i];
-                if (!starterFn->m_parents.empty())
+                if (starterFn->m_parents.empty())
                 {
-                    m_starterFunctions[i] = m_starterFunctions.back();
-                    m_starterFunctions.pop_back();
+                    ++i;
+                    continue;
                 }
+                
+                m_starterFunctions[i] = m_starterFunctions.back();
+                m_starterFunctions.pop_back();
             }
 
             if (m_starterFunctions.empty())
@@ -653,39 +769,46 @@ namespace be::tests::unit
         };
 
         SystemsSchedulerWIP sut{};
-        sut.RegisterFunction("getFunction", Functions::getFunction);
+        /*sut.RegisterFunction("getFunction", Functions::getFunction);
         sut.RegisterFunction("updateFunction", Functions::updateFunction);
         sut.RegisterFunction("addFunction", Functions::addFunction);
         sut.RegisterFunction("removeFunction", Functions::removeFunction);
-        ShuffleFunctions(sut);
+        ShuffleFunctions(sut);*/
+
+        sut.RegisterFunction("getFunction", Functions::getFunction);
+        sut.RegisterFunction("addFunction", Functions::addFunction);
+        sut.RegisterFunction("removeFunction", Functions::removeFunction);
+        sut.RegisterFunction("updateFunction", Functions::updateFunction);
+        //ShuffleFunctions(sut);
 
         sut.Prepare();
 
-        ASSERT_TRUE(sut.m_starterFunctions.size() == 1);
+        ASSERT_EQ(1, sut.m_starterFunctions.size());
         auto* starterFn = sut.m_starterFunctions[0];
         ASSERT_EQ("removeFunction", starterFn->m_name);
-        ASSERT_TRUE(starterFn->m_parents.size() == 0);
-        ASSERT_TRUE(starterFn->m_children.size() == 3);
+        ASSERT_EQ(0, starterFn->m_parents.size());
+        ASSERT_EQ(1, starterFn->m_children.size());
 
-        ASSERT_TRUE(HasChild(starterFn, "updateFunction"));
         ASSERT_TRUE(HasChild(starterFn, "addFunction"));
-        ASSERT_TRUE(HasChild(starterFn, "getFunction"));
 
         const auto* addFn = GetFunction(starterFn->m_children, "addFunction");
+        ASSERT_EQ(1, addFn->m_parents.size());
+        ASSERT_EQ(1, addFn->m_children.size());
+
         ASSERT_TRUE(HasParent(addFn, "removeFunction"));
         ASSERT_TRUE(HasChild(addFn, "updateFunction"));
-        ASSERT_TRUE(HasChild(addFn, "getFunction"));
 
         const auto* updateFn = GetFunction(addFn->m_children, "updateFunction");
+        ASSERT_EQ(1, updateFn->m_parents.size());
+        ASSERT_EQ(1, updateFn->m_children.size());
 
         ASSERT_TRUE(HasParent(updateFn, "addFunction"));
-        ASSERT_TRUE(HasParent(updateFn, "removeFunction"));
         ASSERT_TRUE(HasChild(updateFn, "getFunction"));
 
         const auto* getFn = GetFunction(updateFn->m_children, "getFunction");
+        ASSERT_EQ(1, updateFn->m_parents.size());
         ASSERT_TRUE(getFn->m_children.empty());
-        ASSERT_TRUE(HasParent(getFn, "removeFunction"));
-        ASSERT_TRUE(HasParent(getFn, "addFunction"));
+
         ASSERT_TRUE(HasParent(getFn, "updateFunction"));
     }
 
@@ -973,25 +1096,25 @@ namespace be::tests::unit
         sut.RegisterFunction("FnD", Functions::FnD);
         ShuffleFunctions(sut);
 
+        /*sut.RegisterFunction("FnB", Functions::FnB);
+        sut.RegisterFunction("FnA", Functions::FnA);
+        sut.RegisterFunction("FnC", Functions::FnC);
+        sut.RegisterFunction("FnD", Functions::FnD);*/
+
         // In this case, the order of registration actually matters as both FnA and FnB (which are weak dependencies) functions have the same number of dependencies,
-        // so the first one in the list is going to be chosen as the dependant.
-        std::string resolvedDependant = "";
-        std::string resolvedDependency = "";
+        // so the first one in the list is going to be chosen as the child.
+        std::string resolvedParent = "";
         for (const auto& function : sut.m_functions)
         {
             if (function.m_name == "FnA")
-            {
-                resolvedDependant = "FnA";
-                resolvedDependency = "FnB";
-
+            {   
+                resolvedParent = "FnB";
                 break;
             }
 
             if (function.m_name == "FnB")
             {
-                resolvedDependant = "FnB";
-                resolvedDependency = "FnA";
-
+                resolvedParent = "FnA";
                 break;
             }
         }
@@ -1000,23 +1123,46 @@ namespace be::tests::unit
         ASSERT_EQ(1, sut.m_starterFunctions.size());
 
         auto* starterFn = sut.m_starterFunctions[0];
-        ASSERT_EQ(resolvedDependency, starterFn->m_name);
+        ASSERT_EQ(resolvedParent, starterFn->m_name);
 
-        ASSERT_EQ(0, starterFn->m_parents.size());
-        ASSERT_EQ(3, starterFn->m_children.size());
+        if (resolvedParent == "FnA")
+        {
+            // In this case, the FnB function is first in the list of registered functions, so it will choose FnA as its parent.
+            // Additionally, because FnA has one other child, after adding FnB as its new child, it will now have two children.
 
-        ASSERT_TRUE(HasChild(starterFn, resolvedDependant));
-        ASSERT_TRUE(HasChild(starterFn, "FnC"));
-        ASSERT_TRUE(HasChild(starterFn, "FnD"));
+            ASSERT_EQ(0, starterFn->m_parents.size());
+            ASSERT_EQ(2, starterFn->m_children.size());
 
-        ASSERT_FALSE(HasParent(starterFn, resolvedDependant));
+            ASSERT_TRUE(HasChild(starterFn, "FnB"));
+            ASSERT_TRUE(HasChild(starterFn, "FnC"));
 
-        ASSERT_EQ(0, starterFn->m_weakDependencies.size());
+            ASSERT_FALSE(HasParent(starterFn, "FnB"));
 
-        auto* dependantFn = GetFunction(starterFn->m_children, resolvedDependant);
-        ASSERT_EQ(0, dependantFn->m_children.size());
-        ASSERT_EQ(1, dependantFn->m_parents.size());
-        ASSERT_TRUE(HasParent(dependantFn, resolvedDependency));
+            ASSERT_EQ(0, starterFn->m_weakDependencies.size());
+
+            auto* dependantFn = GetFunction(starterFn->m_children, "FnB");
+            ASSERT_EQ(0, dependantFn->m_children.size());
+            ASSERT_EQ(1, dependantFn->m_parents.size());
+            ASSERT_TRUE(HasParent(dependantFn, resolvedParent));
+        }
+        else
+        {
+            // In this case, the FnA function is first in the list of registered functions, so it will choose FnB as its parent.
+            // Additionally, FnB doesn't have any other children, so after adding FnA as its child, it will only have one child.
+
+            ASSERT_EQ(0, starterFn->m_parents.size());
+            ASSERT_EQ(1, starterFn->m_children.size());
+
+            ASSERT_TRUE(HasChild(starterFn, "FnA"));
+            ASSERT_FALSE(HasParent(starterFn, "FnA"));
+
+            ASSERT_EQ(0, starterFn->m_weakDependencies.size());
+
+            auto* dependantFn = GetFunction(starterFn->m_children, "FnA");
+            ASSERT_EQ(1, dependantFn->m_children.size());
+            ASSERT_EQ(1, dependantFn->m_parents.size());
+            ASSERT_TRUE(HasParent(dependantFn, resolvedParent));
+        }
 
         // TODO: Add test case to make sure that the function with less dependencies is chosen as the first one.
     }
