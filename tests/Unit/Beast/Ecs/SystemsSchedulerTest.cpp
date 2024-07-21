@@ -4,6 +4,7 @@
 #include <Beast/Ecs/Components/Graphics.h>
 
 #include <gtest/gtest.h>
+#include <fmt/format.h>
 
 #include <vector>
 #include <typeinfo>
@@ -250,11 +251,10 @@ namespace be::tests::unit
         using Wrapper = std::function<void(be::World&)>;
 
         template<WorldView... Views>
-        static SystemFunction Create(std::string_view name, Wrapper&& function)
+        static SystemFunction Create(Id id, std::string_view name, Wrapper&& function)
         {
-            SystemFunction systemFunction{name, std::move(function)};
+            SystemFunction systemFunction{id, name, std::move(function)};
             systemFunction.Process<Views...>();
-            systemFunction.SortComponents();
 
             return systemFunction;
         }
@@ -280,15 +280,6 @@ namespace be::tests::unit
             {
                 (AddComponent({std::type_index(typeid(ComponentsT)), access, typeid(ComponentsT).name()}), ...);
             }
-        }
-
-        void SortComponents()
-        {
-            // We sort the components so that we have components from least restricing to most restricing (GET -> REMOVE).
-            // This way we can quickly stop processing the functions dependencies when creating dependencies graph.
-            std::sort(m_components.begin(), m_components.end(), [](const Component& lhs, const Component& rhs) {
-                return lhs.access < rhs.access;
-            });
         }
 
         enum class FunctionRelation
@@ -417,7 +408,7 @@ namespace be::tests::unit
                     }
                 }
 
-                // Weak dependency not found in the graph. We need to decide manually
+                // Weak dependency not found in the graph. We need to decide manually.
                 if (!dependencyRemoved)
                 {
                     AddParent(weakDependency);
@@ -437,7 +428,6 @@ namespace be::tests::unit
                 queue.pop_back();
 
                 RemoveParent(searchedParent);
-
                 if (!SearchParentDFS(searchedParent, m_parents, visitedNodes))
                 {
                     AddParent(searchedParent);
@@ -466,44 +456,6 @@ namespace be::tests::unit
 
             return false;
         }
-
-        /*bool SearchGraphBFS(SystemFunction* startNode, const SystemFunction* searchedNode, bool addParents, bool addChildren)
-        {
-            std::unordered_set<SystemFunction*> visited{};
-            std::queue<SystemFunction*> queue{};
-            queue.push(startNode);
-            while (!queue.empty())
-            {
-                auto* function = queue.front();
-                queue.pop();
-                if (visited.contains(function))
-                {
-                    continue;
-                }
-                visited.insert(function);
-
-                if (function == searchedNode)
-                {
-                    return true;
-                }
-
-                if (addParents)
-                {
-                    for (auto* parent : function->m_parents)
-                    {
-                        queue.push(parent);
-                    }
-                }
-
-                if (addChildren)
-                {
-                    for (auto* child : function->m_children)
-                    {
-                        queue.push(child);
-                    }
-                }
-            }
-        }*/
 
     private:
         static FunctionRelation EvaluateRelation(SystemFunction::ComponentAccess lhsAccess, SystemFunction::ComponentAccess rhsAccess)
@@ -566,6 +518,7 @@ namespace be::tests::unit
         }
 
     public:
+        Id m_id;
         std::string_view m_name;
         Wrapper m_implementation;
 
@@ -591,7 +544,7 @@ namespace be::tests::unit
             auto wrapperFunction = [function = std::move(systemFunction)](be::World& world) {
                 function(world.CreateView<typename std::decay_t<Views>::AL>()...);
             };
-            m_functions.emplace_back(SystemFunction::Create<Views...>(name, std::move(wrapperFunction)));
+            m_functions.emplace_back(SystemFunction::Create<Views...>(Id{m_functions.size()}, name, std::move(wrapperFunction)));
         }
 
         /*template<typename System, typename... Views>
@@ -619,6 +572,7 @@ namespace be::tests::unit
 
             ResolveDependencies();
             SetUpStarterFunctions();
+            VerifyGraphIsDAG();
         }
 
     private:
@@ -629,25 +583,34 @@ namespace be::tests::unit
 
             for (const auto& component : lhs.m_components)
             {
-                const auto relation = lhs.GetFunctionRelation(component, rhs);
+                const auto newRelation = lhs.GetFunctionRelation(component, rhs);
 
                 // The relation is not changed, so we can ignore it.
-                if (relation == Relation::NONE || relation == currentRelation)
+                if (newRelation == Relation::NONE || newRelation == currentRelation)
                 {
                     continue;
                 }
 
-                // We already have a stronger relation in place, so we can ignore the WEAK_DEPENDENCY
-                if (relation == Relation::WEAK_DEPENDENCY && currentRelation != Relation::NONE)
+                if (currentRelation != Relation::NONE)
                 {
-                    continue;
+                    // We already have a stronger relation in place,
+                    // so we can ignore the WEAK_DEPENDENCY.
+                    if (newRelation == Relation::WEAK_DEPENDENCY)
+                    {
+                        continue;
+                    }
+
+                    // There's a strong dependency in both direction, which prevents us from creating a graph.
+                    if (currentRelation != Relation::WEAK_DEPENDENCY)
+                    {
+                        // TODO: Make this error clear.
+                        throw std::runtime_error("Functions depend on each other");
+                    }
                 }
 
                 // Relation changed, we should update it.
-                currentRelation = relation;
+                currentRelation = newRelation;
             }
-
-            // TODO: Here we also need to make sure that there's only one-way dependency, so that we can always clearly define the dependency and the dependant
 
             if (currentRelation == Relation::NONE)
             {
@@ -683,8 +646,6 @@ namespace be::tests::unit
 
         void SetUpStarterFunctions()
         {
-            // TODO: This should be changed, as we can miss the starter function with parents if we iterate over the same set we modify.
-            // We should probably use some erase technique.
             std::size_t i = 0;
             while (i != m_starterFunctions.size())
             {
@@ -694,7 +655,7 @@ namespace be::tests::unit
                     ++i;
                     continue;
                 }
-                
+
                 m_starterFunctions[i] = m_starterFunctions.back();
                 m_starterFunctions.pop_back();
             }
@@ -702,6 +663,55 @@ namespace be::tests::unit
             if (m_starterFunctions.empty())
             {
                 throw std::runtime_error("No started functions!");
+            }
+        }
+
+        void VerifyGraphIsDAG() const
+        {
+            // TODO: Rewrite this. This is crap :/
+
+            using FnIndex = std::size_t;
+
+            const auto graphSize = m_functions.size();
+            std::vector<FnIndex> graph(graphSize, 0u);
+            std::vector<FnIndex> startNodes;
+
+            for (FnIndex i = 0; i < graphSize; ++i)
+            {
+                const auto parentsCount = m_functions[i].m_parents.size();
+                graph[i] = parentsCount;
+
+                if (parentsCount == 0)
+                {
+                    startNodes.push_back(i);
+                }
+            }
+         
+            std::vector<FnIndex> sortedGraph;
+            sortedGraph.reserve(graphSize);
+
+            while (!startNodes.empty())
+            {
+                const auto startNodeIndex = startNodes.back();
+                sortedGraph.push_back(startNodeIndex);
+                startNodes.pop_back();
+
+                for (const auto& function : m_functions[startNodeIndex].m_children)
+                {
+                    const FnIndex functionIndex = function->m_id.Raw();
+                    --graph[functionIndex];
+                    
+                    if (graph[functionIndex] == 0)
+                    {
+                        startNodes.push_back(functionIndex);
+                        graph.erase(std::next(graph.begin(), functionIndex));
+                    }
+                }
+            }
+
+            if (graph.size())
+            {
+                throw std::runtime_error("NOT A DAG");
             }
         }
 
@@ -747,7 +757,7 @@ namespace be::tests::unit
         for (size_t i = 0; i < functions.size(); ++i)
         {
             const auto& fn = functions[i];
-            std::cout << "Function " << i << " " << fn.m_name << "\n";
+            std::cout << fmt::format("Function {} {}\n", i, fn.m_name);
         }
     }
 
@@ -769,17 +779,11 @@ namespace be::tests::unit
         };
 
         SystemsSchedulerWIP sut{};
-        /*sut.RegisterFunction("getFunction", Functions::getFunction);
-        sut.RegisterFunction("updateFunction", Functions::updateFunction);
-        sut.RegisterFunction("addFunction", Functions::addFunction);
-        sut.RegisterFunction("removeFunction", Functions::removeFunction);
-        ShuffleFunctions(sut);*/
-
         sut.RegisterFunction("getFunction", Functions::getFunction);
+        sut.RegisterFunction("updateFunction", Functions::updateFunction);
         sut.RegisterFunction("addFunction", Functions::addFunction);
         sut.RegisterFunction("removeFunction", Functions::removeFunction);
-        sut.RegisterFunction("updateFunction", Functions::updateFunction);
-        //ShuffleFunctions(sut);
+        ShuffleFunctions(sut);
 
         sut.Prepare();
 
@@ -812,7 +816,7 @@ namespace be::tests::unit
         ASSERT_TRUE(HasParent(getFn, "updateFunction"));
     }
 
-    TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillReturnErrorWhenCannotSortFunctions)
+    TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillThrowWhenTwoFunctionsStronglyDependOnEachOther)
     {
         /**
          * I want to test if preparing the schedule succeeds. The scheduler::Prepare() function should return `optional` or `expected` with schedule that can be run.
@@ -856,6 +860,63 @@ namespace be::tests::unit
         ASSERT_THROW(sut.Prepare(), std::runtime_error);
     }
 
+    TEST_F(SystemsSchedulerTest, AutomaticScheduling_WillThrowWhenThereIsCircularDependencyInGraph)
+    {
+        /**
+         * In this scenario there's a circular dependency
+         * FnA ---Component1---> FnC ---Component3---> FnB ---Component2---> FnA
+         * 
+         * There's starter function as well to make sure we get the exact error we need
+         */
+
+        struct Component1
+        {};
+        struct Component2
+        {};
+        struct Component3
+        {};
+
+        struct Functions
+        {
+            struct StarterAL : be::BaseAccessList
+            {
+                using Add = be::Components<be::Transform>;
+            };
+            static void StarterFn(const be::View<StarterAL>&) {}
+
+            struct AAL : be::BaseAccessList
+            {
+                using Add = be::Components<Component1>;
+                using Get = be::Components<Component2, be::Transform>;
+            };
+            static void FnA(const be::View<AAL>&) {}
+
+            struct BAL : be::BaseAccessList
+            {
+                using Add = be::Components<Component2>;
+                using Get = be::Components<Component3>;
+            };
+            static void FnB(const be::View<BAL>&) {}
+
+            struct CAL : be::BaseAccessList
+            {
+                using Add = be::Components<Component3>;
+                using Get = be::Components<Component1>;
+            };
+            static void FnC(const be::View<CAL>&) {}
+        };
+
+        SystemsSchedulerWIP sut{};
+
+        sut.RegisterFunction("StarterFn", Functions::StarterFn);
+        sut.RegisterFunction("FnA", Functions::FnA);
+        sut.RegisterFunction("FnB", Functions::FnB);
+        sut.RegisterFunction("FnC", Functions::FnC);
+        ShuffleFunctions(sut);
+
+        ASSERT_THROW(sut.Prepare(), std::runtime_error);
+    }
+
     TEST_F(SystemsSchedulerTest, AutomaticScheduling_RealWorldScenario)
     {
         struct Functions
@@ -876,11 +937,6 @@ namespace be::tests::unit
             static void PlayerSpawner(const be::View<PlayerSpawnerAL>&) {}
 
             /**
-             * TODO: Swapping Mover's and Transform's position in the access list changes the schedule, which is not good.
-             * This is the special case where it's not obvious which function should be run first.
-             * So, I think we should check the relations and always use the strongest.
-             * So if at one point, Shooter depends on Mover on the Update, but then, it turns out that Mover depends on Shooter on the Add,
-             * then the latter should be chosen as it is a "stronger" relation.
              * 
              * Another important question is if it should actually be allowed to have the same component in two different access lists?
              * Perhaps this is a sign of a bad code?
@@ -927,13 +983,12 @@ namespace be::tests::unit
             static void BulletMover(const be::View<BulletMoverAL>&) {}
         };
 
-        // Also, we must make sure that the order of registeration always gives the same schedule!
-        // Or at least, guarantee that functions with strong dependencies will always end up in the same place in the schedule no matter the order
         SystemsSchedulerWIP sut{};
+
         sut.RegisterFunction("PlayerSpawner", Functions::PlayerSpawner);
         sut.RegisterFunction("PlayerMover", Functions::PlayerMover);
-        sut.RegisterFunction("PlayerShooter", Functions::PlayerShooter);
         sut.RegisterFunction("BulletMover", Functions::BulletMover);
+        sut.RegisterFunction("PlayerShooter", Functions::PlayerShooter);
         ShuffleFunctions(sut);
 
         sut.Prepare();
@@ -953,27 +1008,32 @@ namespace be::tests::unit
         ASSERT_EQ(1, sut.m_starterFunctions.size());
         auto* starterFn = sut.m_starterFunctions[0];
         ASSERT_EQ("PlayerSpawner", starterFn->m_name);
-        ASSERT_TRUE(starterFn->m_parents.size() == 0);
-        ASSERT_TRUE(starterFn->m_children.size() == 3);
+        ASSERT_EQ(0, starterFn->m_parents.size());
+        ASSERT_EQ(1, starterFn->m_children.size());
 
         ASSERT_TRUE(HasChild(starterFn, "PlayerMover"));
-        ASSERT_TRUE(HasChild(starterFn, "PlayerShooter"));
-        ASSERT_TRUE(HasChild(starterFn, "BulletMover"));
 
         const auto* playerMover = GetFunction(starterFn->m_children, "PlayerMover");
-        ASSERT_TRUE(playerMover->m_parents.size() == 1);
+        ASSERT_EQ(1, playerMover->m_children.size());
+        ASSERT_EQ(1, playerMover->m_parents.size());
+
         ASSERT_TRUE(HasParent(playerMover, "PlayerSpawner"));
+        ASSERT_TRUE(HasChild(playerMover, "PlayerShooter"));
 
-        const auto* playerShooter = GetFunction(starterFn->m_children, "PlayerShooter");
+        const auto* playerShooter = GetFunction(playerMover->m_children, "PlayerShooter");
 
-        ASSERT_TRUE(playerShooter->m_parents.size() == 2);
-        ASSERT_TRUE(HasParent(playerShooter, "PlayerSpawner"));
+        ASSERT_EQ(1, playerShooter->m_children.size());
+        ASSERT_EQ(1, playerShooter->m_parents.size());
+
         ASSERT_TRUE(HasParent(playerShooter, "PlayerMover"));
 
-        const auto* bulletMover = GetFunction(starterFn->m_children, "BulletMover");
+        ASSERT_TRUE(HasChild(playerShooter, "BulletMover"));
 
-        ASSERT_EQ(2, bulletMover->m_parents.size());
-        ASSERT_TRUE(HasParent(bulletMover, "PlayerSpawner"));
+        const auto* bulletMover = GetFunction(playerShooter->m_children, "BulletMover");
+
+        ASSERT_EQ(1, bulletMover->m_parents.size());
+        ASSERT_EQ(0, bulletMover->m_children.size());
+
         ASSERT_TRUE(HasParent(bulletMover, "PlayerShooter"));
     }
 
@@ -1013,10 +1073,10 @@ namespace be::tests::unit
 
         SystemsSchedulerWIP sut{};
 
-        sut.RegisterFunction("FnA", Functions::FnA);
-        sut.RegisterFunction("FnB", Functions::FnB);
-        sut.RegisterFunction("FnC", Functions::FnC);
         sut.RegisterFunction("FnD", Functions::FnD);
+        sut.RegisterFunction("FnA", Functions::FnA);
+        sut.RegisterFunction("FnC", Functions::FnC);
+        sut.RegisterFunction("FnB", Functions::FnB);
         ShuffleFunctions(sut);
 
         sut.Prepare();
@@ -1026,10 +1086,9 @@ namespace be::tests::unit
         ASSERT_EQ("FnA", starterFn->m_name);
 
         ASSERT_EQ(0, starterFn->m_parents.size());
-        ASSERT_EQ(2, starterFn->m_children.size());
+        ASSERT_EQ(1, starterFn->m_children.size());
 
         ASSERT_TRUE(HasChild(starterFn, "FnC"));
-        ASSERT_TRUE(HasChild(starterFn, "FnD"));
 
         ASSERT_FALSE(HasChild(starterFn, "FnB"));
         ASSERT_FALSE(HasParent(starterFn, "FnB"));
@@ -1038,13 +1097,17 @@ namespace be::tests::unit
 
         auto* fnC = GetFunction(starterFn->m_children, "FnC");
         ASSERT_TRUE(HasChild(fnC, "FnD"));
-        ASSERT_TRUE(fnC->m_children.size() == 1);
+        ASSERT_EQ(1, fnC->m_children.size());
+        ASSERT_EQ(1, fnC->m_parents.size());
         ASSERT_TRUE(HasParent(fnC, "FnA"));
 
         auto* fnD = GetFunction(fnC->m_children, "FnD");
         ASSERT_TRUE(HasChild(fnD, "FnB"));
         ASSERT_EQ(1, fnD->m_children.size());
-        ASSERT_TRUE(HasParent(fnD, "FnA"));
+        ASSERT_EQ(1, fnD->m_parents.size());
+
+        ASSERT_TRUE(HasParent(fnD, "FnC"));
+        ASSERT_FALSE(HasParent(fnD, "FnA"));
 
         auto* fnB = GetFunction(fnD->m_children, "FnB");
         ASSERT_EQ(0, fnB->m_children.size());
@@ -1096,18 +1159,13 @@ namespace be::tests::unit
         sut.RegisterFunction("FnD", Functions::FnD);
         ShuffleFunctions(sut);
 
-        /*sut.RegisterFunction("FnB", Functions::FnB);
-        sut.RegisterFunction("FnA", Functions::FnA);
-        sut.RegisterFunction("FnC", Functions::FnC);
-        sut.RegisterFunction("FnD", Functions::FnD);*/
-
-        // In this case, the order of registration actually matters as both FnA and FnB (which are weak dependencies) functions have the same number of dependencies,
+        // In this case, the order of registration actually matters as both FnA and FnB
         // so the first one in the list is going to be chosen as the child.
         std::string resolvedParent = "";
         for (const auto& function : sut.m_functions)
         {
             if (function.m_name == "FnA")
-            {   
+            {
                 resolvedParent = "FnB";
                 break;
             }
@@ -1163,9 +1221,9 @@ namespace be::tests::unit
             ASSERT_EQ(1, dependantFn->m_parents.size());
             ASSERT_TRUE(HasParent(dependantFn, resolvedParent));
         }
-
-        // TODO: Add test case to make sure that the function with less dependencies is chosen as the first one.
     }
+
+    // TODO: Add test case to make sure independent functions are put together into the starter functions.
 
     TEST_F(SystemsSchedulerTest, RegisterFunction_WillThrowIfAccessListHasSameComponentWithMultipleAccesses)
     {
