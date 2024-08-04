@@ -1,6 +1,5 @@
 #include <Beast/Ecs/Scheduler.h>
 #include <Beast/Ecs/SystemFunction.h>
-#include <Beast/Ecs/Schedule.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
 #include <Beast/Ecs/Components/Graphics.h>
@@ -38,42 +37,23 @@ namespace be::tests::unit
         using Type = be::Components<be::Transform>; \
     };
 
-    static auto GetFunction(const std::vector<SystemFunction*>& source, std::string_view functionToFind)
+    static const SystemFunction* GetFunction(std::span<const SystemFunction* const> source, std::string_view functionToFind)
     {
         const auto foundIt = std::find_if(source.begin(), source.end(), [functionToFind](const SystemFunction* function) {
-            return function->m_name == functionToFind;
+            return function->Name() == functionToFind;
         });
 
         return foundIt == source.end() ? nullptr : *foundIt;
     }
 
-    static auto GetFunction(const std::vector<ScheduledFunction>& source, std::string_view functionToFind)
+    static bool HasChild(const SystemFunction* function, std::string_view expectedChild)
     {
-        const auto foundIt = std::find_if(source.begin(), source.end(), [functionToFind](const ScheduledFunction& function) {
-            return function.Name() == functionToFind;
-        });
-
-        return foundIt == source.end() ? nullptr : &(*foundIt);
-    }
-
-    static bool HasChild(const ScheduledFunction& function, std::string_view expectedChild)
-    {
-        return GetFunction(function.Children(), expectedChild) != nullptr;
-    }
-
-    static bool HasParent(const ScheduledFunction& function, std::string_view expectedParent)
-    {
-        return GetFunction(function.Parents(), expectedParent) != nullptr;
-    }
-
-        static bool HasChild(const SystemFunction* function, std::string_view expectedChild)
-    {
-        return GetFunction(function->m_children, expectedChild) != nullptr;
+        return GetFunction(function->Children(), expectedChild) != nullptr;
     }
 
     static bool HasParent(const SystemFunction* function, std::string_view expectedParent)
     {
-        return GetFunction(function->m_parents, expectedParent) != nullptr;
+        return GetFunction(function->Parents(), expectedParent) != nullptr;
     }
 
     TEST_F(SchedulerTest, AutomaticScheduling)
@@ -102,33 +82,34 @@ namespace be::tests::unit
         });
 
         const auto schedule = sut.Prepare();
+
         const auto& starterFunctions = schedule.GetFunctions();
 
         ASSERT_EQ(1, starterFunctions.size());
-        auto& starterFn = starterFunctions[0];
-        ASSERT_EQ("removeFunction", starterFn.Name());
-        ASSERT_EQ(0, starterFn.Parents().size());
-        ASSERT_EQ(1, starterFn.Children().size());
+        auto* starterFn = starterFunctions[0];
+        ASSERT_EQ("removeFunction", starterFn->Name());
+        ASSERT_EQ(0, starterFn->Parents().size());
+        ASSERT_EQ(1, starterFn->Children().size());
 
         ASSERT_TRUE(HasChild(starterFn, "addFunction"));
 
-        const auto* addFn = GetFunction(starterFn.Children(), "addFunction");
-        ASSERT_EQ(1, addFn->m_parents.size());
-        ASSERT_EQ(1, addFn->m_children.size());
+        const auto* addFn = GetFunction(starterFn->Children(), "addFunction");
+        ASSERT_EQ(1, addFn->Parents().size());
+        ASSERT_EQ(1, addFn->Children().size());
 
         ASSERT_TRUE(HasParent(addFn, "removeFunction"));
         ASSERT_TRUE(HasChild(addFn, "updateFunction"));
 
-        const auto* updateFn = GetFunction(addFn->m_children, "updateFunction");
-        ASSERT_EQ(1, updateFn->m_parents.size());
-        ASSERT_EQ(1, updateFn->m_children.size());
+        const auto* updateFn = GetFunction(addFn->Children(), "updateFunction");
+        ASSERT_EQ(1, updateFn->Parents().size());
+        ASSERT_EQ(1, updateFn->Children().size());
 
         ASSERT_TRUE(HasParent(updateFn, "addFunction"));
         ASSERT_TRUE(HasChild(updateFn, "getFunction"));
 
-        const auto* getFn = GetFunction(updateFn->m_children, "getFunction");
-        ASSERT_EQ(1, updateFn->m_parents.size());
-        ASSERT_TRUE(getFn->m_children.empty());
+        const auto* getFn = GetFunction(updateFn->Children(), "getFunction");
+        ASSERT_EQ(1, updateFn->Parents().size());
+        ASSERT_TRUE(getFn->Children().empty());
 
         ASSERT_TRUE(HasParent(getFn, "updateFunction"));
     }
@@ -311,33 +292,33 @@ namespace be::tests::unit
          */
 
         ASSERT_EQ(1, starterFunctions.size());
-        auto& starterFn = starterFunctions[0];
-        ASSERT_EQ("PlayerSpawner", starterFn.Name());
-        ASSERT_EQ(0, starterFn.Parents().size());
-        ASSERT_EQ(1, starterFn.Children().size());
+        auto* starterFn = starterFunctions[0];
+        ASSERT_EQ("PlayerSpawner", starterFn->Name());
+        ASSERT_EQ(0, starterFn->Parents().size());
+        ASSERT_EQ(1, starterFn->Children().size());
 
         ASSERT_TRUE(HasChild(starterFn, "PlayerMover"));
 
-        const auto* playerMover = GetFunction(starterFn.Children(), "PlayerMover");
-        ASSERT_EQ(1, playerMover->m_children.size());
-        ASSERT_EQ(1, playerMover->m_parents.size());
+        const auto* playerMover = GetFunction(starterFn->Children(), "PlayerMover");
+        ASSERT_EQ(1, playerMover->Children().size());
+        ASSERT_EQ(1, playerMover->Parents().size());
 
         ASSERT_TRUE(HasParent(playerMover, "PlayerSpawner"));
         ASSERT_TRUE(HasChild(playerMover, "PlayerShooter"));
 
-        const auto* playerShooter = GetFunction(playerMover->m_children, "PlayerShooter");
+        const auto* playerShooter = GetFunction(playerMover->Children(), "PlayerShooter");
 
-        ASSERT_EQ(1, playerShooter->m_children.size());
-        ASSERT_EQ(1, playerShooter->m_parents.size());
+        ASSERT_EQ(1, playerShooter->Children().size());
+        ASSERT_EQ(1, playerShooter->Parents().size());
 
         ASSERT_TRUE(HasParent(playerShooter, "PlayerMover"));
 
         ASSERT_TRUE(HasChild(playerShooter, "BulletMover"));
 
-        const auto* bulletMover = GetFunction(playerShooter->m_children, "BulletMover");
+        const auto* bulletMover = GetFunction(playerShooter->Children(), "BulletMover");
 
-        ASSERT_EQ(1, bulletMover->m_parents.size());
-        ASSERT_EQ(0, bulletMover->m_children.size());
+        ASSERT_EQ(1, bulletMover->Parents().size());
+        ASSERT_EQ(0, bulletMover->Children().size());
 
         ASSERT_TRUE(HasParent(bulletMover, "PlayerShooter"));
     }
@@ -389,34 +370,34 @@ namespace be::tests::unit
 
         ASSERT_EQ(1, starterFunctions.size());
 
-        auto& starterFn = starterFunctions[0];
-        ASSERT_EQ("FnA", starterFn.Name());
+        auto* starterFn = starterFunctions[0];
+        ASSERT_EQ("FnA", starterFn->Name());
 
-        ASSERT_EQ(0, starterFn.Parents().size());
-        ASSERT_EQ(1, starterFn.Children().size());
+        ASSERT_EQ(0, starterFn->Parents().size());
+        ASSERT_EQ(1, starterFn->Children().size());
 
         ASSERT_TRUE(HasChild(starterFn, "FnC"));
 
         ASSERT_FALSE(HasChild(starterFn, "FnB"));
         ASSERT_FALSE(HasParent(starterFn, "FnB"));
 
-        auto* fnC = GetFunction(starterFn.Children(), "FnC");
+        auto* fnC = GetFunction(starterFn->Children(), "FnC");
         ASSERT_TRUE(HasChild(fnC, "FnD"));
-        ASSERT_EQ(1, fnC->m_children.size());
-        ASSERT_EQ(1, fnC->m_parents.size());
+        ASSERT_EQ(1, fnC->Children().size());
+        ASSERT_EQ(1, fnC->Parents().size());
         ASSERT_TRUE(HasParent(fnC, "FnA"));
 
-        auto* fnD = GetFunction(fnC->m_children, "FnD");
+        auto* fnD = GetFunction(fnC->Children(), "FnD");
         ASSERT_TRUE(HasChild(fnD, "FnB"));
-        ASSERT_EQ(1, fnD->m_children.size());
-        ASSERT_EQ(1, fnD->m_parents.size());
+        ASSERT_EQ(1, fnD->Children().size());
+        ASSERT_EQ(1, fnD->Parents().size());
 
         ASSERT_TRUE(HasParent(fnD, "FnC"));
         ASSERT_FALSE(HasParent(fnD, "FnA"));
 
-        auto* fnB = GetFunction(fnD->m_children, "FnB");
-        ASSERT_EQ(0, fnB->m_children.size());
-        ASSERT_EQ(1, fnB->m_parents.size());
+        auto* fnB = GetFunction(fnD->Children(), "FnB");
+        ASSERT_EQ(0, fnB->Children().size());
+        ASSERT_EQ(1, fnB->Parents().size());
         ASSERT_TRUE(HasParent(fnB, "FnD"));
 
         ASSERT_FALSE(HasParent(fnB, "FnA"));
@@ -473,25 +454,25 @@ namespace be::tests::unit
 
         ASSERT_EQ(1, starterFunctions.size());
 
-        auto& starterFn = starterFunctions[0];
-        ASSERT_TRUE(starterFn.Name() == "FnA" || starterFn.Name() == "FnB");
+        auto* starterFn = starterFunctions[0];
+        ASSERT_TRUE(starterFn->Name() == "FnA" || starterFn->Name() == "FnB");
 
-        if (starterFn.Name() == "FnA")
+        if (starterFn->Name() == "FnA")
         {
             // In this case, the FnB function is first in the list of registered functions, so it will choose FnA as its parent.
             // Additionally, because FnA has one other child, after adding FnB as its new child, it will now have two children.
 
-            ASSERT_EQ(0, starterFn.Parents().size());
-            ASSERT_EQ(2, starterFn.Children().size());
+            ASSERT_EQ(0, starterFn->Parents().size());
+            ASSERT_EQ(2, starterFn->Children().size());
 
             ASSERT_TRUE(HasChild(starterFn, "FnB"));
             ASSERT_TRUE(HasChild(starterFn, "FnC"));
 
             ASSERT_FALSE(HasParent(starterFn, "FnB"));
 
-            auto* dependantFn = GetFunction(starterFn.Children(), "FnB");
-            ASSERT_EQ(0, dependantFn->m_children.size());
-            ASSERT_EQ(1, dependantFn->m_parents.size());
+            auto* dependantFn = GetFunction(starterFn->Children(), "FnB");
+            ASSERT_EQ(0, dependantFn->Children().size());
+            ASSERT_EQ(1, dependantFn->Parents().size());
             ASSERT_TRUE(HasParent(dependantFn, "FnA"));
         }
         else
@@ -499,15 +480,15 @@ namespace be::tests::unit
             // In this case, the FnA function is first in the list of registered functions, so it will choose FnB as its parent.
             // Additionally, FnB doesn't have any other children, so after adding FnA as its child, it will only have one child.
 
-            ASSERT_EQ(0, starterFn.Parents().size());
-            ASSERT_EQ(1, starterFn.Children().size());
+            ASSERT_EQ(0, starterFn->Parents().size());
+            ASSERT_EQ(1, starterFn->Children().size());
 
             ASSERT_TRUE(HasChild(starterFn, "FnA"));
             ASSERT_FALSE(HasParent(starterFn, "FnA"));
 
-            auto* dependantFn = GetFunction(starterFn.Children(), "FnA");
-            ASSERT_EQ(1, dependantFn->m_children.size());
-            ASSERT_EQ(1, dependantFn->m_parents.size());
+            auto* dependantFn = GetFunction(starterFn->Children(), "FnA");
+            ASSERT_EQ(1, dependantFn->Children().size());
+            ASSERT_EQ(1, dependantFn->Parents().size());
             ASSERT_TRUE(HasParent(dependantFn, "FnB"));
         }
     }
@@ -784,33 +765,33 @@ namespace be::tests::unit
          */
 
         ASSERT_EQ(1, starterFunctions.size());
-        auto& starterFn = starterFunctions[0];
-        ASSERT_EQ("PlayerSystem::PlayerSpawner", starterFn.Name());
-        ASSERT_EQ(0, starterFn.Parents().size());
-        ASSERT_EQ(1, starterFn.Children().size());
+        auto* starterFn = starterFunctions[0];
+        ASSERT_EQ("PlayerSystem::PlayerSpawner", starterFn->Name());
+        ASSERT_EQ(0, starterFn->Parents().size());
+        ASSERT_EQ(1, starterFn->Children().size());
 
         ASSERT_TRUE(HasChild(starterFn, "PlayerSystem::PlayerMover"));
 
-        const auto* playerMover = GetFunction(starterFn.Children(), "PlayerSystem::PlayerMover");
-        ASSERT_EQ(1, playerMover->m_children.size());
-        ASSERT_EQ(1, playerMover->m_parents.size());
+        const auto* playerMover = GetFunction(starterFn->Children(), "PlayerSystem::PlayerMover");
+        ASSERT_EQ(1, playerMover->Children().size());
+        ASSERT_EQ(1, playerMover->Parents().size());
 
         ASSERT_TRUE(HasParent(playerMover, "PlayerSystem::PlayerSpawner"));
         ASSERT_TRUE(HasChild(playerMover, "PlayerSystem::PlayerShooter"));
 
-        const auto* playerShooter = GetFunction(playerMover->m_children, "PlayerSystem::PlayerShooter");
+        const auto* playerShooter = GetFunction(playerMover->Children(), "PlayerSystem::PlayerShooter");
 
-        ASSERT_EQ(1, playerShooter->m_children.size());
-        ASSERT_EQ(1, playerShooter->m_parents.size());
+        ASSERT_EQ(1, playerShooter->Children().size());
+        ASSERT_EQ(1, playerShooter->Parents().size());
 
         ASSERT_TRUE(HasParent(playerShooter, "PlayerSystem::PlayerMover"));
 
         ASSERT_TRUE(HasChild(playerShooter, "BulletMover::Run"));
 
-        const auto* bulletMover = GetFunction(playerShooter->m_children, "BulletMover::Run");
+        const auto* bulletMover = GetFunction(playerShooter->Children(), "BulletMover::Run");
 
-        ASSERT_EQ(1, bulletMover->m_parents.size());
-        ASSERT_EQ(0, bulletMover->m_children.size());
+        ASSERT_EQ(1, bulletMover->Parents().size());
+        ASSERT_EQ(0, bulletMover->Children().size());
 
         ASSERT_TRUE(HasParent(bulletMover, "PlayerSystem::PlayerShooter"));
     }
@@ -868,40 +849,37 @@ namespace be::tests::unit
 
         const auto schedule = sut.Prepare();
         const auto& starterFunctions = schedule.GetFunctions();
-        starterFunctions[0]->m_name = "asdasd";
 
         ASSERT_EQ(1, starterFunctions.size());
 
-        auto& starterFn = starterFunctions[0];
-        ASSERT_EQ("SystemA::Run", starterFn.Name());
+        auto* starterFn = starterFunctions[0];
+        ASSERT_EQ("SystemA::Run", starterFn->Name());
 
-        ASSERT_EQ(0, starterFn.Parents().size());
-        ASSERT_EQ(1, starterFn.Children().size());
+        ASSERT_EQ(0, starterFn->Parents().size());
+        ASSERT_EQ(1, starterFn->Children().size());
 
         ASSERT_TRUE(HasChild(starterFn, "SystemC::Run"));
 
         ASSERT_FALSE(HasChild(starterFn, "SystemB::Run"));
         ASSERT_FALSE(HasParent(starterFn, "SystemB::Run"));
 
-        ASSERT_EQ(0, starterFn.m_weakDependencies.size());
-
-        auto* fnC = GetFunction(starterFn.Children(), "SystemC::Run");
+        auto* fnC = GetFunction(starterFn->Children(), "SystemC::Run");
         ASSERT_TRUE(HasChild(fnC, "SystemD::Run"));
-        ASSERT_EQ(1, fnC->m_children.size());
-        ASSERT_EQ(1, fnC->m_parents.size());
+        ASSERT_EQ(1, fnC->Children().size());
+        ASSERT_EQ(1, fnC->Parents().size());
         ASSERT_TRUE(HasParent(fnC, "SystemA::Run"));
 
-        auto* fnD = GetFunction(fnC->m_children, "SystemD::Run");
+        auto* fnD = GetFunction(fnC->Children(), "SystemD::Run");
         ASSERT_TRUE(HasChild(fnD, "SystemB::Run"));
-        ASSERT_EQ(1, fnD->m_children.size());
-        ASSERT_EQ(1, fnD->m_parents.size());
+        ASSERT_EQ(1, fnD->Children().size());
+        ASSERT_EQ(1, fnD->Parents().size());
 
         ASSERT_TRUE(HasParent(fnD, "SystemC::Run"));
         ASSERT_FALSE(HasParent(fnD, "SystemA::Run"));
 
-        auto* fnB = GetFunction(fnD->m_children, "SystemB::Run");
-        ASSERT_EQ(0, fnB->m_children.size());
-        ASSERT_EQ(1, fnB->m_parents.size());
+        auto* fnB = GetFunction(fnD->Children(), "SystemB::Run");
+        ASSERT_EQ(0, fnB->Children().size());
+        ASSERT_EQ(1, fnB->Parents().size());
         ASSERT_TRUE(HasParent(fnB, "SystemD::Run"));
 
         ASSERT_FALSE(HasParent(fnB, "SystemA::Run"));
@@ -965,27 +943,25 @@ namespace be::tests::unit
 
         ASSERT_EQ(1, starterFunctions.size());
 
-        auto& starterFn = starterFunctions[0];
-        ASSERT_TRUE(starterFn.Name() == "SystemA::Run" || starterFn.Name() == "SystemB::Run");
+        auto* starterFn = starterFunctions[0];
+        ASSERT_TRUE(starterFn->Name() == "SystemA::Run" || starterFn->Name() == "SystemB::Run");
 
-        if (starterFn.Name() == "SystemA::Run")
+        if (starterFn->Name() == "SystemA::Run")
         {
             // In this case, the SystemB::Run function is first in the list of registered functions, so it will choose SystemA::Run as its parent.
             // Additionally, because SystemA::Run has one other child, after adding SystemB::Run as its new child, it will now have two children.
 
-            ASSERT_EQ(0, starterFn.Parents().size());
-            ASSERT_EQ(2, starterFn.Children().size());
+            ASSERT_EQ(0, starterFn->Parents().size());
+            ASSERT_EQ(2, starterFn->Children().size());
 
             ASSERT_TRUE(HasChild(starterFn, "SystemB::Run"));
             ASSERT_TRUE(HasChild(starterFn, "SystemC::Run"));
 
             ASSERT_FALSE(HasParent(starterFn, "SystemB::Run"));
 
-            ASSERT_EQ(0, starterFn.m_weakDependencies.size());
-
-            auto* dependantFn = GetFunction(starterFn.Children(), "SystemB::Run");
-            ASSERT_EQ(0, dependantFn->m_children.size());
-            ASSERT_EQ(1, dependantFn->m_parents.size());
+            auto* dependantFn = GetFunction(starterFn->Children(), "SystemB::Run");
+            ASSERT_EQ(0, dependantFn->Children().size());
+            ASSERT_EQ(1, dependantFn->Parents().size());
             ASSERT_TRUE(HasParent(dependantFn, "SystemA::Run"));
         }
         else
@@ -993,17 +969,15 @@ namespace be::tests::unit
             // In this case, the SystemA::Run function is first in the list of registered functions, so it will choose SystemB::Run as its parent.
             // Additionally, SystemB::Run doesn't have any other children, so after adding SystemA::Run as its child, it will only have one child.
 
-            ASSERT_EQ(0, starterFn.Parents().size());
-            ASSERT_EQ(1, starterFn.Children().size());
+            ASSERT_EQ(0, starterFn->Parents().size());
+            ASSERT_EQ(1, starterFn->Children().size());
 
             ASSERT_TRUE(HasChild(starterFn, "SystemA::Run"));
             ASSERT_FALSE(HasParent(starterFn, "SystemA::Run"));
 
-            ASSERT_EQ(0, starterFn.m_weakDependencies.size());
-
-            auto* dependantFn = GetFunction(starterFn.Children(), "SystemA::Run");
-            ASSERT_EQ(1, dependantFn->m_children.size());
-            ASSERT_EQ(1, dependantFn->m_parents.size());
+            auto* dependantFn = GetFunction(starterFn->Children(), "SystemA::Run");
+            ASSERT_EQ(1, dependantFn->Children().size());
+            ASSERT_EQ(1, dependantFn->Parents().size());
             ASSERT_TRUE(HasParent(dependantFn, "SystemB::Run"));
         }
     }
@@ -1067,12 +1041,12 @@ namespace be::tests::unit
         ASSERT_EQ(2, starterFunctions.size());
 
         const auto* fnA = GetFunction(starterFunctions, "SystemA::Run");
-        ASSERT_EQ(0, fnA->m_children.size());
-        ASSERT_EQ(0, fnA->m_parents.size());
+        ASSERT_EQ(0, fnA->Children().size());
+        ASSERT_EQ(0, fnA->Parents().size());
 
         const auto* fnB = GetFunction(starterFunctions, "SystemB::Run");
-        ASSERT_EQ(0, fnB->m_children.size());
-        ASSERT_EQ(0, fnB->m_parents.size());
+        ASSERT_EQ(0, fnB->Children().size());
+        ASSERT_EQ(0, fnB->Parents().size());
     }
 
     TEST_F(SchedulerTest, RegisterFunctions_Member_WillThrowIfFunctionWithGivenNameAlreadyRegistered)

@@ -76,7 +76,7 @@ namespace be
             if (!visitedNodes.contains(processedNode))
             {
                 visitedNodes.insert(processedNode);
-                if (SearchParentDFS(nodeToFind, processedNode->m_parents, visitedNodes))
+                if (SearchParentDFS(nodeToFind, processedNode->Parents(), visitedNodes))
                 {
                     return true;
                 }
@@ -84,6 +84,21 @@ namespace be
         }
 
         return false;
+    }
+
+    std::string_view SystemFunction::Name() const
+    {
+        return m_name;
+    }
+
+    const std::vector<SystemFunction*>& SystemFunction::Parents() const
+    {
+        return m_parents;
+    }
+
+    const std::vector<SystemFunction*>& SystemFunction::Children() const
+    {
+        return m_children;
     }
 
     FunctionRelation SystemFunction::GetFunctionRelation(const Component& component, const SystemFunction& other) const

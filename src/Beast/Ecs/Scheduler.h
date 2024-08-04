@@ -5,6 +5,7 @@
 
 #include <string_view>
 #include <vector>
+#include <span>
 #include <type_traits>
 
 namespace be
@@ -44,6 +45,10 @@ namespace be
 
     private:
         void CheckFunctionUniquness(std::string_view name);
+        void CheckDependencies(SystemFunction& lhs, SystemFunction& rhs);
+        void ResolveDependencies(std::span<SystemFunction> functions);
+        void SetUpStarterFunctions(std::vector<SystemFunction*>& functions);
+        void VerifyGraphIsDAG(std::span<const SystemFunction> functions);
 
     private:
         std::vector<SystemFunction> m_functions;

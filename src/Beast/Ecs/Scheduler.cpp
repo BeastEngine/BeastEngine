@@ -4,7 +4,40 @@
 
 namespace be
 {
-    static constexpr void CheckDependencies(SystemFunction& lhs, SystemFunction& rhs)
+    Schedule Scheduler::Prepare()
+    {
+        const auto functionsCount = m_functions.size();
+        for (std::size_t i = 0; i < functionsCount; ++i)
+        {
+            auto& lhsFunction = m_functions[i];
+            for (std::size_t j = i + 1; j < functionsCount; ++j)
+            {
+                CheckDependencies(lhsFunction, m_functions[j]);
+            }
+
+            if (lhsFunction.m_parents.empty())
+            {
+                m_starterFunctions.push_back(&lhsFunction);
+            }
+        }
+
+        ResolveDependencies(m_functions);
+        SetUpStarterFunctions(m_starterFunctions);
+        VerifyGraphIsDAG(m_functions);
+
+        return Schedule{m_starterFunctions};
+    }
+
+    void Scheduler::CheckFunctionUniquness(std::string_view name)
+    {
+        const auto it = std::find_if(m_functions.begin(), m_functions.end(), [&](const SystemFunction& fn) { return fn.m_name == name; });
+        if (it != m_functions.end())
+        {
+            throw std::runtime_error("Function already registered!");
+        }
+    }
+
+    void Scheduler::CheckDependencies(SystemFunction& lhs, SystemFunction& rhs)
     {
         using Relation = FunctionRelation;
         Relation currentRelation = Relation::NONE;
@@ -59,7 +92,7 @@ namespace be
         }
     }
 
-    static constexpr void ResolveDependencies(std::span<SystemFunction> functions)
+    void Scheduler::ResolveDependencies(std::span<SystemFunction> functions)
     {
         for (auto& function : functions)
         {
@@ -72,7 +105,7 @@ namespace be
         }
     }
 
-    static constexpr void SetUpStarterFunctions(std::vector<SystemFunction*>& functions)
+    void Scheduler::SetUpStarterFunctions(std::vector<SystemFunction*>& functions)
     {
         std::size_t i = 0;
         while (i != functions.size())
@@ -94,7 +127,7 @@ namespace be
         }
     }
 
-    static constexpr void VerifyGraphIsDAG(std::span<const SystemFunction> functions)
+    void Scheduler::VerifyGraphIsDAG(std::span<const SystemFunction> functions)
     {
         // Kahn's algorithm implementation
 
@@ -143,39 +176,6 @@ namespace be
         if (output_functions_count != graphSize)
         {
             throw std::runtime_error("NOT A DAG");
-        }
-    }
-
-    Schedule Scheduler::Prepare()
-    {
-        const auto functionsCount = m_functions.size();
-        for (std::size_t i = 0; i < functionsCount; ++i)
-        {
-            auto& lhsFunction = m_functions[i];
-            for (std::size_t j = i + 1; j < functionsCount; ++j)
-            {
-                CheckDependencies(lhsFunction, m_functions[j]);
-            }
-
-            if (lhsFunction.m_parents.empty())
-            {
-                m_starterFunctions.push_back(&lhsFunction);
-            }
-        }
-
-        ResolveDependencies(m_functions);
-        SetUpStarterFunctions(m_starterFunctions);
-        VerifyGraphIsDAG(m_functions);
-
-        return Schedule{m_starterFunctions};
-    }
-
-    void Scheduler::CheckFunctionUniquness(std::string_view name)
-    {
-        const auto it = std::find_if(m_functions.begin(), m_functions.end(), [&](const SystemFunction& fn) { return fn.m_name == name; });
-        if (it != m_functions.end())
-        {
-            throw std::runtime_error("Function already registered!");
         }
     }
 } // namespace be

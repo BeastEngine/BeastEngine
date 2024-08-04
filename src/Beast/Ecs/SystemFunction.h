@@ -32,8 +32,37 @@ namespace be
         REMOVE = 3,
     };
 
-    struct SystemFunction
+    class SystemFunction
     {
+        friend class Scheduler;
+
+    public:
+        [[nodiscard]] std::string_view Name() const;
+        [[nodiscard]] const std::vector<SystemFunction*>& Parents() const;
+        [[nodiscard]] const std::vector<SystemFunction*>& Children() const;
+
+        /**
+         * TODO:
+         * void Run(World& world)
+         * {
+         *      m_implementation(world);
+         *      for (auto* child : m_children)
+         *      {
+         *          child->NotifyParentDoneRunning();
+         *      }
+         * }
+         * 
+         * void NotifyParentDoneRunning()
+         * {
+         *      const auto previous = m_parentsCounter.fetch_sub(1);
+         *      if (previous == 0)
+         *      {
+         *          m_threadPool->Queue(this);
+         *      }
+         * }
+         */
+
+    private:
         struct Component
         {
             using ComponentId = std::type_index;
@@ -51,12 +80,15 @@ namespace be
         using Wrapper = std::function<void(be::World&)>;
 
         template<WorldView... Views>
-        static SystemFunction Create(Id id, std::string_view name, Wrapper&& function)
+        static SystemFunction Create(Id id, std::string_view name, Wrapper&& implementation)
         {
-            SystemFunction systemFunction{id, name, std::move(function)};
-            systemFunction.Process<Views...>();
-
-            return systemFunction;
+            SystemFunction function{};
+            function.m_id = id;
+            function.m_name = name;
+            function.m_implementation = std::move(implementation);
+            
+            function.Process<Views...>();
+            return function;
         }
 
         template<WorldView... Views>
@@ -100,7 +132,7 @@ namespace be
         void ResolveWeakDependencies();
         void SimplifyDependencies();
 
-    public:
+    private:
         Id m_id;
         std::string_view m_name;
         Wrapper m_implementation;
