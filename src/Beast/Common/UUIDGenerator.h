@@ -1,6 +1,6 @@
 #pragma once
-#include "Beast/Common/Types.h"
 #include "Beast/Common/Utils/Hasher.h"
+#include "Beast/Common/Id.h"
 
 #include <uuid.h>
 #include <random>

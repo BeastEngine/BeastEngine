@@ -1,5 +1,7 @@
 #pragma once
 #include "Beast/Common/Types.h"
+#include "Beast/Common/Id.h"
+
 #include "Beast/Math/Types.h"
 
 namespace be::graphics

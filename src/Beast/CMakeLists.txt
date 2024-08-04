@@ -67,7 +67,7 @@ add_library(
   "Graphics/D3D11/RenderTarget.h"
   "Windows/Window.cpp"
   "Input/Input.h"
-)
+ "Ecs/Scheduler.h" "Ecs/Scheduler.cpp" "Ecs/SystemFunction.h" "Ecs/SystemFunction.cpp" "Ecs/Schedule.h" "Ecs/Schedule.cpp")
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)
 
