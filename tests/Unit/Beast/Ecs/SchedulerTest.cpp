@@ -10,6 +10,8 @@
 #include <span>
 #include <string_view>
 #include <random>
+#include <thread>
+#include <atomic>
 
 namespace be::tests::unit
 {
@@ -221,30 +223,6 @@ namespace be::tests::unit
                 using Add = be::Components<Player, Mover, be::Transform, be::Sprite>;
             };
             static void PlayerSpawner(const be::View<PlayerSpawnerAL>&) {}
-
-            /**
-             * 
-             * Another important question is if it should actually be allowed to have the same component in two different access lists?
-             * Perhaps this is a sign of a bad code?
-             * The mover here could technically iterate over entities from the Get view and create new entities using the Spawn view, which could - in theory - modify the Get view.
-             * I think to make sure this doesn't happen, we should prohibit that. Essentially, we want combine all Access Lists and make sure there aren't any duplicates.
-             * This would happen on the compilation of `RegisterFunction` call I believe.
-             * 
-             * I think we should also allow adding/removing the component when it's in the Update list. This way, we can make those access lists much easier, because we can combine
-             * the GetPlayerDetailsAL and SpawnBulletAL into a single AL like this:
-             * struct SpawnBulletsAL
-             * {
-             *  using Add = be::Components<Bullet, be::Sprite>;
-             *  using Update = be::Components<be::Transform>;
-             *  using Get = be::Components<Player, Mover>; // This should also be replaced with Required in the future
-             * };
-             * 
-             * And now, the dependencies are clear. It depends on the spawner via Player, Mover and Transform.
-             * And it also depends strongly on the PlayerMover via Mover component.
-             * This is a clean dependency chain, and lets us avoid two functions strongly referancing each-other. So this can potentially also be a fix to our problem where two functions strongly depend on each other on the same level.
-             * This also seems to make more sense, as we not necessarily need to restrict the operations so much. We really care about writes not happening simutainously, but we can use Add and Remove to just add stronger ordering guarantess.
-             * Phew... There's a lot(!!!) to think about with all this.
-             */
 
             struct PlayerMoverAL : be::BaseAccessList
             {
@@ -1081,5 +1059,106 @@ namespace be::tests::unit
 
         ASSERT_NO_THROW(sut.RegisterFunction("SystemA::Run", &SystemA::Run, &sysA));
         ASSERT_THROW(sut.RegisterFunction("SystemA::Run", &SystemB::Run, &sysB), std::runtime_error);
+    }
+
+    struct SystemRun
+    {
+        std::chrono::milliseconds timestamp;
+        std::atomic_bool isRunning = false;
+    };
+
+    struct SystemInputParams
+    {
+        std::mutex& mutex;
+        uint16& count;
+        SystemRun& systemRun;
+    };
+
+    class TestSystem
+    {
+    public:
+        TestSystem(SystemInputParams params)
+            : m_params(std::move(params))
+        {}
+
+    protected:
+        void RunImpl()
+        {
+            ASSERT_FALSE(m_params.systemRun.isRunning);
+            m_params.systemRun.isRunning = true;
+
+            ASSERT_TRUE(m_params.mutex.try_lock());
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            ++m_params.count;
+            m_params.mutex.unlock();
+        }
+
+    private:
+        SystemInputParams m_params;
+    };
+
+#define TEST_SYSTEM(Access)                  \
+    class System##Access : public TestSystem \
+    {                                        \
+    public:                                  \
+        void Run(const View<AL##Access>&)    \
+        {                                    \
+            RunImpl();                       \
+        }                                    \
+    }
+
+    TEST_F(SchedulerTest, Schedule_Run_WillRunScheduledFunctionsInRightOrder)
+    {
+        std::mutex systemsMutex;
+        uint16 count = 0;
+        std::unordered_map<std::string, SystemRun> systemsRun;
+
+        struct ALAdd : BaseAccessList
+        {
+            using Add = Components<Transform>;
+        };
+
+        struct ALUpdate : BaseAccessList
+        {
+            using Update = Components<Transform>;
+        };
+
+        struct ALGet : BaseAccessList
+        {
+            using Get = Components<Transform>;
+        };
+
+        struct ALRemove : BaseAccessList
+        {
+            using Remove = Components<Transform>;
+        };
+
+        constexpr auto SYSTEM_NAME_ADD = "SystemAdd::Run";
+        constexpr auto SYSTEM_NAME_UPDATE = "SystemUpdate::Run";
+        constexpr auto SYSTEM_NAME_GET = "SystemGet::Run";
+        constexpr auto SYSTEM_NAME_REMOVE = "SystemRemove::Run";
+
+        TEST_SYSTEM(Add)
+        sysAdd(SystemInputParams{systemsMutex, count, systemsRun[SYSTEM_NAME_ADD]});
+
+        TEST_SYSTEM(Update)
+        sysUpdate(SystemInputParams{systemsMutex, count, systemsRun[SYSTEM_NAME_UPDATE]});
+
+        TEST_SYSTEM(Get)
+        sysGet(SystemInputParams{systemsMutex, count, systemsRun[SYSTEM_NAME_GET]});
+
+        TEST_SYSTEM(Remove)
+        sysRemove(SystemInputParams{systemsMutex, count, systemsRun[SYSTEM_NAME_REMOVE]});
+
+        Scheduler scheduler{};
+        scheduler.RegisterFunction(SYSTEM_NAME_ADD, &SystemAdd::Run, &sysAdd);
+        scheduler.RegisterFunction(SYSTEM_NAME_UPDATE, &SystemUpdate::Run, &sysUpdate);
+        scheduler.RegisterFunction(SYSTEM_NAME_GET, &SystemGet::Run, &sysGet);
+        scheduler.RegisterFunction(SYSTEM_NAME_REMOVE, &SystemRemove::Run, &sysRemove);
+
+        const auto schedule = scheduler.Prepare();
+        schedule.Run();
+
+        ASSERT_EQ(4, count);
     }
 } // namespace be::tests::unit
