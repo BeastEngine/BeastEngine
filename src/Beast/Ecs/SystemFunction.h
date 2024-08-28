@@ -10,6 +10,7 @@
 namespace be
 {
     class World;
+    class FunctionsQueue;
 
     template<typename T>
     concept WorldView = requires {
@@ -41,26 +42,7 @@ namespace be
         [[nodiscard]] const std::vector<SystemFunction*>& Parents() const;
         [[nodiscard]] const std::vector<SystemFunction*>& Children() const;
 
-        /**
-         * TODO:
-         * void Run(World& world)
-         * {
-         *      m_implementation(world);
-         *      for (auto* child : m_children)
-         *      {
-         *          child->NotifyParentDoneRunning();
-         *      }
-         * }
-         * 
-         * void NotifyParentDoneRunning()
-         * {
-         *      const auto previous = m_parentsCounter.fetch_sub(1);
-         *      if (previous == 0)
-         *      {
-         *          m_threadPool->Queue(this);
-         *      }
-         * }
-         */
+        void Run(World& world);
 
     private:
         struct Component
@@ -86,7 +68,7 @@ namespace be
             function.m_id = id;
             function.m_name = name;
             function.m_implementation = std::move(implementation);
-            
+
             function.Process<Views...>();
             return function;
         }
@@ -134,7 +116,7 @@ namespace be
 
     private:
         Id m_id;
-        std::string_view m_name;
+        std::string m_name;
         Wrapper m_implementation;
 
         std::vector<SystemFunction*> m_parents;

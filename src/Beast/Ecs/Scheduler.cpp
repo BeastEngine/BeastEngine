@@ -4,7 +4,7 @@
 
 namespace be
 {
-    Schedule Scheduler::Prepare()
+    SystemsSchedule Scheduler::Prepare()
     {
         const auto functionsCount = m_functions.size();
         for (std::size_t i = 0; i < functionsCount; ++i)
@@ -25,7 +25,7 @@ namespace be
         SetUpStarterFunctions(m_starterFunctions);
         VerifyGraphIsDAG(m_functions);
 
-        return Schedule{m_starterFunctions};
+        return SystemsSchedule{m_starterFunctions, m_functions.size()};
     }
 
     void Scheduler::CheckFunctionUniquness(std::string_view name)

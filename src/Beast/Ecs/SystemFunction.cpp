@@ -1,4 +1,5 @@
 #include "Beast/Ecs/SystemFunction.h"
+#include "Beast/Ecs/SystemsRunner.h"
 
 #include <exception>
 #include <queue>
@@ -99,6 +100,11 @@ namespace be
     const std::vector<SystemFunction*>& SystemFunction::Children() const
     {
         return m_children;
+    }
+
+    void SystemFunction::Run(World& world)
+    {
+        m_implementation(world);
     }
 
     FunctionRelation SystemFunction::GetFunctionRelation(const Component& component, const SystemFunction& other) const

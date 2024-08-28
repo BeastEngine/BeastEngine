@@ -3,6 +3,7 @@
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
 #include <Beast/Ecs/Components/Graphics.h>
+#include <Beast/Ecs/SystemsRunner.h>
 
 #include <gtest/gtest.h>
 #include <fmt/format.h>
@@ -85,7 +86,7 @@ namespace be::tests::unit
 
         const auto schedule = sut.Prepare();
 
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         ASSERT_EQ(1, starterFunctions.size());
         auto* starterFn = starterFunctions[0];
@@ -255,7 +256,7 @@ namespace be::tests::unit
             [&] { sut.RegisterFunction("PlayerShooter", Functions::PlayerShooter); return "PlayerShooter"; },
         });
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         /**
          * In this test, there should be 1 starting function, the PlayerSpawner. All other functions should depend on it.
@@ -344,7 +345,7 @@ namespace be::tests::unit
         });
 
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         ASSERT_EQ(1, starterFunctions.size());
 
@@ -428,7 +429,7 @@ namespace be::tests::unit
         // so the first one in the list is going to be chosen as the child.
 
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         ASSERT_EQ(1, starterFunctions.size());
 
@@ -523,7 +524,7 @@ namespace be::tests::unit
         sut.RegisterFunction("FnB", Functions::FnB);
 
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         ASSERT_EQ(2, starterFunctions.size());
 
@@ -728,7 +729,7 @@ namespace be::tests::unit
         });
 
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         /**
          * In this test, there should be 1 starting function, the PlayerSpawner. All other functions should depend on it.
@@ -826,7 +827,7 @@ namespace be::tests::unit
         });
 
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         ASSERT_EQ(1, starterFunctions.size());
 
@@ -917,7 +918,7 @@ namespace be::tests::unit
         // In this case, the order of registration actually matters as both FnA and FnB
         // so the first one in the list is going to be chosen as the child.
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         ASSERT_EQ(1, starterFunctions.size());
 
@@ -1014,7 +1015,7 @@ namespace be::tests::unit
         sut.RegisterFunction("SystemB::Run", &SystemB::Run, &sysB);
 
         const auto schedule = sut.Prepare();
-        const auto& starterFunctions = schedule.GetFunctions();
+        const auto& starterFunctions = schedule.GetStarterFunctions();
 
         ASSERT_EQ(2, starterFunctions.size());
 
@@ -1156,8 +1157,11 @@ namespace be::tests::unit
         scheduler.RegisterFunction(SYSTEM_NAME_GET, &SystemGet::Run, &sysGet);
         scheduler.RegisterFunction(SYSTEM_NAME_REMOVE, &SystemRemove::Run, &sysRemove);
 
+        World world{};
+        SystemsRunner runner{world};
+
         const auto schedule = scheduler.Prepare();
-        schedule.Run();
+        runner.Run(schedule);
 
         ASSERT_EQ(4, count);
     }
