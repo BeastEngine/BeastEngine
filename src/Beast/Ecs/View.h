@@ -56,7 +56,8 @@ namespace be
         template<typename Component>
         constexpr void AddComponent(be::Entity entity, Component&& component) const
         {
-            static_assert(ComponentsHave<Add, std::decay_t<Component>>, "Component must be in the AL::Add list!");
+            // TODO: I'm pretty sure we want to allow adding component when either in Add or Update, but need to double check
+            static_assert(ComponentsHave<Add, std::decay_t<Component>> || ComponentsHave<Update, std::decay_t<Component>>, "Component must be in the AL::Add list!");
             m_registry.emplace<std::decay_t<Component>>(entity, std::forward<Component>(component));
         }
 
