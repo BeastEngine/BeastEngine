@@ -1,5 +1,4 @@
 #pragma once
-#include "Beast/Ecs/SystemsSchedule.h"
 #include "Beast/Ecs/SystemFunction.h"
 #include "Beast/Ecs/World.h"
 
@@ -10,6 +9,12 @@
 
 namespace be
 {
+    struct SystemsSchedule
+    {
+        std::vector<SystemFunction> functions;
+        std::vector<SystemFunction*> starterFunctions;
+    };
+
     class Scheduler
     {
     public:
@@ -44,7 +49,7 @@ namespace be
         void CreateFunction(std::string_view name, SystemFunction::Wrapper&& wrapper)
         {
             CheckFunctionUniquness(name);
-            m_functions.emplace_back(SystemFunction::Create<Views...>(Id{m_functions.size()}, name, std::move(wrapper)));
+            m_schedule.functions.emplace_back(SystemFunction::Create<Views...>(Id{m_schedule.functions.size()}, name, std::move(wrapper)));
         }
 
         void CheckFunctionUniquness(std::string_view name);
@@ -54,7 +59,6 @@ namespace be
         void VerifyGraphIsDAG(std::span<const SystemFunction> functions);
 
     private:
-        std::vector<SystemFunction> m_functions;
-        std::vector<SystemFunction*> m_starterFunctions;
+        SystemsSchedule m_schedule;
     };
 } // namespace be

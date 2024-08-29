@@ -6,32 +6,32 @@ namespace be
 {
     SystemsSchedule Scheduler::Prepare()
     {
-        const auto functionsCount = m_functions.size();
+        const auto functionsCount = m_schedule.functions.size();
         for (std::size_t i = 0; i < functionsCount; ++i)
         {
-            auto& lhsFunction = m_functions[i];
+            auto& lhsFunction = m_schedule.functions[i];
             for (std::size_t j = i + 1; j < functionsCount; ++j)
             {
-                CheckDependencies(lhsFunction, m_functions[j]);
+                CheckDependencies(lhsFunction, m_schedule.functions[j]);
             }
 
             if (lhsFunction.m_parents.empty())
             {
-                m_starterFunctions.push_back(&lhsFunction);
+                m_schedule.starterFunctions.push_back(&lhsFunction);
             }
         }
 
-        ResolveDependencies(m_functions);
-        SetUpStarterFunctions(m_starterFunctions);
-        VerifyGraphIsDAG(m_functions);
+        ResolveDependencies(m_schedule.functions);
+        SetUpStarterFunctions(m_schedule.starterFunctions);
+        VerifyGraphIsDAG(m_schedule.functions);
 
-        return SystemsSchedule{m_starterFunctions, m_functions.size()};
+        return m_schedule;
     }
 
     void Scheduler::CheckFunctionUniquness(std::string_view name)
     {
-        const auto it = std::find_if(m_functions.begin(), m_functions.end(), [&](const SystemFunction& fn) { return fn.m_name == name; });
-        if (it != m_functions.end())
+        const auto it = std::find_if(m_schedule.functions.begin(), m_schedule.functions.end(), [&](const SystemFunction& fn) { return fn.m_name == name; });
+        if (it != m_schedule.functions.end())
         {
             throw std::runtime_error("Function already registered!");
         }

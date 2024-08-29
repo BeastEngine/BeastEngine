@@ -1,4 +1,6 @@
 #pragma once
+#include "Beast/Ecs/Scheduler.h"
+
 #include "Beast/Common/Id.h"
 
 #include <mutex>
@@ -13,7 +15,6 @@
 
 namespace be
 {
-    class SystemsSchedule;
     class SystemFunction;
     class World;
 
@@ -40,8 +41,8 @@ namespace be
     class SystemsRunner
     {
     public:
-        SystemsRunner(World& world);
-        void Run(const SystemsSchedule& schedule);
+        SystemsRunner(World& world, SystemsSchedule schedule);
+        void Run();
 
     private:
         std::function<void(SystemFunction*)> CreateFunctionCallback();
@@ -49,6 +50,7 @@ namespace be
     private:
         World& m_world;
         FunctionsQueue m_queue;
+        SystemsSchedule m_schedule;
         
         std::atomic_size_t m_functionsLeftToRun;
         std::atomic_bool m_isGraphCompleted = false;
