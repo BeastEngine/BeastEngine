@@ -51,10 +51,10 @@ namespace be
         World& m_world;
         FunctionsQueue m_queue;
         SystemsSchedule m_schedule;
-        
+
         std::atomic_size_t m_functionsLeftToRun;
         std::atomic_bool m_isGraphCompleted = false;
 
         std::unordered_map<SystemFunction*, std::atomic_size_t> m_parentsCounters;
     };
-}
+} // namespace be

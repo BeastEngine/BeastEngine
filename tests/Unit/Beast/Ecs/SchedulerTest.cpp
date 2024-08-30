@@ -313,27 +313,27 @@ namespace be::tests::unit
             {
                 using Add = be::Components<be::Transform, Component>;
             };
-            static void FnA(const be::View<FnAAccessList>&){};
+            static void FnA(const be::View<FnAAccessList>&) {};
 
             struct FnBAccessList : be::BaseAccessList
             {
                 using Add = be::Components<Component>;
                 using Get = be::Components<be::Sprite>;
             };
-            static void FnB(const be::View<FnBAccessList>&){};
+            static void FnB(const be::View<FnBAccessList>&) {};
 
             struct FnCAccessList : be::BaseAccessList
             {
                 using Update = be::Components<be::Transform>;
             };
-            static void FnC(const be::View<FnCAccessList>&){};
+            static void FnC(const be::View<FnCAccessList>&) {};
 
             struct FnDAccessList : be::BaseAccessList
             {
                 using Get = be::Components<be::Transform>;
                 using Add = be::Components<be::Sprite>;
             };
-            static void FnD(const be::View<FnDAccessList>&){};
+            static void FnD(const be::View<FnDAccessList>&) {};
         };
 
         Scheduler sut{};
@@ -394,26 +394,26 @@ namespace be::tests::unit
             {
                 using Add = be::Components<be::Transform, Component>;
             };
-            static void FnA(const be::View<FnAAccessList>&){};
+            static void FnA(const be::View<FnAAccessList>&) {};
 
             struct FnBAccessList : be::BaseAccessList
             {
                 using Add = be::Components<Component>;
             };
-            static void FnB(const be::View<FnBAccessList>&){};
+            static void FnB(const be::View<FnBAccessList>&) {};
 
             struct FnCAccessList : be::BaseAccessList
             {
                 using Update = be::Components<be::Transform>;
             };
-            static void FnC(const be::View<FnCAccessList>&){};
+            static void FnC(const be::View<FnCAccessList>&) {};
 
             struct FnDAccessList : be::BaseAccessList
             {
                 using Get = be::Components<be::Transform>;
                 using Add = be::Components<be::Sprite>;
             };
-            static void FnD(const be::View<FnDAccessList>&){};
+            static void FnD(const be::View<FnDAccessList>&) {};
         };
 
         Scheduler sut{};
@@ -485,7 +485,7 @@ namespace be::tests::unit
                 using Update = be::Components<Component>;
             };
 
-            static void Run(const be::View<AccessList>&){};
+            static void Run(const be::View<AccessList>&) {};
         };
 
         Scheduler sut{};
@@ -786,7 +786,7 @@ namespace be::tests::unit
             {
                 using Add = be::Components<be::Transform, Component>;
             };
-            void Run(const be::View<FnAAccessList>&){};
+            void Run(const be::View<FnAAccessList>&) {};
         } sysA;
 
         struct SystemB
@@ -796,7 +796,7 @@ namespace be::tests::unit
                 using Add = be::Components<Component>;
                 using Get = be::Components<be::Sprite>;
             };
-            void Run(const be::View<FnBAccessList>&){};
+            void Run(const be::View<FnBAccessList>&) {};
         } sysB;
 
         struct SystemC
@@ -805,7 +805,7 @@ namespace be::tests::unit
             {
                 using Update = be::Components<be::Transform>;
             };
-            void Run(const be::View<FnCAccessList>&){};
+            void Run(const be::View<FnCAccessList>&) {};
         } sysC;
 
         struct SystemD
@@ -815,7 +815,7 @@ namespace be::tests::unit
                 using Get = be::Components<be::Transform>;
                 using Add = be::Components<be::Sprite>;
             };
-            void Run(const be::View<FnDAccessList>&){};
+            void Run(const be::View<FnDAccessList>&) {};
         } sysD;
 
         Scheduler sut{};
@@ -876,7 +876,7 @@ namespace be::tests::unit
             {
                 using Add = be::Components<be::Transform, Component>;
             };
-            void Run(const be::View<FnAAccessList>&){};
+            void Run(const be::View<FnAAccessList>&) {};
         } sysA;
 
         struct SystemB
@@ -885,7 +885,7 @@ namespace be::tests::unit
             {
                 using Add = be::Components<Component>;
             };
-            void Run(const be::View<FnBAccessList>&){};
+            void Run(const be::View<FnBAccessList>&) {};
         } sysB;
 
         struct SystemC
@@ -894,7 +894,7 @@ namespace be::tests::unit
             {
                 using Update = be::Components<be::Transform>;
             };
-            void Run(const be::View<FnCAccessList>&){};
+            void Run(const be::View<FnCAccessList>&) {};
         } sysC;
 
         struct SystemD
@@ -904,7 +904,7 @@ namespace be::tests::unit
                 using Get = be::Components<be::Transform>;
                 using Add = be::Components<be::Sprite>;
             };
-            void Run(const be::View<FnDAccessList>&){};
+            void Run(const be::View<FnDAccessList>&) {};
         } sysD;
 
         Scheduler sut{};
@@ -974,7 +974,7 @@ namespace be::tests::unit
                 using Update = be::Components<Component>;
             };
 
-            void Run(const be::View<AccessList>&){};
+            void Run(const be::View<AccessList>&) {};
         } sys;
 
         Scheduler sut{};

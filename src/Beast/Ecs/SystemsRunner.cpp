@@ -74,7 +74,7 @@ namespace be
         {
             m_queue.Add(function);
         }
-     
+
         // This will return if the value is already "true", so no need to worry that the functions finish running before we get here and hang forever.
         m_isGraphCompleted.wait(false);
     }
