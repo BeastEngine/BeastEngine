@@ -1,8 +1,16 @@
 #include <Beast/Ecs/SystemsScheduler.h>
 #include <Beast/Ecs/AccessList.h>
 #include <Beast/Ecs/View.h>
+#include <Beast/Ecs/Components/Graphics.h>
 
 #include <gtest/gtest.h>
+#include <fmt/format.h>
+
+#include <vector>
+#include <typeinfo>
+#include <typeindex>
+
+#include <queue>
 
 namespace be::tests::unit
 {

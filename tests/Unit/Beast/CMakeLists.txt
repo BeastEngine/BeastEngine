@@ -21,6 +21,7 @@ add_executable(
   "Input/InputTest.cpp"
   "Ecs/WorldTest.cpp"
   "Ecs/ViewTest.cpp"
+  "Ecs/SchedulerTest.cpp"
 )
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
 
