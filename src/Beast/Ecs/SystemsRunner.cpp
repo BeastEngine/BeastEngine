@@ -81,6 +81,8 @@ namespace be
 
     std::function<void(SystemFunction*)> SystemsRunner::CreateFunctionCallback()
     {
+        // TODO: Maybe we can actually move all of this into FunctionsQueue? Basically merge both. Maybe we could guard this with mutex?
+
         return [this](SystemFunction* fn) {
             if (--m_functionsLeftToRun == 0)
             {
