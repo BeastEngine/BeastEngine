@@ -13,7 +13,7 @@ namespace be
      * @brief Defines common interface for logging API, leaving the actual logging
      * functionality to the logger implementation provided during construction.
      * It accepts messages in the same format as the `fmt` and `spdlog` libraries, meaning you can use the same messages format.
-     * @see https://fmt.dev/latest/index.hpptml
+     * @see https://fmt.dev/latest/index.html
      */
     class Logger final
     {
