@@ -1,9 +1,9 @@
 #ifdef BE_PLATFORM_WINDOWS
-    #include "Beast/Windows/Win32/Win32Window.h"
-    #include "Beast/Debug.h"
-    #include "Beast/Input/Events/Events.h"
+    #include "Beast/Windows/Win32/Win32Window.hpp"
+    #include "Beast/Debug.hpp"
+    #include "Beast/Input/Events/Events.hpp"
 
-    #include "Beast/Debug.h"
+    #include "Beast/Debug.hpp"
     #include <unordered_map>
 
 namespace be::internals

@@ -1,10 +1,10 @@
-#include "Beast/BeastEngine.h"
-#include "Beast/Versions.h"
+#include "Beast/BeastEngine.hpp"
+#include "Beast/Versions.hpp"
 
-#include "Beast/Loggers/LoggersFactories.h"
-#include "Beast/Loggers/StaticLogger.h"
+#include "Beast/Loggers/LoggersFactories.hpp"
+#include "Beast/Loggers/StaticLogger.hpp"
 
-#include "Beast/Graphics/GraphicsFactory.h"
+#include "Beast/Graphics/GraphicsFactory.hpp"
 
 #include <fmt/color.h>
 

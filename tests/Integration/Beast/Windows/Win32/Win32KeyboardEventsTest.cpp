@@ -1,8 +1,8 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
-    #include <Integration/Beast/Windows/Win32/Win32KeyboardEventsTest.h>
+    #include <Integration/Beast/Windows/Win32/Win32KeyboardEventsTest.hpp>
 
-    #include <Beast/Windows/Win32/Win32Window.h>
-    #include <Beast/Input/Events/Events.h>
+    #include <Beast/Windows/Win32/Win32Window.hpp>
+    #include <Beast/Input/Events/Events.hpp>
 
 namespace be::tests::integration
 {

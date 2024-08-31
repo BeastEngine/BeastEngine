@@ -1,4 +1,4 @@
-#include <Beast/Common/Utils/Hasher.h>
+#include <Beast/Common/Utils/Hasher.hpp>
 #include <gtest/gtest.h>
 
 #include <array>

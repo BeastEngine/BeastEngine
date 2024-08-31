@@ -1,13 +1,13 @@
 add_library(
   BeastCommon
   INTERFACE
-  "Helpers.h"
-  "Types.h"
-  "Filesystem/Types.h"
-  "UUIDGenerator.h"
-  "Utils/Hasher.h"
-  "Utils/Xxh64.h"
-  "Id.h"
+  "Helpers.hpp"
+  "Types.hpp"
+  "Filesystem/Types.hpp"
+  "UUIDGenerator.hpp"
+  "Utils/Hasher.hpp"
+  "Utils/Xxh64.hpp"
+  "Id.hpp"
 )
 
 target_include_directories(BeastCommon INTERFACE "${BeastEngine_SOURCE_DIR}/src")

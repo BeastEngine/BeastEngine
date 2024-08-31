@@ -1,5 +1,5 @@
-#include "Beast/Graphics/D3D11/Graphics.h"
-#include "Beast/Graphics/D3D11/Utils.h"
+#include "Beast/Graphics/D3D11/Graphics.hpp"
+#include "Beast/Graphics/D3D11/Utils.hpp"
 
 namespace be::graphics::d3d11
 {
