@@ -2,8 +2,6 @@
 #include "Beast/Windows/Window.h"
 #include "Beast/BeastEngine.h"
 
-#include "Beast/Ecs/Ecs.h"
-
 #include "Beast/Common/Types.h"
 #include "Beast/Common/Helpers.h"
 #include "Beast/Math/Types.h"
@@ -50,8 +48,6 @@ namespace be
 
     protected:
         Unique<Window> m_window = nullptr;
-
-        Ecs m_ecs;
 
     private:
         Unique<BeastEngine> m_engine;

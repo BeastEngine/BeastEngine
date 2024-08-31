@@ -4,12 +4,6 @@
 #include <Beast/Common/Types.h>
 #include <Beast/Common/Utils/Hasher.h>
 
-#include <Beast/Ecs/Types.h>
-#include <Beast/Ecs/AccessList.h>
-#include <Beast/Ecs/View.h>
-#include <Beast/Ecs/SystemsScheduler.h>
-#include <Beast/Ecs/Components/Graphics.h>
-
 #include <entt/entt.hpp>
 
 #include <iostream>
@@ -26,34 +20,6 @@
 
 constexpr be::Id TEXTURE_ID = be::Id("Path/To/My/Texture");
 
-class Attacher
-{
-public:
-    struct AccessList : be::BaseAccessList
-    {
-        using Add = be::Components<be::Sprite, be::Transform>;
-    };
-
-    void Run(const be::View<AccessList>& view)
-    {
-        be::uint32 layer = 0;
-        for (std::size_t i = 0; i < 10; ++i)
-        {
-            const auto entity = view.CreateEntity();
-            view.AddComponent(
-                entity,
-                be::Sprite{
-                    .texture{.id = TEXTURE_ID, .uvCoords = {0.0f, 1.0f}},
-                    .material{.color{}},
-                    .layer = be::ToEnum<be::Layer>(layer),
-                }
-            );
-
-            layer = (layer + 1) % be::LAYERS_COUNT;
-        }
-    }
-};
-
 class BasicApplication final : public be::AApplication
 {
 public:
@@ -69,17 +35,8 @@ public:
     {
         GetEngine().PrintInfo();
 
-        auto& scheduler = m_ecs.scheduler;
-
-        auto group2 = scheduler.CreateGroup();
-        group2.AttachSystem<Attacher>();
-
         /*be::Shared<be::graphics::Graphics> graphics = GetEngine().CreateGraphics(be::graphics::RenderingApi::D3D11, *m_window);
         group2.AttachSystem<Renderer>(graphics);*/
-
-        auto group1 = scheduler.CreateGroup();
-
-        scheduler.Prepare({group2, group1});
 
         /*be::Vec2i previousCords = m_mouse->GetMousePosition();
         const auto& currentCoords = m_mouse->GetMousePosition();

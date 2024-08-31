@@ -15,13 +15,9 @@ add_executable(
   "DataStructuresTests.h"
   "Loggers/ConsoleLoggerTest.h"
   "Loggers/LoggerTest.h"
-  "Ecs/SystemsSchedulerTest.cpp"
   "Common/Utils/HasherTest.cpp"
   "Common/IdTest.cpp"
   "Input/InputTest.cpp"
-  "Ecs/WorldTest.cpp"
-  "Ecs/ViewTest.cpp"
-  "Ecs/SchedulerTest.cpp"
 )
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
 
