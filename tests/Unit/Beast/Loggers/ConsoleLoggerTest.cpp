@@ -1,6 +1,6 @@
-#include <Unit/Beast/Loggers/ConsoleLoggerTest.h>
+#include <Unit/Beast/Loggers/ConsoleLoggerTest.hpp>
 
-#include <Beast/Loggers/LoggersFactories.h>
+#include <Beast/Loggers/LoggersFactories.hpp>
 
 namespace be::tests::unit
 {

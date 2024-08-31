@@ -1,4 +1,4 @@
-#include <Beast/Common/Id.h>
+#include <Beast/Common/Id.hpp>
 
 #include <gtest/gtest.h>
 #include <unordered_set>

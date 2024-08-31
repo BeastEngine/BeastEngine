@@ -1,4 +1,4 @@
-#include "Beast/Loggers/LoggersFactories.h"
+#include "Beast/Loggers/LoggersFactories.hpp"
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>

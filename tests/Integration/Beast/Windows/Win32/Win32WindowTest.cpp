@@ -1,7 +1,7 @@
 #ifdef BE_ENABLE_WINDOWS_TESTS
-    #include <Integration/Beast/Windows/Win32/Win32WindowTest.h>
+    #include <Integration/Beast/Windows/Win32/Win32WindowTest.hpp>
 
-    #include <Beast/Windows/Win32/Win32Window.h>
+    #include <Beast/Windows/Win32/Win32Window.hpp>
 
 namespace be::tests::integration
 {

@@ -1,4 +1,4 @@
-#include <Beast/Input/Input.h>
+#include <Beast/Input/Input.hpp>
 
 #include <gtest/gtest.h>
 #include <iostream>

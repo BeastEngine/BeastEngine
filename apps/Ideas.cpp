@@ -1,11 +1,11 @@
 #if 0
 
-    #include "Beast/Common/IdGenerators/IUuIdGenerator.h"
-    #include "Beast/Common/Filesystem/Types.h"
+    #include "Beast/Common/IdGenerators/IUuIdGenerator.hpp"
+    #include "Beast/Common/Filesystem/Types.hpp"
     #include <span>
     #include <shared_mutex>
     #include <mutex>
-    #include "Beast/Debug.h"
+    #include "Beast/Debug.hpp"
 
 namespace be
 {
