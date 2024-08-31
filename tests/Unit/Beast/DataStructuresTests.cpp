@@ -1,7 +1,7 @@
-#include <Unit/Beast/DataStructuresTests.hpp>
+#include <Unit/Beast/DataStructuresTests.h>
 
-#include <Beast/DataStructures.hpp>
-#include <Beast/Common/Types.hpp>
+#include <Beast/DataStructures.h>
+#include <Beast/Common/Types.h>
 
 namespace be::tests::unit
 {

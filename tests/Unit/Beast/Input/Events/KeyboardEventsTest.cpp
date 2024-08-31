@@ -1,5 +1,5 @@
-#include <Beast/Input/Events/KeyboardEvents.hpp>
-#include <Beast/Input/InputCodes.hpp>
+#include <Beast/Input/Events/KeyboardEvents.h>
+#include <Beast/Input/InputCodes.h>
 
 #include <gtest/gtest.h>
 

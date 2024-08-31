@@ -1,6 +1,6 @@
-#include "Beast/Graphics/2DRenderer.hpp"
+#include "Beast/Graphics/2DRenderer.h"
 
-#include "Beast/Debug.hpp"
+#include "Beast/Debug.h"
 
 namespace be::graphics
 {

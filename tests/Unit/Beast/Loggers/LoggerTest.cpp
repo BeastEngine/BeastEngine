@@ -1,4 +1,4 @@
-#include <Unit/Beast/Loggers/LoggerTest.hpp>
+#include <Unit/Beast/Loggers/LoggerTest.h>
 
 namespace be::tests::unit
 {

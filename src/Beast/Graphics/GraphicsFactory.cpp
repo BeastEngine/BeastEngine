@@ -1,8 +1,8 @@
-#include "Beast/Graphics/GraphicsFactory.hpp"
-#include "Beast/Debug.hpp"
+#include "Beast/Graphics/GraphicsFactory.h"
+#include "Beast/Debug.h"
 
 #ifdef BE_PLATFORM_WINDOWS
-    #include "Beast/Graphics/D3D11/Graphics.hpp"
+    #include "Beast/Graphics/D3D11/Graphics.h"
 #endif
 
 namespace be::internals

@@ -1,7 +1,7 @@
-#include "Beast/Windows/Window.hpp"
+#include "Beast/Windows/Window.h"
 #ifdef BE_PLATFORM_WINDOWS
-    #include "Beast/Windows/Win32/Win32Window.hpp"
-    #include "Beast/Common/UUIDGenerator.hpp"
+    #include "Beast/Windows/Win32/Win32Window.h"
+    #include "Beast/Common/UUIDGenerator.h"
 
     #include <string>
 #else

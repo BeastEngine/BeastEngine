@@ -1,5 +1,5 @@
-#include <Beast/Input/Events/MouseEvents.hpp>
-#include <Beast/Input/InputCodes.hpp>
+#include <Beast/Input/Events/MouseEvents.h>
+#include <Beast/Input/InputCodes.h>
 
 #include <gtest/gtest.h>
 

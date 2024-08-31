@@ -1,8 +1,10 @@
-#include <Beast/EntryPoint.hpp>
-#include <Beast/BeastEngine.hpp>
-#include <Beast/Loggers/LoggersFactories.hpp>
-#include <Beast/Common/Types.hpp>
-#include <Beast/Common/Utils/Hasher.hpp>
+#include <Beast/EntryPoint.h>
+#include <Beast/BeastEngine.h>
+#include <Beast/Loggers/LoggersFactories.h>
+#include <Beast/Common/Types.h>
+#include <Beast/Common/Utils/Hasher.h>
+
+#include <entt/entt.hpp>
 
 #include <iostream>
 #include <vector>

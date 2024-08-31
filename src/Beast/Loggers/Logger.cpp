@@ -1,5 +1,5 @@
-#include "Beast/Loggers/Logger.hpp"
-#include "Beast/Debug.hpp"
+#include "Beast/Loggers/Logger.h"
+#include "Beast/Debug.h"
 
 namespace be
 {

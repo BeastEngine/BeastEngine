@@ -1,4 +1,4 @@
-#include "Beast/Application.hpp"
+#include "Beast/Application.h"
 
 namespace be
 {

@@ -1,6 +1,6 @@
-#include "Beast/Graphics/D3D11/Utils.hpp"
-#include "Beast/Graphics/D3D11/D3D11.hpp"
-#include "Beast/Graphics/D3D11/Buffer.hpp"
+#include "Beast/Graphics/D3D11/Utils.h"
+#include "Beast/Graphics/D3D11/D3D11.h"
+#include "Beast/Graphics/D3D11/Buffer.h"
 
 #include <d3dcompiler.h>
 

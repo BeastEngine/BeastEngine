@@ -1,6 +1,6 @@
-#include <Integration/FilesystemTestCase.hpp>
+#include <Integration/FilesystemTestCase.h>
 
-#include <Beast/Loggers/LoggersFactories.hpp>
+#include <Beast/Loggers/LoggersFactories.h>
 #include <set>
 
 namespace be::tests::integration
