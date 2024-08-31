@@ -1,11 +1,9 @@
 #pragma once
-#include "Beast/Ecs/Components/Core.h"
-#include "Beast/Ecs/Components/Graphics.h"
-
 #include "Beast/Graphics/IGraphics.h"
 #include "Beast/Graphics/Types.h"
 
 #include "Beast/Debug.h"
+#include "Beast/Math/Types.h"
 
 namespace be::graphics
 {
@@ -13,16 +11,15 @@ namespace be::graphics
     {
         struct Primitive
         {
-            Transform transform;
-            Texture texture;
-            Material material;
+            Vec2 position;
+            Color color;
         };
 
     public:
         explicit Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites);
 
         void StartFrame();
-        void AddSprite(const Transform& transform, const Sprite& sprite);
+        void AddSprite(const Vec2& position, const Color& color);
         void EndFrame(const Viewport& viewport);
 
     private:

@@ -2,8 +2,6 @@
 #include "Beast/Loggers/Logger.h"
 #include "Beast/Windows/Window.h"
 
-#include "Beast/Ecs/Ecs.h"
-
 #include "Beast/Common/Helpers.h"
 #include "Beast/Common/Types.h"
 

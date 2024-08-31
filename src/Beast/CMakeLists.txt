@@ -1,8 +1,18 @@
 add_subdirectory(Common)
 add_subdirectory(Graphics/D3D11/Shaders)
 
-set(BEAST_API_FILES
-    "Application.h"
+
+if(WIN32)
+  list(APPEND BEAST_SOURCES "beastengine.dll.manifest")
+endif()
+
+message(STATUS "${BEAST_SOURCES}")
+message(STATUS "${BEAST_API_FILES}")
+add_library(
+  BeastCore STATIC
+  "${BEAST_SOURCES}"
+  "${BEAST_API_FILES}"
+      "Application.h"
     "BeastEngine.h"
     "DataStructures.h"
     "Debug.h"
@@ -18,48 +28,24 @@ set(BEAST_API_FILES
     "Windows/Window.h"
     "EntryPoint.h"
     "Math/Types.h"
-    "Ecs/AccessList.h"
-    "Ecs/Types.h"
-    "Ecs/View.h"
-    "Ecs/World.h"
-    "Ecs/SystemsScheduler.h"
-    "Ecs/Ecs.h"
-)
-
-set(BEAST_SOURCES
-    "Application.cpp"
-    "BeastEngine.cpp"
-    "Loggers/Logger.cpp"
-    "Loggers/LoggersFactories.cpp"
-    "Windows/Win32/Win32Window.cpp"
-    "Windows/Win32/Win32Window.h"
-    "Ecs/SystemsScheduler.cpp"
-)
-
-if(WIN32)
-  list(APPEND BEAST_SOURCES "beastengine.dll.manifest")
-endif()
-
-message(STATUS "${BEAST_SOURCES}")
-message(STATUS "${BEAST_API_FILES}")
-add_library(
-  BeastCore STATIC
-  "${BEAST_SOURCES}"
-  "${BEAST_API_FILES}"
   "Graphics/D3D11/Debug.h"
   "Graphics/D3D11/Buffer.h"
   "Graphics/D3D11/D3D11.h"
   "Graphics/IGraphics.h"
   "Graphics/GraphicsFactory.h"
   "Graphics/GraphicsFactory.cpp"
-  "Ecs/Components/Core.h"
   "Graphics/2DRenderer.h"
   "Graphics/2DRenderer.cpp"
   "Graphics/D3D11/Shader.h"
   "Graphics/Types.h"
-  "Ecs/Components/Graphics.h"
   "Logging.h"
-  "Ecs.h"
+
+  "Application.cpp"
+    "BeastEngine.cpp"
+    "Loggers/Logger.cpp"
+    "Loggers/LoggersFactories.cpp"
+    "Windows/Win32/Win32Window.cpp"
+    "Windows/Win32/Win32Window.h"
   "Graphics/D3D11/Graphics.h"
   "Graphics/D3D11/Graphics.cpp"
   "Graphics/D3D11/Utils.h"
@@ -67,12 +53,6 @@ add_library(
   "Graphics/D3D11/RenderTarget.h"
   "Windows/Window.cpp"
   "Input/Input.h"
-  "Ecs/Scheduler.h"
-  "Ecs/Scheduler.cpp"
-  "Ecs/SystemFunction.h"
-  "Ecs/SystemFunction.cpp"
-  "Ecs/SystemsRunner.h"
-  "Ecs/SystemsRunner.cpp"
 )
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)

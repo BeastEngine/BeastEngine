@@ -7,7 +7,7 @@ namespace be::graphics
     Renderer2D::Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites)
         : m_graphics(std::move(graphics))
     {
-        const uint32 vertexCount = sizeof(Vertex) * 3 * maxNumberOfSprites;
+        const uint32 vertexCount = sizeof(Vertex) * 6 * maxNumberOfSprites;
         m_buffer = m_graphics->CreateVertexBuffer(VERTEX_STRIDE, vertexCount);
 
         be::graphics::InputLayout layout{
@@ -33,11 +33,11 @@ namespace be::graphics
         BE_DEBUG_EXPRESSION(m_hasFrameEnded = false);
     }
 
-    void Renderer2D::AddSprite(const Transform& transform, const Sprite& sprite)
+    void Renderer2D::AddSprite(const Vec2& position, const Color& color)
     {
         BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started before sprites can be added!");
 
-        Primitive primitive{.transform = transform, .texture = sprite.texture, .material = sprite.material};
+        Primitive primitive{.position = position, .color = color};
         m_framePrimitives.emplace_back(std::move(primitive));
     }
 
@@ -45,7 +45,7 @@ namespace be::graphics
     {
         BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started first, before it can be ended!");
         {
-            const uint32 verticesCount = static_cast<uint32>(m_framePrimitives.size() * 3u);
+            const uint32 verticesCount = static_cast<uint32>(m_framePrimitives.size() * 6u);
 
             std::vector<Vertex> vertices;
             vertices.reserve(verticesCount);
@@ -53,16 +53,28 @@ namespace be::graphics
             for (const auto& primitive : m_framePrimitives)
             {
                 vertices.emplace_back(Vertex{
-                    .position = Vec2{-0.1f, -0.1f} + primitive.transform.position,
-                    .color = primitive.material.color,
+                    .position = Vec2{-0.1f, -0.1f} + primitive.position,
+                    .color = primitive.color,
                 });
                 vertices.emplace_back(Vertex{
-                    .position = Vec2{0.0f, 0.1f} + primitive.transform.position,
-                    .color = primitive.material.color,
+                    .position = Vec2{-0.1f, 0.1f} + primitive.position,
+                    .color = primitive.color,
                 });
                 vertices.emplace_back(Vertex{
-                    .position = Vec2{0.1f, -0.1f} + primitive.transform.position,
-                    .color = primitive.material.color,
+                    .position = Vec2{0.1f, 0.1f} + primitive.position,
+                    .color = primitive.color,
+                });
+                vertices.emplace_back(Vertex{
+                    .position = Vec2{-0.1f, -0.1f} + primitive.position,
+                    .color = primitive.color,
+                });
+                vertices.emplace_back(Vertex{
+                    .position = Vec2{0.1f, 0.1f} + primitive.position,
+                    .color = primitive.color,
+                });
+                vertices.emplace_back(Vertex{
+                    .position = Vec2{0.1f, -0.1f} + primitive.position,
+                    .color = primitive.color,
                 });
             }
             m_graphics->UpdateVertexBuffer(m_buffer, vertices);
@@ -74,7 +86,7 @@ namespace be::graphics
             pipeline.viewport = viewport;
             pipeline.drawCall.vertexCount = verticesCount;
 
-            m_graphics->Clear({0.6f, 0.2f, 0.3f, 1.0f});
+            m_graphics->Clear({0.35f, 0.35f, 0.35f, 1.0f});
             m_graphics->Draw(pipeline);
             m_graphics->Present();
         }
