@@ -19,6 +19,11 @@ namespace be::graphics
         float a = 1.0f;
     };
 
+    struct Sprite
+    {
+        Color color;
+    };
+
     struct Vertex
     {
         Vec2 position;
@@ -34,6 +39,11 @@ namespace be::graphics
     };
 
     struct VertexBuffer
+    {
+        Id id;
+    };
+
+    struct ConstantBuffer
     {
         Id id;
     };
@@ -64,5 +74,10 @@ namespace be::graphics
     struct PixelShader
     {
         Id id;
+    };
+
+    struct Viewport
+    {
+        Vec2 dimensions;
     };
 } // namespace be::graphics

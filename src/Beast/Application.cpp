@@ -10,14 +10,7 @@ namespace be
 
     void AApplication::Start()
     {
-        try
-        {
-            m_engine->PrintInfo();
-            Run();
-        }
-        catch (const std::exception& error)
-        {
-            BE_DISPLAY_ERROR(error);
-        }
+        m_engine->PrintInfo();
+        Run();
     }
 } // namespace be

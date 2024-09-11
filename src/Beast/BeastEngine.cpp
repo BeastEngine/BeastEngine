@@ -36,12 +36,12 @@ namespace be
 
     void BeastEngine::SetLogger(EngineConfig& config)
     {
-        internals::LoggerPtr logger = std::move(config.logger);
+        LoggerPtr logger = std::move(config.logger);
         if (logger == nullptr)
         {
             logger = ConsoleLogger::Create(DEFAULT_LOGGER_NAME);
         }
 
-        internals::StaticLogger::SetLogger(std::move(logger));
+        StaticLogger::SetLogger(std::move(logger));
     }
 } // namespace be

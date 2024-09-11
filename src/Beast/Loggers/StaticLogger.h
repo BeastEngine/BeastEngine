@@ -9,7 +9,7 @@ namespace be
     class BeastEngine;
 }
 
-namespace be::internals
+namespace be
 {
     using LoggerPtr = Shared<Logger>;
     class StaticLogger final
@@ -69,4 +69,4 @@ namespace be::internals
     private:
         inline static LoggerPtr m_logger = nullptr;
     };
-} // namespace be::internals
+} // namespace be

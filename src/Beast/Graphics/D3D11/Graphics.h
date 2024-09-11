@@ -16,10 +16,12 @@ namespace be::graphics::d3d11
 
     private:
         graphics::VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) override;
+        graphics::ConstantBuffer CreateConstantBuffer(uint32 size) override;
         graphics::VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) override;
         graphics::PixelShader CreatePixelShader(const FilesystemPath& filepath) override;
 
         void UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) override;
+        void UpdateConstantBuffer(graphics::ConstantBuffer buffer, const void* const data) override;
 
         void Draw(const Pipeline& pipeline) override;
         void Clear(const Color& color) override;
@@ -30,6 +32,7 @@ namespace be::graphics::d3d11
         d3d11::RenderTarget m_renderTarget;
 
         std::vector<d3d11::VertexBuffer> m_vertexBuffers;
+        std::vector<d3d11::ConstantBuffer> m_constantBuffers;
         std::vector<d3d11::VertexShader> m_vertexShaders;
         std::vector<d3d11::PixelShader> m_pixelShaders;
     };

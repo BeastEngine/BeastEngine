@@ -4,7 +4,7 @@
 
 #include <format>
 
-namespace be::internals
+namespace be
 {
 #ifndef BE_DEBUG_MESSAGE
     #define BE_DEBUG_MESSAGE(message) "[{}:{}] *** " message " ***", __FILE__, __LINE__
@@ -13,7 +13,7 @@ namespace be::internals
 #ifndef BE_DEBUG_LOG_INFO
     #ifdef BE_DEBUGGING_INFO_ENABLED
         #define BE_DEBUG_LOG_INFO(message, ...) \
-            internals::StaticLogger::LogInfo(BE_DEBUG_MESSAGE(message), __VA_ARGS__);
+            be::StaticLogger::LogInfo(BE_DEBUG_MESSAGE(message), __VA_ARGS__);
     #else
         #define BE_DEBUG_LOG_INFO(message, ...)
     #endif
@@ -22,7 +22,7 @@ namespace be::internals
 #ifndef BE_DEBUG_LOG_WARNING
     #ifdef BE_DEBUGGING_INFO_ENABLED
         #define BE_DEBUG_LOG_WARNING(message, ...) \
-            internals::StaticLogger::LogWarning(BE_DEBUG_MESSAGE(message), __VA_ARGS__)
+            be::StaticLogger::LogWarning(BE_DEBUG_MESSAGE(message), __VA_ARGS__)
     #else
         #define BE_DEBUG_LOG_WARNING(message, ...)
     #endif
@@ -31,7 +31,7 @@ namespace be::internals
 #ifndef BE_DEBUG_LOG_ERROR
     #ifdef BE_DEBUGGING_INFO_ENABLED
         #define BE_DEBUG_LOG_ERROR(message, ...) \
-            internals::StaticLogger::LogError(message, __VA_ARGS__)
+            be::StaticLogger::LogError(message, __VA_ARGS__)
     #else
         #define BE_DEBUG_LOG_ERROR(message, ...)
     #endif
@@ -40,7 +40,7 @@ namespace be::internals
 #ifndef BE_DEBUG_LOG_FATAL_ERROR
     #ifdef BE_DEBUGGING_INFO_ENABLED
         #define BE_DEBUG_LOG_FATAL_ERROR(message, ...) \
-            internals::StaticLogger::LogFatalError(BE_DEBUG_MESSAGE(message), __VA_ARGS__)
+            be::StaticLogger::LogFatalError(BE_DEBUG_MESSAGE(message), __VA_ARGS__)
     #else
         #define BE_DEBUG_LOG_FATAL_ERROR(message, ...)
     #endif
@@ -115,4 +115,4 @@ namespace be::internals
         std::filesystem::path errorMessage{error.what()}; \
         MessageBox(NULL, errorMessage.wstring().c_str(), nullptr, MB_OK);
 #endif
-} // namespace be::internals
+} // namespace be

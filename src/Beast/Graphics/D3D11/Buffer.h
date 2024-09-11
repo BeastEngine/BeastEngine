@@ -45,4 +45,31 @@ namespace be::graphics::d3d11
         uint32 m_stride = VERTEX_STRIDE;
         uint32 m_size = 0;
     };
+
+    class ConstantBuffer final
+    {
+    public:
+        ConstantBuffer(wrl::ComPtr<ID3D11Buffer> buffer, uint32 size)
+            : m_bufferPtr(std::move(buffer)), m_size(size)
+        {}
+
+        void Update(ID3D11DeviceContext& context, const void* const data) const
+        {
+            D3D11_MAPPED_SUBRESOURCE subresource{};
+            BE_DX_CALL(context.Map(m_bufferPtr.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &subresource));
+            {
+                memcpy(subresource.pData, data, m_size);
+            }
+            context.Unmap(m_bufferPtr.Get(), 0);
+        }
+
+        ID3D11Buffer* const* Address() const noexcept
+        {
+            return m_bufferPtr.GetAddressOf();
+        }
+
+    private:
+        wrl::ComPtr<ID3D11Buffer> m_bufferPtr;
+        uint32 m_size;
+    };
 } // namespace be::graphics::d3d11

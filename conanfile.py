@@ -7,10 +7,9 @@ class BeastEngine(ConanFile):
     requires = [
         "spdlog/1.12.0",
         "gtest/1.12.1",
-        "glm/0.9.9.8",
+        "glm/1.0.1",
         "stduuid/1.2.2",
         "xxhash/0.8.1",
-        "entt/3.12.2",
     ]
     generators = ["CMakeDeps", "CMakeToolchain"]
 

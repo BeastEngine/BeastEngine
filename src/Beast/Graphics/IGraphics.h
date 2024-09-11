@@ -12,11 +12,6 @@ namespace be
 
 namespace be::graphics
 {
-    struct Viewport
-    {
-        Vec2 dimensions;
-    };
-
     struct Pipeline
     {
         struct VSStage
@@ -40,6 +35,8 @@ namespace be::graphics
         PSStage pixelShaderStage;
         Viewport viewport;
 
+        ConstantBuffer constantBuffer;
+
         DrawCall drawCall;
     };
 
@@ -51,10 +48,12 @@ namespace be::graphics
         virtual ~IGraphics() = default;
 
         virtual VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) = 0;
+        virtual ConstantBuffer CreateConstantBuffer(uint32 size) = 0;
         virtual VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) = 0;
         virtual PixelShader CreatePixelShader(const FilesystemPath& filepath) = 0;
 
         virtual void UpdateVertexBuffer(VertexBuffer buffer, std::span<const Vertex> verticies) = 0;
+        virtual void UpdateConstantBuffer(ConstantBuffer buffer, const void* const data) = 0;
 
         virtual void Draw(const Pipeline& pipeline) = 0;
         virtual void Clear(const Color& color) = 0;

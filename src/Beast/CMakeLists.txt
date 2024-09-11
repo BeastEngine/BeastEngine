@@ -53,15 +53,22 @@ add_library(
   "Graphics/D3D11/RenderTarget.h"
   "Windows/Window.cpp"
   "Input/Input.h"
-)
+ "Graphics/Camera2D.h" "Graphics/Camera2D.cpp")
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)
 
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
-find_package(entt REQUIRED)
 find_package(glm REQUIRED)
-target_link_libraries(BeastCore PUBLIC BE::common spdlog::spdlog fmt::fmt EnTT::EnTT glm::glm)
+target_link_libraries(
+    BeastCore
+    PUBLIC
+        BE::common
+        spdlog::spdlog
+        fmt::fmt
+        glm::glm
+        box2d::box2d
+)
 add_dependencies(BeastCore BeCoreShaders)
 
 set(BEAST_DEBUGGING_DEFINES $<$<CONFIG:Debug>:BE_DEBUG>)
@@ -73,7 +80,7 @@ if(${BE_ENABLE_ASSERTIONS})
   list(APPEND BEAST_DEBUGGING_DEFINES BE_ASSERTIONS_ENABLED)
 endif()
 
-target_compile_definitions(BeastCore PRIVATE ${BEAST_DEBUGGING_DEFINES})
+target_compile_definitions(BeastCore PUBLIC ${BEAST_DEBUGGING_DEFINES})
 
 # TODO: Remove when spdlog depends on at least fmt/10.1.1
 target_compile_definitions(BeastCore PUBLIC _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)
