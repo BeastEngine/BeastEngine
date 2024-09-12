@@ -18,7 +18,8 @@ add_executable(
   "Common/Utils/HasherTest.cpp"
   "Common/IdTest.cpp"
   "Input/InputTest.cpp"
- "Graphics/Camera2DTest.cpp")
+  "Graphics/Camera2DTest.cpp"
+)
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
 
 find_package(GTest REQUIRED)

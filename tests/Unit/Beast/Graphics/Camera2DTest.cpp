@@ -42,10 +42,11 @@ namespace be::tests::unit
         const Vec2 position = viewport.dimensions / 2.0f;
 
         const Mat4 expectedViewMatrix = {
-            0.0025f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0033333333f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, -1.0f, 0.0f, 1.0f};
+            0.0025f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0033333333f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, -1.0f, 0.0f, 1.0f
+        };
 
         graphics::Camera2D sut(viewport, position);
-        
+
         const auto actualViewMatrix = sut.GetViewMatrix();
         AssertMatrixEqual(expectedViewMatrix, actualViewMatrix);
     }
@@ -57,7 +58,8 @@ namespace be::tests::unit
 
         // after transforming by translationVector = { -100.0f,  -235.0f, 0.0f };
         const Mat4 expectedViewMatrix = {
-            0.0025f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0033333333f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.25f, -1.783333333f, 0.0f, 1.0f};
+            0.0025f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0033333333f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.25f, -1.783333333f, 0.0f, 1.0f
+        };
 
         graphics::Camera2D sut(viewport, position);
 
@@ -72,7 +74,8 @@ namespace be::tests::unit
         const float scale = -1.25;
 
         const Mat4 expectedViewMatrix = {
-            -0.003125f, 0.0f, 0.0f, 0.0f, 0.0f, -0.0041666666f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.25f, 1.25f, 0.0f, 1.0f};
+            -0.003125f, 0.0f, 0.0f, 0.0f, 0.0f, -0.0041666666f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.25f, 1.25f, 0.0f, 1.0f
+        };
 
         graphics::Camera2D sut(viewport, position);
         sut.Zoom(scale);

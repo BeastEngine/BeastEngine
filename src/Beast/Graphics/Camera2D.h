@@ -26,7 +26,7 @@ namespace be::graphics
 
         const Viewport& GetViewport() const noexcept;
         const Vec2& GetPosition() const noexcept;
-        
+
         /**
 		 * @brief Returns orthogonal camera transformation matrix
 		 *

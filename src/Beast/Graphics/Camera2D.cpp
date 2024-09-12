@@ -33,7 +33,7 @@ namespace be::graphics
     {
         const Mat4 orthoMatrix = glm::ortho(0.0f, m_viewport.dimensions.x, 0.0f, m_viewport.dimensions.y, 1.0f, -1.0f);
         const glm::vec2 translatedPosition = -m_position + (m_viewport.dimensions * 0.5f);
-        
+
         Mat4 viewMatrix = glm::translate(orthoMatrix, {translatedPosition.x, translatedPosition.y, 0.0f});
         return glm::scale(glm::mat4(1.0f), {m_zoom, m_zoom, 1.0f}) * viewMatrix;
     }
@@ -42,7 +42,7 @@ namespace be::graphics
     {
         return m_viewport;
     }
-    
+
     const Vec2& Camera2D::GetPosition() const noexcept
     {
         return m_position;
