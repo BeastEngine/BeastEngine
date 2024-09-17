@@ -8,9 +8,37 @@ namespace be::tests::unit
     class IdAllocatorTest : public testing::Test
     {
     protected:
-        const uint8 allocatorId = 0;
+        const IdAllocator::ID allocatorId{0};
         IdAllocator sut{allocatorId};
     };
+
+    TEST_F(IdAllocatorTest, ConstructorWillThrowIfInvalidIdGiven)
+    {
+        const IdAllocator::ID invalidId1{15};
+        ASSERT_ANY_THROW(IdAllocator{invalidId1});
+        
+        const IdAllocator::ID invalidId2{static_cast<uint8>(-1)};
+        ASSERT_ANY_THROW(IdAllocator{invalidId2});
+    }
+
+    TEST_F(IdAllocatorTest, ConstructorWillNotThrowIfIdsFromAvailableRangeGiven)
+    {
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_0});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_1});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_2});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_3});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_4});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_5});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_6});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_7});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_8});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_9});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_10});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_11});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_12});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_13});
+        ASSERT_NO_THROW(IdAllocator{IdAllocator::ID::ID_LAST});
+    }
 
     TEST_F(IdAllocatorTest, AllocateWillAllocateNewIdWithIncreasingIndexZeroVersionAndAllocatorId)
     {
@@ -95,8 +123,8 @@ namespace be::tests::unit
 
     TEST_F(IdAllocatorTest, IsValidWillReturnFalseForIdFromDifferentAllocator)
     {
-        const uint8 allocatorId0 = 0;
-        const uint8 allocatorId1 = 1;
+        const IdAllocator::ID allocatorId0{0};
+        const IdAllocator::ID allocatorId1{1};
 
         IdAllocator allocator0{allocatorId0};
         IdAllocator allocator1{allocatorId1};

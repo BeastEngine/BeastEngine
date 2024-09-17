@@ -1,20 +1,16 @@
 #pragma once
 #include "Beast/Common/IdAllocator.h"
+#include "Beast/Debug.h"
 
 namespace be
 {
-    static constexpr AllocatorAwareId CreateFromParts(uint32 index, uint16 version, uint8 allocator)
+    static constexpr AllocatorAwareId CreateFromParts(uint32 index, uint16 version, IdAllocator::ID allocator)
     {
         uint32 id = index;
         id |= version << AAID_VERSION_START_BIT;
-        id |= allocator << AAID_ALLOCATOR_START_BIT;
+        id |= ToUnderlying(allocator) << AAID_ALLOCATOR_START_BIT;
 
         return AllocatorAwareId{id};
-    }
-
-    static constexpr uint32 ExtractIndex(AllocatorAwareId id)
-    {
-        return ToUnderlying(id) & AAID_INDEX_MASK;
     }
 
     static constexpr uint16 ExtractVersion(AllocatorAwareId id)
@@ -22,18 +18,23 @@ namespace be
         return (ToUnderlying(id) >> AAID_VERSION_START_BIT) & AAID_VERSION_MASK;
     }
 
-    IdAllocator::IdAllocator(uint8 id)
+    IdAllocator::IdAllocator(IdAllocator::ID id)
         : m_id(id)
     {
+        const auto rawId = ToUnderlying(id);
+        if (rawId > ToUnderlying(IdAllocator::ID::ID_LAST))
+        {
+            throw std::runtime_error(std::format("Given {} id is not a valid id!", rawId));
+        }
     }
 
     AllocatorAwareId IdAllocator::Allocate()
     {
-        // TODO: Figure out how to check if we reached the limit.
-
         if (m_freeList.empty())
         {
             const uint32 index = static_cast<uint32>(m_ids.size());
+            BE_ASSERT_MSG_ALWAYS(index <= AAID_INDEX_MASK, "{}", "Tried to allocate new id, but there's no more available indices!");
+
             return m_ids.emplace_back(CreateFromParts(index, 0, m_id));
         }
 
@@ -53,12 +54,17 @@ namespace be
             throw std::runtime_error(std::format("Given {} id is not valid!", ToUnderlying(id)));
         }
 
-        // Extract current ID version and increase it by 1. This becomes a new revision
+        // Extract id's current version and increase it by 1. This becomes a new revision
         const uint32 index = ExtractIndex(id);
         const uint16 newVersion = ExtractVersion(id) + 1;
 
         m_freeList.emplace_back(CreateFromParts(index, newVersion, m_id));
         m_ids[index] = AAID_NULL;
+    }
+
+    uint32 IdAllocator::ExtractIndex(AllocatorAwareId id) const
+    {
+        return ToUnderlying(id) & AAID_INDEX_MASK;
     }
 
     bool IdAllocator::IsValid(AllocatorAwareId id) const
