@@ -24,9 +24,14 @@ namespace be
     {
     }
 
-    IdAllocator& IdAllocatorsFactory::Get(IdAllocator::ID allocatorId)
+    IdAllocator* IdAllocatorsFactory::TryGet(IdAllocator::ID allocatorId)
     {
-        BE_ASSERT_MSG(ToUnderlying(allocatorId) <= ToUnderlying(IdAllocator::ID::ID_LAST), "Tried to access allocator via invalid id: {}", ToUnderlying(allocatorId));
-        return m_allocators[ToUnderlying(allocatorId)];
+        if (ToUnderlying(allocatorId) > ToUnderlying(IdAllocator::ID::ID_LAST))
+        {
+            BE_ASSERT_MSG(false, "Tried to access allocator via invalid id: {}", ToUnderlying(allocatorId));
+            return nullptr;
+        }
+        
+        return &m_allocators[ToUnderlying(allocatorId)];
     }
 } // namespace be

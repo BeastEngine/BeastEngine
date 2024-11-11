@@ -11,7 +11,7 @@ namespace be
     {
     public:
         IdAllocatorsFactory();
-        [[nodiscard]] IdAllocator& Get(IdAllocator::ID allocatorId);
+        [[nodiscard]] IdAllocator* TryGet(IdAllocator::ID allocatorId);
 
     private:
         std::array<IdAllocator, ToUnderlying(IdAllocator::ID::ID_LAST) + 1> m_allocators;

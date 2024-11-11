@@ -47,6 +47,7 @@ namespace be
         [[nodiscard]] AllocatorAwareId Allocate();
         void Deallocate(AllocatorAwareId id);
 
+        // TODO: Write tests for this and add docs.
         uint32 ExtractIndex(AllocatorAwareId id) const;
 
         /**
