@@ -85,6 +85,22 @@ namespace be::graphics::d3d11
         return {std::move(buffer), stride, maxSize};
     }
 
+    ConstantBuffer CreateConstantBuffer(API& api, uint32 size)
+    {
+        D3D11_BUFFER_DESC bufferDescriptor = {
+            .ByteWidth = size,
+            .Usage = D3D11_USAGE_DYNAMIC,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+            .CPUAccessFlags = D3D11_CPU_ACCESS_WRITE,
+            .MiscFlags = 0,
+            .StructureByteStride = 0,
+        };
+        wrl::ComPtr<ID3D11Buffer> buffer;
+        BE_DX_CALL(api.Device().CreateBuffer(&bufferDescriptor, nullptr, &buffer));
+
+        return {std::move(buffer), size};
+    }
+
     VertexShader CreateVertexShader(API& api, const FilesystemPath& filepath, const InputLayout& inputLayout)
     {
         wrl::ComPtr<ID3D11VertexShader> shaderPtr;

@@ -27,15 +27,8 @@ namespace be
 
 BE_MAIN()
 {
-    try
-    {
-        auto application = be::CreateApplication(BE_WINDOW_HANDLE_INSTANCE);
-        application->Start();
-    }
-    catch (const std::exception& ex)
-    {
-        printf(ex.what());
-    }
+    auto application = be::CreateApplication(BE_WINDOW_HANDLE_INSTANCE);
+    application->Start();
 
     return 0;
 }

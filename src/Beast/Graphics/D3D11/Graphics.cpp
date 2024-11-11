@@ -21,6 +21,14 @@ namespace be::graphics::d3d11
         return graphics::VertexBuffer{.id = id};
     }
 
+    graphics::ConstantBuffer Graphics::CreateConstantBuffer(uint32 size)
+    {
+        m_constantBuffers.emplace_back(d3d11::CreateConstantBuffer(m_api, size));
+        Id id{m_constantBuffers.size() - 1};
+
+        return graphics::ConstantBuffer{.id = id};
+    }
+
     graphics::VertexShader Graphics::CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout)
     {
         m_vertexShaders.emplace_back(d3d11::CreateVertexShader(m_api, filepath, inputLayout));
@@ -42,6 +50,11 @@ namespace be::graphics::d3d11
         m_vertexBuffers.at(buffer.id.Raw()).Update(m_api.Context(), verticies);
     }
 
+    void Graphics::UpdateConstantBuffer(graphics::ConstantBuffer buffer, const void* const data)
+    {
+        m_constantBuffers.at(buffer.id.Raw()).Update(m_api.Context(), data);
+    }
+
     void Graphics::Draw(const Pipeline& pipeline)
     {
         auto& context = m_api.Context();
@@ -60,6 +73,9 @@ namespace be::graphics::d3d11
             const auto& shader = GetResource(m_vertexShaders, pipeline.vertexShaderStage.shader);
             context.IASetInputLayout(shader.Layout());
             context.VSSetShader(shader.Shader(), nullptr, 0u);
+
+            const auto& buffer = GetResource(m_constantBuffers, pipeline.constantBuffer);
+            context.VSSetConstantBuffers(0, 1, buffer.Address());
         }
 
         // PSStage

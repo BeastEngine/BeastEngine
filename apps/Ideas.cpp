@@ -129,5 +129,30 @@ namespace be
         graphics::Context* m_context;
         std::unordered_map<TextureId, TextureResource> m_textures;
     };
+
+
+    /**
+     * PHYSICS.
+     */
+    class Physics
+    {
+        DynamicRB CreateDynamicRigidBody(...)
+        {  
+            // Assert all have the same size, so that our index points to the same element in all arrays.
+            // This could be done by doing:
+            // dynamicRBs.rigidBodies.resize(index);
+            // etc.
+            DynamicRB index = GenerateIndex();
+            dynamicRBs.rigidBodies[index] = World.CreateRigidBody(...);
+            dynamicRBs.velocities[index] = Velocity(0.0f, 0.0f);
+            dynamicRBs.transforms[index] = ...;
+
+           return level.physics.dynamicRBs.create(World::CreateRigidBody(...), Velocity{0.0f, 0.0f});
+        }
+    };
+
+
+    for (std::size_t i = 0; i < )
+    world.level.physics.rigidBodies
 } // namespace be
 #endif

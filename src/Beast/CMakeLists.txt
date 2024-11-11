@@ -1,6 +1,4 @@
-add_subdirectory(Common)
 add_subdirectory(Graphics/D3D11/Shaders)
-
 
 if(WIN32)
   list(APPEND BEAST_SOURCES "beastengine.dll.manifest")
@@ -12,22 +10,22 @@ add_library(
   BeastCore STATIC
   "${BEAST_SOURCES}"
   "${BEAST_API_FILES}"
-      "Application.h"
-    "BeastEngine.h"
-    "DataStructures.h"
-    "Debug.h"
-    "Input/Events/Events.h"
-    "Input/Events/KeyboardEvents.h"
-    "Input/Events/MouseEvents.h"
-    "Input/InputCodes.h"
-    "Loggers/Logger.h"
-    "Loggers/LoggersFactories.h"
-    "Loggers/StaticLogger.h"
-    "PlatformSetup.h"
-    "Versions.h"
-    "Windows/Window.h"
-    "EntryPoint.h"
-    "Math/Types.h"
+  "Application.h"
+  "BeastEngine.h"
+  "DataStructures.h"
+  "Debug.h"
+  "Input/Events/Events.h"
+  "Input/Events/KeyboardEvents.h"
+  "Input/Events/MouseEvents.h"
+  "Input/InputCodes.h"
+  "Loggers/Logger.h"
+  "Loggers/LoggersFactories.h"
+  "Loggers/StaticLogger.h"
+  "PlatformSetup.h"
+  "Versions.h"
+  "Windows/Window.h"
+  "EntryPoint.h"
+  "Math/Types.h"
   "Graphics/D3D11/Debug.h"
   "Graphics/D3D11/Buffer.h"
   "Graphics/D3D11/D3D11.h"
@@ -39,13 +37,12 @@ add_library(
   "Graphics/D3D11/Shader.h"
   "Graphics/Types.h"
   "Logging.h"
-
   "Application.cpp"
-    "BeastEngine.cpp"
-    "Loggers/Logger.cpp"
-    "Loggers/LoggersFactories.cpp"
-    "Windows/Win32/Win32Window.cpp"
-    "Windows/Win32/Win32Window.h"
+  "BeastEngine.cpp"
+  "Loggers/Logger.cpp"
+  "Loggers/LoggersFactories.cpp"
+  "Windows/Win32/Win32Window.cpp"
+  "Windows/Win32/Win32Window.h"
   "Graphics/D3D11/Graphics.h"
   "Graphics/D3D11/Graphics.cpp"
   "Graphics/D3D11/Utils.h"
@@ -53,15 +50,33 @@ add_library(
   "Graphics/D3D11/RenderTarget.h"
   "Windows/Window.cpp"
   "Input/Input.h"
+  "Graphics/Camera2D.h"
+  "Graphics/Camera2D.cpp"
+  "Physics/World.h"
+  "Physics/Types.h"
+  "Physics/World.cpp"
+  "Common/Helpers.h"
+  "Common/Types.h"
+  "Common/Filesystem/Types.h"
+  "Common/UUIDGenerator.h"
+  "Common/Utils/Hasher.h"
+  "Common/Utils/Xxh64.h"
+  "Common/Id.h"
+  "Common/AllocatorAwareId.h"
+  "Common/IdAllocator.h"
+  "Common/IdAllocator.cpp"
+  "Common/IdAllocatorsFactory.h"
+  "Common/IdAllocatorsFactory.cpp"
 )
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)
 
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
-find_package(entt REQUIRED)
 find_package(glm REQUIRED)
-target_link_libraries(BeastCore PUBLIC BE::common spdlog::spdlog fmt::fmt EnTT::EnTT glm::glm)
+find_package(xxHash REQUIRED)
+find_package(stduuid REQUIRED)
+target_link_libraries(BeastCore PUBLIC spdlog::spdlog fmt::fmt glm::glm box2d::box2d xxHash::xxhash stduuid::stduuid)
 add_dependencies(BeastCore BeCoreShaders)
 
 set(BEAST_DEBUGGING_DEFINES $<$<CONFIG:Debug>:BE_DEBUG>)
@@ -73,7 +88,7 @@ if(${BE_ENABLE_ASSERTIONS})
   list(APPEND BEAST_DEBUGGING_DEFINES BE_ASSERTIONS_ENABLED)
 endif()
 
-target_compile_definitions(BeastCore PRIVATE ${BEAST_DEBUGGING_DEFINES})
+target_compile_definitions(BeastCore PUBLIC ${BEAST_DEBUGGING_DEFINES})
 
 # TODO: Remove when spdlog depends on at least fmt/10.1.1
 target_compile_definitions(BeastCore PUBLIC _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING)

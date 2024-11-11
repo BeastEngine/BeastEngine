@@ -7,6 +7,8 @@
 
 namespace be::graphics
 {
+    class Camera2D;
+
     class Renderer2D final
     {
         struct Primitive
@@ -19,8 +21,8 @@ namespace be::graphics
         explicit Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites);
 
         void StartFrame();
-        void AddSprite(const Vec2& position, const Color& color);
-        void EndFrame(const Viewport& viewport);
+        void AddSprite(const Vec2& position, const Sprite& sprite);
+        void EndFrame(const Camera2D& camera);
 
     private:
         be::Unique<IGraphics> m_graphics;
@@ -33,5 +35,6 @@ namespace be::graphics
         VertexBuffer m_buffer;
         VertexShader m_vertexShader;
         PixelShader m_pixelShader;
+        ConstantBuffer m_cameraCBuffer;
     };
 } // namespace be::graphics

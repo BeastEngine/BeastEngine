@@ -14,6 +14,7 @@ namespace be::graphics::d3d11
     RenderTarget CreateRenderTarget(API& api);
 
     VertexBuffer CreateVertexBuffer(API& api, uint32 stride, uint32 maxSize);
+    ConstantBuffer CreateConstantBuffer(API& api, uint32 size);
     VertexShader CreateVertexShader(API& api, const FilesystemPath& filepath, const InputLayout& inputLayout);
     PixelShader CreatePixelShader(API& api, const FilesystemPath& filepath);
 } // namespace be::graphics::d3d11

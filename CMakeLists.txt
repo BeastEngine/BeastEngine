@@ -14,6 +14,8 @@ project(
     LANGUAGES CXX
 )
 
+set(CMAKE_COMPILE_WARNING_AS_ERROR OFF)
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_INSTALL_PREFIX "${${PROJECT_MAIN_NAME}_SOURCE_DIR}")
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -41,10 +43,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     option(BUILD_WIN32_TESTS "Build integration tests for Win32 components" ${BUILD_WIN32_TESTS_VALUE})
 
     if (BE_ENABLE_DEBUG_INFO)
-        set(CT_COMMON_ENABLE_DEBUG TRUE)
+        set(BE_COMMON_ENABLE_DEBUG TRUE)
     endif()
 endif()
 
+add_subdirectory(extern)
 add_subdirectory(src/Beast)
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     add_subdirectory(apps) # Add executable
