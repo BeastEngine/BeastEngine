@@ -31,7 +31,7 @@ namespace be
             BE_ASSERT_MSG(false, "Tried to access allocator via invalid id: {}", ToUnderlying(allocatorId));
             return nullptr;
         }
-        
+
         return &m_allocators[ToUnderlying(allocatorId)];
     }
 } // namespace be

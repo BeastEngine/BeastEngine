@@ -16,4 +16,4 @@ namespace be
     private:
         std::array<IdAllocator, ToUnderlying(IdAllocator::ID::ID_LAST) + 1> m_allocators;
     };
-}
+} // namespace be

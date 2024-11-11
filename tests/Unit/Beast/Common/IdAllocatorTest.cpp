@@ -16,7 +16,7 @@ namespace be::tests::unit
     {
         const IdAllocator::ID invalidId1{15};
         ASSERT_ANY_THROW(IdAllocator{invalidId1});
-        
+
         const IdAllocator::ID invalidId2{static_cast<uint8>(-1)};
         ASSERT_ANY_THROW(IdAllocator{invalidId2});
     }

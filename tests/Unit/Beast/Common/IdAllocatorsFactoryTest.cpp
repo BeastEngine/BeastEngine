@@ -45,7 +45,7 @@ namespace be::tests::unit
             IdAllocator* alloc = sut.TryGet(allocatorId);
             return alloc != nullptr;
         };
-        
+
         ASSERT_TRUE(CanGetAllocator(IdAllocator::ID::ID_0));
         ASSERT_TRUE(CanGetAllocator(IdAllocator::ID::ID_1));
         ASSERT_TRUE(CanGetAllocator(IdAllocator::ID::ID_2));

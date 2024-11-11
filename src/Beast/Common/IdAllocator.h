@@ -38,7 +38,7 @@ namespace be
 
     public:
         explicit IdAllocator(ID id);
-        
+
         /**
          * @brief Allocates id.
          * Will reuse previously deallocated ids first. Internally, it stores a free list with deallocated ids and pops ids from there before allocating a new one.
@@ -63,4 +63,4 @@ namespace be
         std::vector<AllocatorAwareId> m_freeList;
         ID m_id;
     };
-}
+} // namespace be

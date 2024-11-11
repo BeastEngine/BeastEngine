@@ -62,8 +62,12 @@ add_library(
   "Common/Utils/Hasher.h"
   "Common/Utils/Xxh64.h"
   "Common/Id.h"
- "Common/AllocatorAwareId.h" 
- "Common/IdAllocator.h" "Common/IdAllocator.cpp" "Common/IdAllocatorsFactory.h" "Common/IdAllocatorsFactory.cpp")
+  "Common/AllocatorAwareId.h"
+  "Common/IdAllocator.h"
+  "Common/IdAllocator.cpp"
+  "Common/IdAllocatorsFactory.h"
+  "Common/IdAllocatorsFactory.cpp"
+)
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)
 

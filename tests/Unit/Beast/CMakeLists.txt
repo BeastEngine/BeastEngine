@@ -19,7 +19,9 @@ add_executable(
   "Common/IdTest.cpp"
   "Input/InputTest.cpp"
   "Graphics/Camera2DTest.cpp"
- "Common/IdAllocatorTest.cpp" "Common/IdAllocatorsFactoryTest.cpp")
+  "Common/IdAllocatorTest.cpp"
+  "Common/IdAllocatorsFactoryTest.cpp"
+)
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
 
 find_package(GTest REQUIRED)
