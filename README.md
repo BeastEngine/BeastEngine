@@ -44,18 +44,31 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-BeastEngine is a C++17 game engine created with 2D Action-RPG games in mind.
+BeastEngine is a C++20 game engine created with 2D Action-RPG games in mind. It's a hobby project developed out of interest in game engines.
 
 ### Motivation
-I've always been passionate about game engines, and that's why I am creating my own from scratch. I have already been working on a game engine before, but I didn't have a clear vision on how to build it and eventually it became a playground for discovering `OpenGL` aspects, and rendering in general. I no longer work on it, but you can find this project [here](https://bitbucket.org/bearengine/bearenginegraphics/src/master/).
+
+I have been passionate about game engines since I stared programming. I quickly started creating my own game engine, with hopes of making something great. Quickly though, I realized I didn't have a clear vision on how to build it, and it eventually became a playground for experimenting with `OpenGL`, rendering, animations, and other aspects of game engine development. Although I haven't worked on it for a couple of years now, the project is still available online and can be found [here](https://bitbucket.org/bearengine/bearenginegraphics/src/master/).
+
+The current incarnation of BeastEngine is a spiritual successor of the previous project - this time with much smaller ambitions. I'm creating it for fun, without any specific milestones or goals. I jump in and out of the codebase whenever I feel like it.
 
 ### Supported Platforms
-Currently, the project has only been built and tested on:
-
- - Windows 10 + MSVC
+As I work on Windows, naturally the project currently only supports Windows.
 
 <!-- GETTING STARTED -->
 ## Building The Project
+
+### Prerequisites
+
+In order to build the project locally, you need a couple of things:
+
+ * C++20-compatible MSVC compiler
+ * CMake
+ * Conan package manager
+
+For making the development easier.
+# TODO: Write about BeastSDK, Python12, PIPX and that Cmake and conan come bundled with SDK.
+
 This project is based on the [BasicCppSetup](https://github.com/ComaszTyrulik/BasicCppSetup). Please refer to the [`Getting Started`](https://github.com/ComaszTyrulik/BasicCppSetup#getting-started) section of the `BasicCppSetup` project to find out how to build the `BeastEngine`.
 
 ### Additional Info
