@@ -12,48 +12,21 @@
   <h3 align="center">BeastEngine</h3>
 </p>
 
-
-
-<!-- TABLE OF CONTENTS -->
-<details open="open">
-	<summary>Table of Contents</summary>
-	<ol>
-	    <li>
-	        <a href="#about-the-project">About The Project</a>
-	        <ul>
-	            <li><a href="#motivation">Motivation</a></li>
-	        </ul>
-	        <ul>
-	            <li><a href="#supported-platforms">Supported Platforms</a></li>
-	        </ul>
-	    </li>
-	    <li>
-	        <a href="#building-the-project">Building The Project</a>
-	        <ul>
-	            <li><a href="#additional-info">Additional Info</a></li>
-	        </ul>
-	    </li>
-	    <li><a href="#roadmap">Roadmap</a></li>
-	    <li><a href="#license">License</a></li>
-	    <li><a href="#acknowledgements">Acknowledgements</a></li>
-	</ol>
-</details>
-
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-BeastEngine is a C++20 game engine created with 2D Action-RPG games in mind. It's a hobby project developed out of interest in game engines.
+BeastEngine is a 2D game engine created with Action-RPG games in mind. It's a hobby project developed out of interest in game engines.
 
-### Motivation
+### History and Motivation
 
-I have been passionate about game engines since I stared programming. I quickly started creating my own game engine, with hopes of making something great. Quickly though, I realized I didn't have a clear vision on how to build it, and it eventually became a playground for experimenting with `OpenGL`, rendering, animations, and other aspects of game engine development. Although I haven't worked on it for a couple of years now, the project is still available online and can be found [here](https://bitbucket.org/bearengine/bearenginegraphics/src/master/).
+I have been passionate about game engines since I started programming. Early in my programming career, I attempted to create my first game engine, with the hope of producing something great. Quickly, though, I realized I didn't have a clear vision or enough skill to build it, so it eventually became a playground for experimenting with `OpenGL`, rendering, animations, and other aspects of game engine development. I had a lot of fun, and I learnt a lot. Although I haven't worked on it for a couple of years now, the project is still available online and can be found [here](https://bitbucket.org/bearengine/bearenginegraphics/src/master/).
 
-The current incarnation of BeastEngine is a spiritual successor of the previous project - this time with much smaller ambitions. I'm creating it for fun, without any specific milestones or goals. I jump in and out of the codebase whenever I feel like it.
+The current incarnation of BeastEngine is a spiritual successor to the previous project - this time with much smaller ambitions. I want to have fun with creating it, without any specific milestones or goals. I jump in and out of the codebase whenever I feel like it.
+
+The features I add are focused on 2D games. I wish to have some demo game(s) eventually, but I don't expect any full-fledged productions running on BeastEngine.
 
 ### Supported Platforms
-As I work on Windows, naturally the project currently only supports Windows.
+Currently, the project only supports Windows with DirectX 11.
 
 <!-- GETTING STARTED -->
 ## Building The Project
@@ -66,23 +39,35 @@ In order to build the project locally, you need a couple of things:
  * CMake
  * Conan package manager
 
-For making the development easier.
-# TODO: Write about BeastSDK, Python12, PIPX and that Cmake and conan come bundled with SDK.
+For making the development easier, I use [BeastSDK](https://github.com/BeastEngine/BeastSDK) - a set of Python scripts that make my life easier.
+
+`BeastSDK` comes with CMake and Conan bundled, so you don't have to install them yourself. The SDK is a Python-base application, so the recommended way is to install via a tool like [pipx](https://pipx.pypa.io/stable/installation/) to have it accessible globally.
+
+> NOTE: BeastSDK requires at least Python 3.12.
 
 This project is based on the [BasicCppSetup](https://github.com/ComaszTyrulik/BasicCppSetup). Please refer to the [`Getting Started`](https://github.com/ComaszTyrulik/BasicCppSetup#getting-started) section of the `BasicCppSetup` project to find out how to build the `BeastEngine`.
 
-### Additional Info
-`BeastEngine` uses all `CMake` options provided by the `BasicCppSetup`, but also defines additional options that can alter the build process.
+### Conan and CMake
 
-#### CMake Options:
-| Name | Default|Description|
-|------|--------|-----------|
-|`BE_ENABLE_DEBUG_INFO`|ON|If ON, `BeastEngine` will contain definitions of debugging utilities, such as debug logging. It will also include additional debug information in exceptions. See [`Debugging.h`](https://github.com/BeastEngine/BeastEngine/blob/develop/include/BeastEngine/Core/Debugging.h) for example.|
-|`BE_ENABLE_ASSERTIONS`|ON|If ON, `BeastEngine` will contain definitions of debugging assertions. See [`Assertions.h`](https://github.com/BeastEngine/BeastEngine/blob/develop/include/BeastEngine/Core/Assertions.h) for example.|
-|`BUILD_WIN32_TESTS`|Platform dependent|BeastCoreIntegration target contains integration tests for BeastEngine. Among those tests there are ones which test [`Win32Window`](https://github.com/BeastEngine/BeastEngine/blob/develop/include/BeastEngine/Core/Windows/Win32/Win32Window.h) class. Those tests can be time consuming so you can exclude them from build. This value is by default set to `ON` on `Windows` and `OFF` on other platforms.|
+The project uses the [Conan package manager](https://conan.io/) for managing dependencies.
+Running the `beast install` command from the root of the project installs all C++ dependencies and creates the `CMakeUserPresets.json` file.
 
-## Roadmap
-I haven't created a specific roadmap for the project yet, but I am using [Trello](https://trello.com/) for keeping track of tasks and TODOs. You can find the board [here](https://trello.com/b/Rj73uWjS/beastengine).
+The presets file (as of writing this text) contains only a single `conan-default` configuration preset, and `conan-debug`, `conan-release`, `conan-minsizerel`, and `conan-relwithdebinfo` build presets.
+
+To configure and build the project, you need the following:
+
+```bash
+# Install all dependencies using BeastSDK
+beast install
+
+# Configure the project
+cmake --preset conan-default
+
+# Build the project
+cmake --build --preset conan-debug
+```
+
+> NOTE: For altering the build options, see the root [CMakeLists.txt](CMakeLists.txt) file.
 
 ## License
 Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
@@ -94,4 +79,4 @@ Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information
 [license-shield]: https://img.shields.io/github/license/othneildrew/Best-README-Template.svg?style=for-the-badge
 [license-url]: LICENSE
 [board-shield]: https://img.shields.io/badge/PROJECT-BOARD-blue?style=for-the-badge&logo=trello
-[board-url]: https://trello.com/b/Rj73uWjS/beastengine
+[board-url]: https://github.com/orgs/BeastEngine/projects/1
