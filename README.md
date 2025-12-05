@@ -19,11 +19,11 @@ BeastEngine is a 2D game engine created with Action-RPG games in mind. It's a ho
 
 ### History and Motivation
 
-I have been passionate about game engines since I started programming. Early in my programming career, I attempted to create my first game engine, with the hope of producing something great. Quickly, though, I realized I didn't have a clear vision or enough skill to build it, so it eventually became a playground for experimenting with `OpenGL`, rendering, animations, and other aspects of game engine development. I had a lot of fun, and I learnt a lot. Although I haven't worked on it for a couple of years now, the project is still available online and can be found [here](https://bitbucket.org/bearengine/bearenginegraphics/src/master/).
+I have been passionate about games and game engines since I started programming. Early in my programming career, I attempted to create my own game engine, with the hope of producing something great. Quickly, though, I realized I didn't have a clear vision or enough skill to build it, so it eventually became a playground for experimenting with `OpenGL`, rendering, animations, and other aspects of game engine development. I had a lot of fun, and I learnt a lot. Although I haven't worked on it for a couple of years now, the project is still available online and can be found [here](https://bitbucket.org/bearengine/bearenginegraphics/src/master/).
 
 The current incarnation of BeastEngine is a spiritual successor to the previous project - this time with much smaller ambitions. I want to have fun with creating it, without any specific milestones or goals. I jump in and out of the codebase whenever I feel like it.
 
-The features I add are focused on 2D games. I wish to have some demo game(s) eventually, but I don't expect any full-fledged productions running on BeastEngine.
+The features I add are focused on 2D games. I wish to have some demo game(s) eventually, but I don't expect any full-fledged productions running on BeastEngine (at least in a recent future).
 
 ### Supported Platforms
 Currently, the project only supports Windows with DirectX 11.
@@ -44,8 +44,6 @@ For making the development easier, I use [BeastSDK](https://github.com/BeastEngi
 `BeastSDK` comes with CMake and Conan bundled, so you don't have to install them yourself. The SDK is a Python-base application, so the recommended way is to install via a tool like [pipx](https://pipx.pypa.io/stable/installation/) to have it accessible globally.
 
 > NOTE: BeastSDK requires at least Python 3.12.
-
-This project is based on the [BasicCppSetup](https://github.com/ComaszTyrulik/BasicCppSetup). Please refer to the [`Getting Started`](https://github.com/ComaszTyrulik/BasicCppSetup#getting-started) section of the `BasicCppSetup` project to find out how to build the `BeastEngine`.
 
 ### Conan and CMake
 
@@ -68,6 +66,14 @@ cmake --build --preset conan-debug
 ```
 
 > NOTE: For altering the build options, see the root [CMakeLists.txt](CMakeLists.txt) file.
+
+## Work in Progress
+
+The current two biggest features I work on are:
+ * [Basic 2D textures support](https://github.com/BeastEngine/BeastEngine/issues/43)
+ * [ECS system (vol. 2)](https://github.com/BeastEngine/BeastEngine/issues/47)
+
+For the list of all issues and ideas, see the [project board](https://github.com/orgs/BeastEngine/projects/1).
 
 ## License
 Distributed under the MIT License. See [`LICENSE`](LICENSE) for more information.
