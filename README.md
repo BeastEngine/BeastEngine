@@ -23,7 +23,7 @@ I have been passionate about games and game engines since I started programming.
 
 The current incarnation of BeastEngine is a spiritual successor to the previous project - this time with much smaller ambitions. I want to have fun with creating it, without any specific milestones or goals. I jump in and out of the codebase whenever I feel like it.
 
-The features I add are focused on 2D games. I wish to have some demo game(s) eventually, but I don't expect any full-fledged productions running on BeastEngine (at least in a recent future).
+The features I add are focused on 2D games. I wish to have some demo game(s) eventually, but I don't expect any full-fledged productions running on BeastEngine (at least in the foreseeable future).
 
 ### Supported Platforms
 Currently, the project only supports Windows with DirectX 11.
