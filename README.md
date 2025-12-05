@@ -1,5 +1,5 @@
 [![MIT License][license-shield]][license-url]
-[![Trello Project Board][board-shield]][board-url]
+[![GitHub Project Board][board-shield]][board-url]
 
 
 <!-- PROJECT LOGO -->
@@ -12,7 +12,6 @@
   <h3 align="center">BeastEngine</h3>
 </p>
 
-<!-- ABOUT THE PROJECT -->
 ## About The Project
 
 BeastEngine is a 2D game engine created with Action-RPG games in mind. It's a hobby project developed out of interest in game engines.
@@ -28,7 +27,6 @@ The features I add are focused on 2D games. I wish to have some demo game(s) eve
 ### Supported Platforms
 Currently, the project only supports Windows with DirectX 11.
 
-<!-- GETTING STARTED -->
 ## Building The Project
 
 ### Prerequisites
