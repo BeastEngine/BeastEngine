@@ -1,6 +1,7 @@
-#include "Beast/Graphics/D3D11/Utils.h"
 #include "Beast/Graphics/D3D11/D3D11.h"
-#include "Beast/Graphics/D3D11/Buffer.h"
+#include "Beast/Graphics/D3D11/Utils.h"
+
+#include "Beast/Graphics/Images.h"
 
 #include <d3dcompiler.h>
 
@@ -8,7 +9,7 @@
 
 namespace be::graphics::d3d11
 {
-    static wrl::ComPtr<ID3DBlob> LoadShaderByteCode(const FilesystemPath& shaderFilepath)
+    static wrl::ComPtr<ID3DBlob> LoadShaderByteCode(const fs::Path& shaderFilepath)
     {
         wrl::ComPtr<ID3DBlob> shaderByteCode;
         BE_DX_CALL(D3DReadFileToBlob(shaderFilepath.wstring().c_str(), &shaderByteCode));
@@ -101,7 +102,7 @@ namespace be::graphics::d3d11
         return {std::move(buffer), size};
     }
 
-    VertexShader CreateVertexShader(API& api, const FilesystemPath& filepath, const InputLayout& inputLayout)
+    VertexShader CreateVertexShader(API& api, const fs::Path& filepath, const InputLayout& inputLayout)
     {
         wrl::ComPtr<ID3D11VertexShader> shaderPtr;
         wrl::ComPtr<ID3D11InputLayout> layoutPtr;
@@ -138,12 +139,54 @@ namespace be::graphics::d3d11
         return {std::move(shaderPtr), std::move(layoutPtr)};
     }
 
-    PixelShader CreatePixelShader(API& api, const FilesystemPath& filepath)
+    PixelShader CreatePixelShader(API& api, const fs::Path& filepath)
     {
         wrl::ComPtr<ID3D11PixelShader> shaderPtr;
         wrl::ComPtr<ID3DBlob> shaderByteCode = LoadShaderByteCode(filepath);
         BE_DX_CALL(api.Device().CreatePixelShader(shaderByteCode->GetBufferPointer(), shaderByteCode->GetBufferSize(), nullptr, &shaderPtr));
 
         return PixelShader{std::move(shaderPtr)};
+    }
+
+    Texture CreateTexture(API& api, const Image& textureData)
+    {
+        D3D11_TEXTURE2D_DESC textureDesc = {};
+        textureDesc.Width = textureData.width;
+        textureDesc.Height = textureData.height;
+        textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        textureDesc.ArraySize = 1;
+        textureDesc.MipLevels = 1;
+        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // TODO: Map number of channels to the proper format
+        textureDesc.SampleDesc.Count = 1;
+        textureDesc.SampleDesc.Quality = 0;
+        textureDesc.Usage = D3D11_USAGE_IMMUTABLE;
+        textureDesc.CPUAccessFlags = 0;
+        textureDesc.MiscFlags = 0;
+
+        D3D11_SUBRESOURCE_DATA resourceData = {0};
+        resourceData.pSysMem = textureData.data.data();
+        resourceData.SysMemPitch = textureData.width * sizeof(unsigned char) * 4; // TODO: Use number of channels here instead of '4'
+
+        ID3D11Device& device = api.Device();
+
+        wrl::ComPtr<ID3D11Texture2D> texture;
+        BE_DX_CALL(device.CreateTexture2D(&textureDesc, &resourceData, &texture));
+
+        wrl::ComPtr<ID3D11ShaderResourceView> textureResourceView;
+        D3D11_SHADER_RESOURCE_VIEW_DESC resourceViewDesc = {};
+        resourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION::D3D11_SRV_DIMENSION_TEXTURE2D;
+        resourceViewDesc.Texture2D.MipLevels = 1;
+        resourceViewDesc.Texture2D.MostDetailedMip = 0;
+        BE_DX_CALL(device.CreateShaderResourceView(texture.Get(), &resourceViewDesc, &textureResourceView));
+
+        wrl::ComPtr<ID3D11SamplerState> samplerState;
+        D3D11_SAMPLER_DESC samplerDesc = {};
+        samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+        BE_DX_CALL(device.CreateSamplerState(&samplerDesc, &samplerState));
+
+        return Texture{std::move(textureResourceView), std::move(samplerState)};
     }
 } // namespace be::graphics::d3d11

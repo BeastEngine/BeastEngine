@@ -1,12 +1,13 @@
 #include(FetchContent)
 
 #FetchContent_Declare(
-#	box2d
-#	GIT_REPOSITORY https://github.com/erincatto/box2d.git
-#	GIT_TAG v3.0.0
+#	stb
+#	GIT_REPOSITORY https://github.com/nothings/stb.git
+#	GIT_BRANCH master
 #	GIT_SHALLOW TRUE
 #	GIT_PROGRESS TRUE
 #)
-#FetchContent_MakeAvailable(box2d)
+#FetchContent_MakeAvailable(stb)
 
 add_subdirectory(box2d)
+add_subdirectory(stb)

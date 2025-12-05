@@ -5,8 +5,12 @@
 #include "Beast/Debug.h"
 #include "Beast/Math/Types.h"
 
+#include <unordered_map>
+
 namespace be::graphics
 {
+    // TODO: Add resource manager that will return filepath for given TextureId
+
     class Camera2D;
 
     class Renderer2D final
@@ -28,6 +32,8 @@ namespace be::graphics
         be::Unique<IGraphics> m_graphics;
         std::vector<Primitive> m_framePrimitives;
 
+        std::unordered_map<TextureId, Texture, TextureId::Hasher> m_textures;
+
         bool m_hasFrameStarted = false;
         bool m_hasFrameEnded = true;
 
@@ -36,5 +42,6 @@ namespace be::graphics
         VertexShader m_vertexShader;
         PixelShader m_pixelShader;
         ConstantBuffer m_cameraCBuffer;
+        Texture m_texture;
     };
 } // namespace be::graphics

@@ -20,7 +20,9 @@
 
 #include <box2d/box2d.h>
 
-constexpr be::Id TEXTURE_ID = be::Id("Path/To/My/Texture");
+// Just a test to see if it's actually generated at compiletime
+static constexpr be::Id TEXTURE_ID = be::Id("Path/To/My/Texture");
+static constexpr float PLAYER_SPEED = 0.08f;
 
 struct Player
 {
@@ -56,7 +58,7 @@ public:
 
         Player player{
             .position = {0.0f, 0.0f},
-            .sprite = {.color = {1.0f, 0.0f, 0.0f, 1.0f}},
+            .sprite = {.color = {1.0f, 1.0f, 1.0f, 1.0f}},
         };
 
         b2BodyDef playerDef = b2DefaultBodyDef();
@@ -64,13 +66,13 @@ public:
         playerDef.position = player.position;
 
         player.rigidBody = b2CreateBody(world, &playerDef);
-        b2Polygon playerBox = b2MakeBox(25.0f, 25.0f);
+        b2Polygon playerBox = b2MakeBox(0.5f, 0.5f);
 
         b2ShapeDef playerShapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(player.rigidBody, &playerShapeDef, &playerBox);
 
         Wall wall{
-            .position = {200.0f, 0.0f},
+            .position = {7.0f, 0.0f},
             .sprite = {.color = {0.01f, 0.2f, 0.89f, 1.0f}},
         };
 
@@ -79,7 +81,7 @@ public:
         wallDef.position = wall.position;
 
         wall.rigidBody = b2CreateBody(world, &wallDef);
-        b2Polygon wallBox = b2MakeBox(25.0f, 25.0f);
+        b2Polygon wallBox = b2MakeBox(0.5f, 0.5f);
 
         b2ShapeDef wallShapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(wall.rigidBody, &wallShapeDef, &wallBox);
@@ -101,10 +103,28 @@ public:
             m_window->ProcessInput();
             renderer.StartFrame();
 
+            be::Vec2 playerMovement = {0, 0};
+
             if (input.IsKeyDown(be::KeyCode::D))
             {
-                b2Body_SetLinearVelocity(player.rigidBody, {10.0f, 0.0f});
+                playerMovement.x = 1;
             }
+            else if (input.IsKeyDown(be::KeyCode::A))
+            {
+                playerMovement.x = -1;
+            }
+
+            if (input.IsKeyDown(be::KeyCode::W))
+            {
+                playerMovement.y = 1;
+            }
+            else if (input.IsKeyDown(be::KeyCode::S))
+            {
+                playerMovement.y = -1;
+            }
+
+            const be::Vec2 playerVelocity = playerMovement * PLAYER_SPEED;
+            b2Body_SetLinearVelocity(player.rigidBody, {playerVelocity.x, playerVelocity.y});
 
             b2World_Step(world, timeStep, subStepCount);
             player.position = b2Body_GetPosition(player.rigidBody);

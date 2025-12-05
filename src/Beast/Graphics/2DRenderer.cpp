@@ -1,7 +1,11 @@
 #include "Beast/Graphics/2DRenderer.h"
 #include "Beast/Graphics/Camera2D.h"
+#include "Beast/Graphics/Pipeline.h"
 
 #include "Beast/Debug.h"
+
+// TEMP
+#include "Beast/Graphics/ImageLoader.h"
 
 namespace be::graphics
 {
@@ -25,6 +29,11 @@ namespace be::graphics
         m_pixelShader = m_graphics->CreatePixelShader("PixelShader.cso");
 
         m_cameraCBuffer = m_graphics->CreateConstantBuffer(sizeof(Mat4));
+
+        // TEMP - only works if running from IDE
+        const Result<Image> imageResult = LoadImageFromFile("data/textures/t.png");
+        BE_ASSERT(imageResult);
+        m_texture = m_graphics->CreateTexture(imageResult.Value());
     }
 
     void Renderer2D::StartFrame()
@@ -40,6 +49,8 @@ namespace be::graphics
 
     void Renderer2D::AddSprite(const Vec2& position, const Sprite& sprite)
     {
+        // TODO: Let's try render the texture!
+
         BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started before sprites can be added!");
         m_framePrimitives.emplace_back(Primitive{.position = position * PRIMITIVE_SCALE, .color = sprite.color});
     }
@@ -59,26 +70,32 @@ namespace be::graphics
                 vertices.emplace_back(Vertex{
                     .position = Vec2{-SCALE_HALF, -SCALE_HALF} + primitive.position,
                     .color = primitive.color,
+                    .uv = Vec2{0.0f, 0.0f},
                 });
                 vertices.emplace_back(Vertex{
                     .position = Vec2{-SCALE_HALF, SCALE_HALF} + primitive.position,
                     .color = primitive.color,
+                    .uv = Vec2{0.0f, 1.0f},
                 });
                 vertices.emplace_back(Vertex{
                     .position = Vec2{SCALE_HALF, SCALE_HALF} + primitive.position,
                     .color = primitive.color,
+                    .uv = Vec2{1.0f, 1.0f},
                 });
                 vertices.emplace_back(Vertex{
                     .position = Vec2{-SCALE_HALF, -SCALE_HALF} + primitive.position,
                     .color = primitive.color,
+                    .uv = Vec2{0.0f, 0.0f},
                 });
                 vertices.emplace_back(Vertex{
                     .position = Vec2{SCALE_HALF, SCALE_HALF} + primitive.position,
                     .color = primitive.color,
+                    .uv = Vec2{1.0f, 1.0f},
                 });
                 vertices.emplace_back(Vertex{
                     .position = Vec2{SCALE_HALF, -SCALE_HALF} + primitive.position,
                     .color = primitive.color,
+                    .uv = Vec2{1.0f, 0.0f},
                 });
             }
 
@@ -93,6 +110,7 @@ namespace be::graphics
             pipeline.vertexBuffer = m_buffer;
             pipeline.vertexShaderStage.shader = m_vertexShader;
             pipeline.pixelShaderStage.shader = m_pixelShader;
+            pipeline.pixelShaderStage.texture = m_texture;
             pipeline.viewport = camera.GetViewport();
             //pipeline.viewport.dimensions = {1520, 825};
             pipeline.drawCall.vertexCount = verticesCount;

@@ -4,6 +4,7 @@
 #include "Beast/Graphics/D3D11/Buffer.h"
 #include "Beast/Graphics/D3D11/Shader.h"
 #include "Beast/Graphics/D3D11/RenderTarget.h"
+#include "Beast/Graphics/D3D11/Textures.h"
 
 #include "Beast/Windows/Window.h"
 
@@ -17,8 +18,9 @@ namespace be::graphics::d3d11
     private:
         graphics::VertexBuffer CreateVertexBuffer(uint32 stride, uint32 maxSize) override;
         graphics::ConstantBuffer CreateConstantBuffer(uint32 size) override;
-        graphics::VertexShader CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout) override;
-        graphics::PixelShader CreatePixelShader(const FilesystemPath& filepath) override;
+        graphics::VertexShader CreateVertexShader(const fs::Path& filepath, const InputLayout& inputLayout) override;
+        graphics::PixelShader CreatePixelShader(const fs::Path& filepath) override;
+        graphics::Texture CreateTexture(const Image& textureData) override;
 
         void UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies) override;
         void UpdateConstantBuffer(graphics::ConstantBuffer buffer, const void* const data) override;
@@ -35,5 +37,6 @@ namespace be::graphics::d3d11
         std::vector<d3d11::ConstantBuffer> m_constantBuffers;
         std::vector<d3d11::VertexShader> m_vertexShaders;
         std::vector<d3d11::PixelShader> m_pixelShaders;
+        std::vector<d3d11::Texture> m_textures;
     };
 } // namespace be::graphics::d3d11

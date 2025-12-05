@@ -1,13 +1,17 @@
 set(BE_HEADERS_LIST "Windows/Win32/Win32KeyboardEventsTest.h" "Windows/Win32/Win32MouseEventsTest.h"
-                    "Windows/Win32/Win32TestSetup.h" "Windows/Win32/Win32WindowTest.h"
+  "Windows/Win32/Win32TestSetup.h" "Windows/Win32/Win32WindowTest.h" "Config.h"
 )
 
 set(BE_SRC_LIST "Loggers/FileLoggerTest.cpp" "Windows/Win32/Win32KeyboardEventsTest.cpp"
-                "Windows/Win32/Win32MouseEventsTest.cpp" "Windows/Win32/Win32WindowTest.cpp" "main.cpp"
+  "Windows/Win32/Win32MouseEventsTest.cpp" "Windows/Win32/Win32WindowTest.cpp" "main.cpp" "Common/Filesystem/ResourcesManagerTest.cpp"
 )
 
-add_executable(BeastCoreIntegration "${BE_SRC_LIST}" "${BE_HEADERS_LIST}")
+add_executable(
+  BeastCoreIntegration "${BE_SRC_LIST}" "${BE_HEADERS_LIST}" "Graphics/ImageLoaderTest.cpp" "Config.cpp"
+  "Graphics/TestImageData.h"
+)
 target_include_directories(BeastCoreIntegration PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
+set_target_properties(BeastCoreIntegration PROPERTIES OUTPUT_NAME "BeastCoreIntegrationTest")
 
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)

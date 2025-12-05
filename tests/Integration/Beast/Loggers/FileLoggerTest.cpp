@@ -21,7 +21,7 @@ namespace be::tests::integration
             FilesystemTestCase::TearDown();
         }
 
-        auto CreateLogger(const std::string& name, const FilesystemPath& filePath)
+        auto CreateLogger(const std::string& name, const fs::Path& filePath)
         {
             m_namesRegister.insert(name);
             return FileLogger::Create(name, filePath);
@@ -58,10 +58,10 @@ namespace be::tests::integration
         const auto loggerName = "file_logger";
         const auto filePath = GetFullPath("file_logger.log");
 
-        bool fileExistenceBefore = fs::exists(filePath);
+        bool fileExistenceBefore = std::filesystem::exists(filePath);
 
         const auto logger = CreateLogger(loggerName, filePath);
-        bool fileExistenceAfter = fs::exists(filePath);
+        bool fileExistenceAfter = std::filesystem::exists(filePath);
 
         ASSERT_TRUE(fileExistenceAfter);
         ASSERT_NE(fileExistenceBefore, fileExistenceAfter);
@@ -86,12 +86,12 @@ namespace be::tests::integration
         const auto filePath = GetFullPath("file_logger.log");
         const auto otherFilePath = GetFullPath("other_file.log");
 
-        bool otherFileExistenceBefore = fs::exists(otherFilePath);
+        bool otherFileExistenceBefore = std::filesystem::exists(otherFilePath);
 
         const auto logger1 = CreateLogger(loggerName, filePath);
         const auto logger2 = CreateLogger(loggerName, otherFilePath);
 
-        bool otherFileExistenceAfter = fs::exists(otherFilePath);
+        bool otherFileExistenceAfter = std::filesystem::exists(otherFilePath);
 
         ASSERT_FALSE(otherFileExistenceAfter);
         ASSERT_EQ(otherFileExistenceBefore, otherFileExistenceAfter);
@@ -103,13 +103,13 @@ namespace be::tests::integration
         const auto filePath = GetFullPath("file_logger.log");
         const auto otherFilePath = GetFullPath("other_file.log");
 
-        bool otherFileExistenceBefore = fs::exists(otherFilePath);
+        bool otherFileExistenceBefore = std::filesystem::exists(otherFilePath);
 
         const auto logger1 = CreateLogger(loggerName, filePath);
         FileLogger::Destroy(loggerName);
 
         const auto logger2 = CreateLogger(loggerName, otherFilePath);
-        bool otherFileExistenceAfter = fs::exists(otherFilePath);
+        bool otherFileExistenceAfter = std::filesystem::exists(otherFilePath);
 
         ASSERT_TRUE(otherFileExistenceAfter);
         ASSERT_NE(otherFileExistenceBefore, otherFileExistenceAfter);

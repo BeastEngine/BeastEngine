@@ -67,7 +67,7 @@ namespace be
          * @param filePath - Path to a file where all the logs will be stored
          * @return
          */
-        static Shared<Logger> Create(const std::string& name, const FilesystemPath& filePath);
+        static Shared<Logger> Create(const std::string& name, const fs::Path& filePath);
 
         /**
          * @brief Destroys logger implementation associated with given name.

@@ -1,14 +1,25 @@
 #pragma once
 #include "Beast/Common/Types.h"
 #include "Beast/Common/Id.h"
+#include "Beast/Common/Limits.h"
 
 #include "Beast/Math/Types.h"
 
 namespace be::graphics
 {
+    class TextureId final : public Id
+    {
+    public:
+        constexpr TextureId()
+            : Id() {}
+
+        constexpr TextureId(std::string_view stringId)
+            : Id(stringId) {}
+    };
+
     struct Color
     {
-        const float* Data() const
+        constexpr const float* Data() const
         {
             return &r;
         }
@@ -17,11 +28,12 @@ namespace be::graphics
         float g = 1.0f;
         float b = 1.0f;
         float a = 1.0f;
-    };
+    }; // namespace be::graphics
 
     struct Sprite
     {
         Color color;
+        TextureId texture;
     };
 
     struct Vertex
@@ -38,14 +50,12 @@ namespace be::graphics
         D3D11,
     };
 
-    struct VertexBuffer
+    enum class VertexBuffer : uint8
     {
-        Id id;
     };
 
-    struct ConstantBuffer
+    enum class ConstantBuffer : uint8
     {
-        Id id;
     };
 
     struct InputLayout
@@ -66,18 +76,27 @@ namespace be::graphics
         std::vector<VertexAttribute> vertexAttributes;
     };
 
-    struct VertexShader
+    enum class VertexShader : uint8
     {
-        Id id;
     };
 
-    struct PixelShader
+    enum class PixelShader : uint8
     {
-        Id id;
     };
 
     struct Viewport
     {
         Vec2 dimensions;
     };
+
+    enum class Texture : uint16
+    {
+    };
+
+    inline constexpr auto MAX_VB_INDEX = limits::MaxValue<VertexBuffer>();
+    inline constexpr auto MAX_CB_INDEX = limits::MaxValue<ConstantBuffer>();
+    inline constexpr auto MAX_VS_INDEX = limits::MaxValue<VertexShader>();
+    inline constexpr auto MAX_PS_INDEX = limits::MaxValue<PixelShader>();
+    inline constexpr auto MAX_TEXTURE_INDEX = limits::MaxValue<Texture>();
+
 } // namespace be::graphics

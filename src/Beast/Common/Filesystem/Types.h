@@ -1,12 +1,12 @@
 #pragma once
 #include <filesystem>
 
-namespace be
+namespace be::fs
 {
-    using FilesystemPath = std::filesystem::path;
+    using Path = std::filesystem::path;
 
-    inline FilesystemPath operator+(const FilesystemPath& path1, const FilesystemPath& path2)
+    inline Path operator+(const Path& path1, const Path& path2)
     {
-        return FilesystemPath(path1.u8string() + path2.u8string());
+        return Path(path1.u8string() + path2.u8string());
     }
 } // namespace be

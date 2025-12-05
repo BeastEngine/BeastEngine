@@ -16,7 +16,7 @@ namespace be
         return MakeShared<Logger>(logger);
     }
 
-    Shared<Logger> FileLogger::Create(const std::string& name, const FilesystemPath& filePath)
+    Shared<Logger> FileLogger::Create(const std::string& name, const fs::Path& filePath)
     {
         const auto loggerName = LOGGER_FILE_NAME_PREFIX + name;
         LoggerImpl logger = spdlog::get(loggerName);

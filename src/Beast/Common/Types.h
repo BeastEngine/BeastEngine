@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include <cstdint>
 #include <chrono>
 
@@ -22,62 +21,11 @@ namespace be
     /*********************************************************************/
 
     /***********************POINTERS DEFINITIONS**************************/
-    template<typename T>
-    using Unique = std::unique_ptr<T>;
-
-    template<typename T, typename... Args>
-    [[nodiscard]] constexpr Unique<T> MakeUnique(Args&&... args)
-    {
-        return std::make_unique<T>(std::forward<Args>(args)...);
-    }
-
-    template<typename T>
-    using Shared = std::shared_ptr<T>;
-
-    template<typename T, typename... Args>
-    [[nodiscard]] constexpr Shared<T> MakeShared(Args&&... args)
-    {
-        return std::make_shared<T>(std::forward<Args>(args)...);
-    }
-
-    template<typename T>
-    using Weak = std::weak_ptr<T>;
+    
     /***********************************************************************/
 
     /*******************************OTHERS**********************************/
     using TimestampDuration = std::chrono::nanoseconds;
     using Timestamp = TimestampDuration::rep;
-
-    template<typename Enum>
-    using UnderlyingType = std::underlying_type_t<Enum>;
-
-    /**
-     * @brief Converts given enum into its underlying type.
-     * 
-     * @param enumToConvert
-     * @return 
-     */
-    template<typename Enum>
-    constexpr auto ToUnderlying(Enum enumToConvert) noexcept
-    {
-        static_assert(std::is_enum_v<Enum>, "Given Enum Type is not an actual enum!");
-        return static_cast<UnderlyingType<Enum>>(enumToConvert);
-    }
-
-    /**
-     * @biref Converts given value into the requested enum. 
-     * Requested Enum type is provided via template parameter.
-     * 
-     * @param valueToConvert
-     * @return 
-     */
-    template<typename Enum, typename T>
-    constexpr auto ToEnum(T valueToConvert) noexcept
-    {
-        static_assert(std::is_enum_v<Enum>, "Given Enum Type is not an actual enum!");
-        const auto value = static_cast<UnderlyingType<Enum>>(valueToConvert);
-
-        return static_cast<Enum>(value);
-    }
     /***********************************************************************/
 } // namespace be

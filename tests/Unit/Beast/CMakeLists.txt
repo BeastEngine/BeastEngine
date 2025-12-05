@@ -1,9 +1,3 @@
-set(BE_TESTS_UNIT_INCLUDE_DIR "${BeastEngine_SOURCE_DIR}/tests")
-set(BE_TESTS_UNIT_SRC_DIR "${BeastEngine_SOURCE_DIR}/tests")
-
-set(BE_TESTS_UNIT_HEADERS_PREFIX "${BE_TESTS_UNIT_INCLUDE_DIR}/BeastEngine/Unit/")
-set(BE_TESTS_UNIT_SRC_PREFIX "${BE_TESTS_UNIT_SRC_DIR}/BeastEngine/Unit/")
-
 add_executable(
   BeastCoreUnits
   "DataStructuresTests.cpp"
@@ -21,8 +15,10 @@ add_executable(
   "Graphics/Camera2DTest.cpp"
   "Common/IdAllocatorTest.cpp"
   "Common/IdAllocatorsFactoryTest.cpp"
+  "Common/ResultTest.cpp"
 )
 target_include_directories(BeastCoreUnits PRIVATE "${BeastEngine_SOURCE_DIR}/tests")
+set_target_properties(BeastCoreUnits PROPERTIES OUTPUT_NAME "BeastCoreUnitTest")
 
 find_package(GTest REQUIRED)
 find_package(spdlog REQUIRED)

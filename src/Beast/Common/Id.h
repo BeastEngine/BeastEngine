@@ -12,9 +12,9 @@ namespace be
 
     /**
      * @brief Represents an ID of any form.
-     * It does not guarantee uniquness.
+     * It does not guarantee uniqueness.
      */
-    class [[nodiscard]] Id final
+    class [[nodiscard]] Id
     {
     public:
         /**
@@ -44,7 +44,7 @@ namespace be
         }
 
         /**
-         * @brief Converts the undrelying value to a string representation.
+         * @brief Converts the underlying value to a string representation.
          */
         std::string ToString() const
         {
@@ -55,6 +55,15 @@ namespace be
         {
             return m_value == other.m_value;
         }
+
+    public:
+        struct Hasher
+        {
+            constexpr std::size_t operator()(const Id& id) const
+            {
+                return static_cast<std::size_t>(id.Raw());
+            }
+        };
 
     private:
         RawId m_value = INVALID_ID;
