@@ -1,6 +1,3 @@
-[submodule "apps/AV"]
-	path = apps/AV
-	url = https://github.com/BeastEngine/AV
 [submodule "extern/box2d"]
 	path = extern/box2d
 	url = https://github.com/BeastEngine/box2d
