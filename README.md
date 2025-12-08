@@ -39,13 +39,18 @@ In order to build the project locally, you need a couple of things:
 
 For making the development easier, I use [BeastSDK](https://github.com/BeastEngine/BeastSDK) - a set of Python scripts that make my life easier.
 
-`BeastSDK` comes with CMake and Conan bundled, so you don't have to install them yourself. The SDK is a Python-base application, so the recommended way is to install via a tool like [pipx](https://pipx.pypa.io/stable/installation/) to have it accessible globally.
+The SDK is a Python-base application, so the recommended way is to install via a tool like [pipx](https://pipx.pypa.io/stable/installation/) to have it accessible globally.
 
 > NOTE: BeastSDK requires at least Python 3.12.
 
 ### Conan and CMake
 
-The project uses the [Conan package manager](https://conan.io/) for managing dependencies.
+The project uses the [Conan package manager](https://conan.io/) for managing dependencies, and cmake.
+The versions I use are `conan==2.9.2` and `cmake==3.31.0`. I haven't tested with other versions, but I assume higher versions should work. The minimum CMake version is `3.16`. For conan, I wouldn't go below `2.9.2`.
+
+> `BeastSDK` comes with CMake and Conan bundled as part of its virtual environment. If you want to, instead of having a global conan and cmake, you can use `pipenv` to enter BeastSDK's virtual env, and use conan and cmake that come with the scripts.
+> For details, see: [BeastSDK docs](https://github.com/BeastEngine/BeastSDK/blob/master/README.md#usage)
+
 Running the `beast install` command from the root of the project installs all C++ dependencies and creates the `CMakeUserPresets.json` file.
 
 The presets file (as of writing this text) contains only a single `conan-default` configuration preset, and `conan-debug`, `conan-release`, `conan-minsizerel`, and `conan-relwithdebinfo` build presets.
