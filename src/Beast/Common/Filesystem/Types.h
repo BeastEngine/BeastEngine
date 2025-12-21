@@ -9,4 +9,4 @@ namespace be::fs
     {
         return Path(path1.u8string() + path2.u8string());
     }
-} // namespace be
+} // namespace be::fs

@@ -5,7 +5,10 @@
 
 namespace be::tests::integration
 {
-    inline const std::vector<std::vector<unsigned char>> EXPECTED_IMAGE_COLOR_DATA = {
+    inline constexpr uint8 TEST_IMAGE_CHANNELS = 4;
+    inline constexpr uint8 TEST_IMAGE_WIDTH = 9;
+    inline constexpr uint8 TEST_IMAGE_HEIGHT = 9;
+    inline const std::vector<std::vector<unsigned char>> TEST_IMAGE_COLOR_DATA = {
         {255, 0, 0, 255},
         {255, 255, 255, 255},
         {255, 0, 0, 255},
@@ -96,4 +99,4 @@ namespace be::tests::integration
         {255, 255, 255, 255},
         {255, 0, 0, 255},
     };
-}
+} // namespace be::tests::integration

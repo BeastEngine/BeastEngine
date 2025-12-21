@@ -13,4 +13,4 @@ namespace be
             return std::numeric_limits<UnderlyingType<EnumType>>::max();
         }
     } // namespace limits
-}
+} // namespace be

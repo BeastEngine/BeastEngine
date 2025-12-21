@@ -11,7 +11,7 @@ namespace be::fs
     {
     public:
         explicit ResourcesManager(const Path& resourcesRootDir);
-        Result<const Path*> GetTexturePath(graphics::TextureId textureId) const;
+        Result<const Path*> GetResourcePath(graphics::TextureId textureId) const;
 
     private:
         std::unordered_map<be::RawId, Path> m_paths;

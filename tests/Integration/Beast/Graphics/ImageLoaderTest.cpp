@@ -1,4 +1,5 @@
 #include "Integration/Beast/Config.h"
+#include "Integration/Beast/Common/Filesystem/ResourcesTestCase.h"
 #include "Integration/Beast/Graphics/TestImageData.h"
 
 #include <Beast/Graphics/ImageLoader.h>
@@ -10,14 +11,9 @@
 
 namespace be::tests::integration
 {
-    class ImageLoaderTest : public testing::Test
+    class ImageLoaderTest : public ResourcesTestCase
     {
     protected:
-        static fs::Path CreateImagePath(const fs::Path& imageFileName)
-        {
-            return GetConfig().dataBasePath / "textures" / imageFileName;
-        }
-
         std::vector<std::vector<unsigned char>> ConvertImageDataToColorData(const graphics::Image& image)
         {
             const auto& imageData = image.data;
@@ -48,7 +44,7 @@ namespace be::tests::integration
         const uint32 expectedChannels = 4;
         const std::size_t expectedDataSize = 324;
 
-        const auto imagePath = CreateImagePath("test.png");
+        const auto imagePath = GetTextureImagePath(ResourcesTestCase::TEST_TEXTURE_NAME);
         const Result<graphics::Image> actualImage = graphics::LoadImageFromFile(imagePath);
         ASSERT_TRUE(actualImage);
 
@@ -58,11 +54,11 @@ namespace be::tests::integration
         ASSERT_EQ(expectedDataSize, actualImage->data.size());
 
         const auto actualColorData = ConvertImageDataToColorData(actualImage.Value());
-        ASSERT_EQ(EXPECTED_IMAGE_COLOR_DATA.size(), actualColorData.size());
+        ASSERT_EQ(TEST_IMAGE_COLOR_DATA.size(), actualColorData.size());
 
         for (std::size_t pixel = 0; pixel < actualColorData.size(); ++pixel)
         {
-            ASSERT_EQ(EXPECTED_IMAGE_COLOR_DATA[pixel], actualColorData[pixel]) << "PIXEL " << pixel << "\n";
+            ASSERT_EQ(TEST_IMAGE_COLOR_DATA[pixel], actualColorData[pixel]) << "PIXEL " << pixel << "\n";
         }
     }
 

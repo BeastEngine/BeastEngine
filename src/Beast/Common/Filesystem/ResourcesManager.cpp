@@ -15,7 +15,7 @@ namespace be::fs
                     if (texture_entry.is_regular_file())
                     {
                         const auto textureFilePath = std::filesystem::relative(texture_entry.path(), directory.path());
-                        const auto textureId = graphics::TextureId(textureFilePath.string());
+                        const auto textureId = graphics::TextureId(textureFilePath.generic_string());
 
                         m_paths[textureId.Raw()] = std::filesystem::absolute(texture_entry.path());
                     }
@@ -24,7 +24,7 @@ namespace be::fs
         }
     }
 
-    Result<const Path*> ResourcesManager::GetTexturePath(graphics::TextureId textureId) const
+    Result<const Path*> ResourcesManager::GetResourcePath(graphics::TextureId textureId) const
     {
         const auto foundPath = m_paths.find(textureId.Raw());
         if (foundPath == m_paths.end())

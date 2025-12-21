@@ -134,7 +134,7 @@ namespace be::tests::integration
         fs::Path CreateDirectoryImpl(const auto& relativePath) const
         {
             auto fullPath = GetFullPath(relativePath);
-            std::filesystem::create_directory(fullPath);
+            std::filesystem::create_directories(fullPath);
 
             return fullPath;
         }
