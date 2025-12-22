@@ -1,17 +1,23 @@
 #pragma once
-#include "Beast/Graphics/IGraphics.h"
 #include "Beast/Graphics/Types.h"
 
 #include "Beast/Debug.h"
+#include "Beast/Common/Helpers.h"
 #include "Beast/Math/Types.h"
 
 #include <unordered_map>
+
+namespace be::fs
+{
+    class ResourcesManager;
+}
 
 namespace be::graphics
 {
     // TODO: Add resource manager that will return filepath for given TextureId
 
     class Camera2D;
+    class IGraphics;
 
     class Renderer2D final
     {
@@ -22,7 +28,10 @@ namespace be::graphics
         };
 
     public:
-        explicit Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites);
+        explicit Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites, be::Unique<fs::ResourcesManager> resourcesManager);
+        ~Renderer2D();
+
+        BE_IMPLEMENT_ADDITIONAL_CONSTRUCTORS_DEFAULT(Renderer2D);
 
         void StartFrame();
         void AddSprite(const Vec2& position, const Sprite& sprite);
@@ -30,7 +39,9 @@ namespace be::graphics
 
     private:
         be::Unique<IGraphics> m_graphics;
-        std::vector<Primitive> m_framePrimitives;
+        be::Unique<fs::ResourcesManager> m_resourcesManager;
+        std::vector<Primitive>
+            m_framePrimitives;
 
         std::unordered_map<TextureId, Texture, TextureId::Hasher> m_textures;
 

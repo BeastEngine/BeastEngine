@@ -15,3 +15,16 @@ if(WIN32)
   # Create WinApi application while using the system console
   target_link_options(${SANDBOX_TARGET_NAME} PRIVATE /ENTRY:wWinMainCRTStartup /SUBSYSTEM:CONSOLE)
 endif()
+
+set(BE_DATA_DIR_NAME "data")
+
+set(BE_DATA_BASE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${BE_DATA_DIR_NAME}")
+set(BE_DATA_POST_BUILD_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${BE_DATA_DIR_NAME}")
+
+add_custom_command(
+  TARGET Sandbox
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${BE_DATA_BASE_DIR} ${BE_DATA_POST_BUILD_DIR} DEPENDS
+  ${BE_DATA_POST_BUILD_DIR}
+  COMMENT "Copying resources folder from ${BE_DATA_BASE_DIR} to ${BE_DATA_POST_BUILD_DIR}"
+)

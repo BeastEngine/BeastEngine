@@ -49,11 +49,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     endif()
 endif()
 
-set(BE_DATA_DIR_NAME "data")
-
-set(BE_DATA_BASE_DIR "${CMAKE_SOURCE_DIR}/${BE_DATA_DIR_NAME}")
-set(BE_DATA_POST_BUILD_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIG>/${BE_DATA_DIR_NAME}")
-
 add_subdirectory(extern)
 add_subdirectory(src/Beast)
 

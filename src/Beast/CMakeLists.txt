@@ -85,12 +85,12 @@ find_package(stduuid REQUIRED)
 target_link_libraries(
   BeastCore
   PUBLIC spdlog::spdlog
-         fmt::fmt
-         glm::glm
-         box2d::box2d
-         xxHash::xxhash
-         stduuid::stduuid
-         stb
+  fmt::fmt
+  glm::glm
+  box2d::box2d
+  xxHash::xxhash
+  stduuid::stduuid
+  stb
 )
 add_dependencies(BeastCore BeCoreShaders)
 
@@ -117,11 +117,3 @@ endif()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Versions.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/Versions.h")
 
 add_library(BE::core ALIAS BeastCore)
-
-add_custom_command(
-  TARGET BeastCore
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${BE_DATA_BASE_DIR} ${BE_DATA_POST_BUILD_DIR} DEPENDS
-          ${BE_DATA_POST_BUILD_DIR}
-  COMMENT "Copying resources folder from ${BE_DATA_BASE_DIR} to ${BE_DATA_POST_BUILD_DIR}"
-)

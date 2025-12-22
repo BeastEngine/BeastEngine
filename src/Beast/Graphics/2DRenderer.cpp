@@ -1,8 +1,10 @@
 #include "Beast/Graphics/2DRenderer.h"
 #include "Beast/Graphics/Camera2D.h"
 #include "Beast/Graphics/Pipeline.h"
+#include "Beast/Graphics/IGraphics.h"
 
 #include "Beast/Debug.h"
+#include "Beast/Common/Filesystem/ResourcesManager.h"
 
 // TEMP
 #include "Beast/Graphics/ImageLoader.h"
@@ -11,8 +13,8 @@ namespace be::graphics
 {
     static constexpr float PRIMITIVE_SCALE = 50.0f;
 
-    Renderer2D::Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites)
-        : m_graphics(std::move(graphics))
+    Renderer2D::Renderer2D(be::Unique<IGraphics> graphics, uint32 maxNumberOfSprites, be::Unique<fs::ResourcesManager> resourcesManager)
+        : m_graphics(std::move(graphics)), m_resourcesManager(std::move(resourcesManager))
     {
         const uint32 vertexCount = sizeof(Vertex) * 6 * maxNumberOfSprites;
         m_buffer = m_graphics->CreateVertexBuffer(VERTEX_STRIDE, vertexCount);
@@ -25,16 +27,20 @@ namespace be::graphics
             },
         };
 
+        // TODO: These should also come from the resources manager
         m_vertexShader = m_graphics->CreateVertexShader("VertexShader.cso", layout);
         m_pixelShader = m_graphics->CreatePixelShader("PixelShader.cso");
 
         m_cameraCBuffer = m_graphics->CreateConstantBuffer(sizeof(Mat4));
 
-        // TEMP - only works if running from IDE
-        const Result<Image> imageResult = LoadImageFromFile("data/textures/t.png");
+        const Result<const fs::Path*> texturePath = m_resourcesManager->GetResourcePath(TextureId("t.png"));
+        const Result<Image> imageResult = LoadImageFromFile(*texturePath.Value());
         BE_ASSERT(imageResult);
         m_texture = m_graphics->CreateTexture(imageResult.Value());
     }
+
+    // Declared here to be able to use Unique with incomplete type
+    Renderer2D::~Renderer2D() = default;
 
     void Renderer2D::StartFrame()
     {

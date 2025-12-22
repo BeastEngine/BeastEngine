@@ -3,6 +3,7 @@
 #include <Beast/Loggers/LoggersFactories.h>
 #include <Beast/Common/Types.h>
 #include <Beast/Common/Utils/Hasher.h>
+#include <Beast/Common/Filesystem/ResourcesManager.h>
 #include <Beast/Graphics/2DRenderer.h>
 #include <Beast/Graphics/Camera2D.h>
 
@@ -41,8 +42,8 @@ struct Wall
 class BasicApplication final : public be::AApplication
 {
 public:
-    BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor)
-        : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger"))
+    BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor, const be::fs::Path& cwd)
+        : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger")), m_dataPath(cwd / "data")
     {
         //m_mouse->SetWheelScrolledListener(OnWheelScrolled());
     }
@@ -86,7 +87,10 @@ public:
         b2ShapeDef wallShapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(wall.rigidBody, &wallShapeDef, &wallBox);
 
-        be::graphics::Renderer2D renderer(GetEngine().CreateGraphics(*m_window), 2);
+        // TODO: We need to create the ResourceManager here. This should probably be done by the engine.
+        // So something like GetEngine().GetResourceManager()
+        be::BeastEngine& engine = GetEngine();
+        be::graphics::Renderer2D renderer(engine.CreateGraphics(*m_window), 2, engine.CreateResourcesManager(m_dataPath));
 
         static constexpr float timeStep = 1.0f / 60.0f;
         static constexpr int subStepCount = 4;
@@ -141,16 +145,17 @@ public:
 
 private:
     const be::Shared<be::Logger> m_logger = nullptr;
+    be::fs::Path m_dataPath;
 };
 
-be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
+be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance, const be::fs::Path& cwd)
 {
     // Configure engine
-    auto config = be::EngineConfig();
+    be::EngineConfig config{};
 
     // Configure window
     be::WindowDescriptor windowDescriptor(std::move(windowHandleInstance));
     windowDescriptor.style = WindowStyle::WINDOW_DEFUALT;
 
-    return be::MakeUnique<BasicApplication>(std::move(config), windowDescriptor);
+    return be::MakeUnique<BasicApplication>(std::move(config), windowDescriptor, cwd);
 }

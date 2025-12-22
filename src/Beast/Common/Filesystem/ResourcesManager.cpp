@@ -8,7 +8,13 @@ namespace be::fs
     {
         for (const auto& directory : std::filesystem::directory_iterator(resourcesRootDir))
         {
-            if (directory.is_directory() && directory.path().filename().string() == "Textures")
+            if (!directory.is_directory())
+            {
+                continue;
+            }
+
+            const auto& directoryName = directory.path().filename().string();
+            if (directoryName == "Textures" || directoryName == "textures")
             {
                 for (const auto& texture_entry : std::filesystem::recursive_directory_iterator(directory.path()))
                 {

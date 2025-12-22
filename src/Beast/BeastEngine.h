@@ -4,11 +4,17 @@
 
 #include "Beast/Common/Helpers.h"
 #include "Beast/Common/Types.h"
+#include "Beast/Common/Filesystem/Types.h"
 
 #include "Beast/Graphics/IGraphics.h"
 
 namespace be
 {
+    namespace fs
+    {
+        class ResourcesManager;
+    }
+
     /**
      * @brief Contains configuration of the BeastEngine class.
      */
@@ -57,7 +63,16 @@ namespace be
          */
         Unique<graphics::IGraphics> CreateGraphics(const Window& window, graphics::RenderingApi api = graphics::RenderingApi::D3D11) const;
 
+        /**
+         * @brief Create a Resources Manager object
+         * 
+         * @param baseResourcesPath 
+         * @return Unique<fs::ResourcesManager>
+         */
+        Unique<fs::ResourcesManager> CreateResourcesManager(const fs::Path& baseResourcesPath) const;
+
     private:
-        void SetLogger(EngineConfig& config);
+        void
+            SetLogger(EngineConfig& config);
     };
 } // namespace be
