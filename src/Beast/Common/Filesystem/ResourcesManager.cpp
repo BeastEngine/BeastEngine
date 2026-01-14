@@ -21,23 +21,21 @@ namespace be::fs
                     if (texture_entry.is_regular_file())
                     {
                         const auto textureFilePath = std::filesystem::relative(texture_entry.path(), directory.path());
-                        const auto textureId = graphics::TextureId(textureFilePath.generic_string());
+                        const auto textureId = Id(textureFilePath.generic_string());
 
-                        m_paths[textureId.Raw()] = std::filesystem::absolute(texture_entry.path());
+                        m_paths[textureId] = std::filesystem::absolute(texture_entry.path());
                     }
                 }
             }
         }
     }
 
-    // TODO: This shouldn't probably depend on graphics and TextureId. I believe we can instead just use be::Id for this.
-    // Or maybe create a new "StringId" type for that kind of stuff.
-    RefResult<Path> ResourcesManager::GetResourcePath(graphics::TextureId textureId) const
+    RefResult<Path> ResourcesManager::GetResourcePath(const Id& resourceId) const
     {
-        const auto foundPath = m_paths.find(textureId.Raw());
+        const auto foundPath = m_paths.find(resourceId);
         if (foundPath == m_paths.end())
         {
-            return std::format("Texture with id {} does not exist", textureId.Raw());
+            return std::format("Resource with id {} does not exist", resourceId.Raw());
         }
 
         return foundPath->second;

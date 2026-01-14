@@ -1,7 +1,7 @@
 #pragma once
 #include "Beast/Common/Filesystem/Types.h"
-#include "Beast/Graphics/Types.h"
 #include "Beast/Common/Result.h"
+#include "Beast/Common/Id.h"
 
 #include <unordered_map>
 
@@ -11,9 +11,9 @@ namespace be::fs
     {
     public:
         explicit ResourcesManager(const Path& resourcesRootDir);
-        RefResult<Path> GetResourcePath(graphics::TextureId textureId) const;
+        RefResult<Path> GetResourcePath(const Id& resourceId) const;
 
     private:
-        std::unordered_map<be::RawId, Path> m_paths;
+        std::unordered_map<Id, Path, Id::Hasher> m_paths;
     };
 } // namespace be::fs
