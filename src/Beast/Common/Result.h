@@ -14,7 +14,7 @@ namespace be
     };
 
     template<typename T>
-    concept NotResultError = (!std::is_same_v<T, ResultError>)&&(!std::is_convertible_v<T, std::string>)&&(!std::is_convertible_v<T, std::string_view>);
+    concept NotResultError = (!std::is_same_v<T, ResultError>) && (!std::is_convertible_v<T, std::string>) && (!std::is_convertible_v<T, std::string_view>);
 
     /**
      * @brief Utility class serving a similar purpose to the one of the https://en.cppreference.com/w/cpp/utility/expected.

@@ -25,6 +25,6 @@ add_custom_command(
   TARGET Sandbox
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${BE_DATA_BASE_DIR} ${BE_DATA_POST_BUILD_DIR} DEPENDS
-  ${BE_DATA_POST_BUILD_DIR}
+          ${BE_DATA_POST_BUILD_DIR}
   COMMENT "Copying resources folder from ${BE_DATA_BASE_DIR} to ${BE_DATA_POST_BUILD_DIR}"
 )

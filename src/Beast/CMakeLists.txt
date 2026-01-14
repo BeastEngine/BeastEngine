@@ -85,12 +85,12 @@ find_package(stduuid REQUIRED)
 target_link_libraries(
   BeastCore
   PUBLIC spdlog::spdlog
-  fmt::fmt
-  glm::glm
-  box2d::box2d
-  xxHash::xxhash
-  stduuid::stduuid
-  stb
+         fmt::fmt
+         glm::glm
+         box2d::box2d
+         xxHash::xxhash
+         stduuid::stduuid
+         stb
 )
 add_dependencies(BeastCore BeCoreShaders)
 
