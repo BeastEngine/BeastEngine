@@ -32,11 +32,6 @@ namespace be::graphics
         m_pixelShader = m_graphics->CreatePixelShader("PixelShader.cso");
 
         m_cameraCBuffer = m_graphics->CreateConstantBuffer(sizeof(Mat4));
-
-        const RefResult<fs::Path> texturePath = m_resourcesManager->GetResourcePath(TextureId("t.png"));
-        const Result<Image> imageResult = LoadImageFromFile(texturePath.Value());
-        BE_ASSERT(imageResult);
-        m_texture = m_graphics->CreateTexture(imageResult.Value());
     }
 
     // Declared here to be able to use Unique with incomplete type
@@ -58,7 +53,7 @@ namespace be::graphics
         // TODO: Let's try render the texture!
 
         BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started before sprites can be added!");
-        m_framePrimitives.emplace_back(Primitive{.position = position * PRIMITIVE_SCALE, .color = sprite.color});
+        m_framePrimitives[sprite.texture].emplace_back(Primitive{.position = position * PRIMITIVE_SCALE, .sprite = sprite});
     }
 
     void Renderer2D::EndFrame(const Camera2D& camera)
@@ -66,67 +61,91 @@ namespace be::graphics
         static constexpr float SCALE_HALF = PRIMITIVE_SCALE / 2.0f;
         BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started first, before it can be ended!");
         {
-            const uint32 verticesCount = static_cast<uint32>(m_framePrimitives.size() * 6u);
-
-            std::vector<Vertex> vertices;
-            vertices.reserve(verticesCount);
-
-            for (const auto& primitive : m_framePrimitives)
-            {
-                vertices.emplace_back(Vertex{
-                    .position = Vec2{-SCALE_HALF, -SCALE_HALF} + primitive.position,
-                    .color = primitive.color,
-                    .uv = Vec2{0.0f, 0.0f},
-                });
-                vertices.emplace_back(Vertex{
-                    .position = Vec2{-SCALE_HALF, SCALE_HALF} + primitive.position,
-                    .color = primitive.color,
-                    .uv = Vec2{0.0f, 1.0f},
-                });
-                vertices.emplace_back(Vertex{
-                    .position = Vec2{SCALE_HALF, SCALE_HALF} + primitive.position,
-                    .color = primitive.color,
-                    .uv = Vec2{1.0f, 1.0f},
-                });
-                vertices.emplace_back(Vertex{
-                    .position = Vec2{-SCALE_HALF, -SCALE_HALF} + primitive.position,
-                    .color = primitive.color,
-                    .uv = Vec2{0.0f, 0.0f},
-                });
-                vertices.emplace_back(Vertex{
-                    .position = Vec2{SCALE_HALF, SCALE_HALF} + primitive.position,
-                    .color = primitive.color,
-                    .uv = Vec2{1.0f, 1.0f},
-                });
-                vertices.emplace_back(Vertex{
-                    .position = Vec2{SCALE_HALF, -SCALE_HALF} + primitive.position,
-                    .color = primitive.color,
-                    .uv = Vec2{1.0f, 0.0f},
-                });
-            }
-
             be::Mat4 viewMatrix = camera.GetViewMatrix();
             auto& translationVec = viewMatrix[3];
             translationVec *= glm::vec4{PRIMITIVE_SCALE, PRIMITIVE_SCALE, 1.0f, 1.0f};
 
-            m_graphics->UpdateVertexBuffer(m_buffer, vertices);
             m_graphics->UpdateConstantBuffer(m_cameraCBuffer, &viewMatrix[0]);
 
-            Pipeline pipeline{};
-            pipeline.vertexBuffer = m_buffer;
-            pipeline.vertexShaderStage.shader = m_vertexShader;
-            pipeline.pixelShaderStage.shader = m_pixelShader;
-            pipeline.pixelShaderStage.texture = m_texture;
-            pipeline.viewport = camera.GetViewport();
-            //pipeline.viewport.dimensions = {1520, 825};
-            pipeline.drawCall.vertexCount = verticesCount;
-            pipeline.constantBuffer = m_cameraCBuffer;
-
             m_graphics->Clear({0.35f, 0.35f, 0.35f, 1.0f});
-            m_graphics->Draw(pipeline);
+
+            std::vector<Vertex> vertices;
+
+            for (const auto& [texture, primitives] : m_framePrimitives)
+            {
+                const uint32 verticesCount = static_cast<uint32>(primitives.size() * 6u);
+                vertices.clear();
+                vertices.reserve(verticesCount);
+
+                for (const auto& primitive : primitives)
+                {
+                    vertices.emplace_back(Vertex{
+                        .position = Vec2{-SCALE_HALF, -SCALE_HALF} + primitive.position,
+                        .color = primitive.sprite.color,
+                        .uv = Vec2{0.0f, 0.0f},
+                    });
+                    vertices.emplace_back(Vertex{
+                        .position = Vec2{-SCALE_HALF, SCALE_HALF} + primitive.position,
+                        .color = primitive.sprite.color,
+                        .uv = Vec2{0.0f, 1.0f},
+                    });
+                    vertices.emplace_back(Vertex{
+                        .position = Vec2{SCALE_HALF, SCALE_HALF} + primitive.position,
+                        .color = primitive.sprite.color,
+                        .uv = Vec2{1.0f, 1.0f},
+                    });
+                    vertices.emplace_back(Vertex{
+                        .position = Vec2{-SCALE_HALF, -SCALE_HALF} + primitive.position,
+                        .color = primitive.sprite.color,
+                        .uv = Vec2{0.0f, 0.0f},
+                    });
+                    vertices.emplace_back(Vertex{
+                        .position = Vec2{SCALE_HALF, SCALE_HALF} + primitive.position,
+                        .color = primitive.sprite.color,
+                        .uv = Vec2{1.0f, 1.0f},
+                    });
+                    vertices.emplace_back(Vertex{
+                        .position = Vec2{SCALE_HALF, -SCALE_HALF} + primitive.position,
+                        .color = primitive.sprite.color,
+                        .uv = Vec2{1.0f, 0.0f},
+                    });
+                }
+
+                m_graphics->UpdateVertexBuffer(m_buffer, vertices);
+
+                Pipeline pipeline{};
+                pipeline.vertexBuffer = m_buffer;
+                pipeline.vertexShaderStage.shader = m_vertexShader;
+                pipeline.pixelShaderStage.shader = m_pixelShader;
+                pipeline.pixelShaderStage.texture = GetOrCreateTexture(texture);
+                pipeline.viewport = camera.GetViewport();
+                //pipeline.viewport.dimensions = {1520, 825};
+                pipeline.drawCall.vertexCount = verticesCount;
+                pipeline.constantBuffer = m_cameraCBuffer;
+
+                m_graphics->Draw(pipeline);
+            }
             m_graphics->Present();
         }
         BE_DEBUG_EXPRESSION(m_hasFrameStarted = false);
         BE_DEBUG_EXPRESSION(m_hasFrameEnded = true);
+    }
+
+    Texture Renderer2D::GetOrCreateTexture(TextureId id)
+    {
+        const auto foundTexture = m_textures.find(id);
+        if (foundTexture != m_textures.end())
+        {
+            return foundTexture->second;
+        }
+
+        const RefResult<fs::Path> texturePath = m_resourcesManager->GetResourcePath(id);
+        const Result<Image> imageResult = LoadImageFromFile(texturePath.Value());
+        BE_ASSERT(imageResult);
+
+        Texture& newTexture = m_textures[id];
+        newTexture = m_graphics->CreateTexture(imageResult.Value());
+
+        return newTexture;
     }
 } // namespace be::graphics

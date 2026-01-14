@@ -24,7 +24,7 @@ namespace be::graphics
         struct Primitive
         {
             Vec2 position;
-            Color color;
+            Sprite sprite;
         };
 
     public:
@@ -38,10 +38,12 @@ namespace be::graphics
         void EndFrame(const Camera2D& camera);
 
     private:
+        Texture GetOrCreateTexture(TextureId id);
+
+    private:
         be::Unique<IGraphics> m_graphics;
         be::Unique<fs::ResourcesManager> m_resourcesManager;
-        std::vector<Primitive>
-            m_framePrimitives;
+        std::unordered_map<TextureId, std::vector<Primitive>, TextureId::Hasher> m_framePrimitives;
 
         std::unordered_map<TextureId, Texture, TextureId::Hasher> m_textures;
 
@@ -53,6 +55,5 @@ namespace be::graphics
         VertexShader m_vertexShader;
         PixelShader m_pixelShader;
         ConstantBuffer m_cameraCBuffer;
-        Texture m_texture;
     };
 } // namespace be::graphics

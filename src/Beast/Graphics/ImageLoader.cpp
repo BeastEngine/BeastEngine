@@ -17,6 +17,7 @@ namespace be::graphics
         int height = 0;
         int numberOfChannels = 0;
 
+        stbi_set_flip_vertically_on_load(1);
         stbi_uc* pixelData = stbi_load(
             imagePath.string().c_str(),
             &width,

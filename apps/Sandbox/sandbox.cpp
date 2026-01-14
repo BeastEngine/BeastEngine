@@ -39,6 +39,40 @@ struct Wall
     b2BodyId rigidBody;
 };
 
+std::vector<Wall> CreateWalls(const be::Vec2& startPosition, size_t count, b2WorldId physicsWorld)
+{
+    std::vector<Wall> walls{};
+    walls.reserve(count);
+
+    for (size_t i = 0; i < count; ++i)
+    {
+        const be::Vec2 translation = static_cast<float>(i) * be::Vec2(1.0f, 0.0f);
+        const be::Vec2 position = startPosition + translation;
+
+        Wall wall{
+            .position = {position.x, position.y},
+            .sprite = {
+                .color = {1.0f, 1.0f, 1.0f, 1.0f},
+                .texture = be::graphics::TextureId("wall.png"),
+            },
+        };
+
+        b2BodyDef wallDef = b2DefaultBodyDef();
+        wallDef.type = b2_staticBody;
+        wallDef.position = wall.position;
+
+        wall.rigidBody = b2CreateBody(physicsWorld, &wallDef);
+        b2Polygon wallBox = b2MakeBox(0.5f, 0.5f);
+
+        b2ShapeDef wallShapeDef = b2DefaultShapeDef();
+        b2CreatePolygonShape(wall.rigidBody, &wallShapeDef, &wallBox);
+
+        walls.push_back(std::move(wall));
+    }
+
+    return walls;
+}
+
 class BasicApplication final : public be::AApplication
 {
 public:
@@ -57,9 +91,13 @@ public:
 
         b2WorldId world = b2CreateWorld(&worldDef);
 
+        // Create player
         Player player{
             .position = {0.0f, 0.0f},
-            .sprite = {.color = {1.0f, 1.0f, 1.0f, 1.0f}},
+            .sprite = {
+                .color = {1.0f, 1.0f, 1.0f, 1.0f},
+                .texture = be::graphics::TextureId("smiley.png"),
+            },
         };
 
         b2BodyDef playerDef = b2DefaultBodyDef();
@@ -72,25 +110,16 @@ public:
         b2ShapeDef playerShapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(player.rigidBody, &playerShapeDef, &playerBox);
 
-        Wall wall{
-            .position = {7.0f, 0.0f},
-            .sprite = {.color = {0.01f, 0.2f, 0.89f, 1.0f}},
-        };
+        // Create walls
+        const std::vector<Wall> topWalls = CreateWalls({-8.0f, 4.5f}, 20, world);
+        const std::vector<Wall> bottomWalls = CreateWalls({-8.0f, -4.5f}, 20, world);
 
-        b2BodyDef wallDef = b2DefaultBodyDef();
-        wallDef.type = b2_staticBody;
-        wallDef.position = wall.position;
-
-        wall.rigidBody = b2CreateBody(world, &wallDef);
-        b2Polygon wallBox = b2MakeBox(0.5f, 0.5f);
-
-        b2ShapeDef wallShapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(wall.rigidBody, &wallShapeDef, &wallBox);
+        const be::uint32 spritesCount = 1u + static_cast<be::uint32>(topWalls.size()) + static_cast<be::uint32>(bottomWalls.size());
 
         // TODO: We need to create the ResourceManager here. This should probably be done by the engine.
         // So something like GetEngine().GetResourceManager()
         be::BeastEngine& engine = GetEngine();
-        be::graphics::Renderer2D renderer(engine.CreateGraphics(*m_window), 2, engine.CreateResourcesManager(m_dataPath));
+        be::graphics::Renderer2D renderer(engine.CreateGraphics(*m_window), spritesCount, engine.CreateResourcesManager(m_dataPath));
 
         static constexpr float timeStep = 1.0f / 60.0f;
         static constexpr int subStepCount = 4;
@@ -134,7 +163,15 @@ public:
             player.position = b2Body_GetPosition(player.rigidBody);
 
             renderer.AddSprite({player.position.x, player.position.y}, player.sprite);
-            renderer.AddSprite({wall.position.x, wall.position.y}, wall.sprite);
+            for (const Wall& wall : topWalls)
+            {
+                renderer.AddSprite({wall.position.x, wall.position.y}, wall.sprite);
+            }
+            for (const Wall& wall : bottomWalls)
+            {
+                renderer.AddSprite({wall.position.x, wall.position.y}, wall.sprite);
+            }
+
             if (input.IsKeyPressed(be::KeyCode::Escape) || m_window->ShouldClose())
             {
                 break;
