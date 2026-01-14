@@ -13,7 +13,7 @@ namespace be::graphics
         constexpr TextureId()
             : Id() {}
 
-        constexpr TextureId(std::string_view stringId)
+        constexpr explicit TextureId(std::string_view stringId)
             : Id(stringId) {}
     };
 

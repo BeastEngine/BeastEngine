@@ -14,10 +14,10 @@ namespace be::tests::integration
         const fs::Path expectedPath = GetTextureImagePath(TEST_TEXTURE_NAME);
         fs::ResourcesManager sut(GetBaseDirectoryPath());
 
-        const Result<const fs::Path*> actualPath = sut.GetResourcePath(TEST_TEXTURE_ID);
+        const RefResult<fs::Path> actualPath = sut.GetResourcePath(TEST_TEXTURE_ID);
         ASSERT_TRUE(actualPath);
 
-        ASSERT_EQ(expectedPath, *actualPath.Value());
+        ASSERT_EQ(expectedPath, actualPath.Value());
     }
 
     TEST_F(ResourcesManagerTestCase, GetResourcePathWillReturnAbsoluteTextureFilepathWithSubDirectories)
@@ -36,10 +36,10 @@ namespace be::tests::integration
         CreateTextureFile(expectedPath, testTextureImage);
 
         fs::ResourcesManager sut(GetBaseDirectoryPath());
-        const Result<const fs::Path*> actualPath = sut.GetResourcePath(TEXTURE_ID);
+        const RefResult<fs::Path> actualPath = sut.GetResourcePath(TEXTURE_ID);
         ASSERT_TRUE(actualPath);
 
-        ASSERT_EQ(expectedPath, *actualPath.Value());
+        ASSERT_EQ(expectedPath, actualPath.Value());
     }
 
     TEST_F(ResourcesManagerTestCase, GetResourcePathWillReturnErrorResultIfTextureDoesNotExist)
@@ -47,7 +47,7 @@ namespace be::tests::integration
         constexpr auto invalidTextureId = graphics::TextureId("Invalid.png");
 
         fs::ResourcesManager sut(GetBaseDirectoryPath());
-        const Result<const fs::Path*> actualPath = sut.GetResourcePath(invalidTextureId);
+        const RefResult<fs::Path> actualPath = sut.GetResourcePath(invalidTextureId);
         ASSERT_FALSE(actualPath);
     }
 } // namespace be::tests::integration

@@ -33,8 +33,8 @@ namespace be::graphics
 
         m_cameraCBuffer = m_graphics->CreateConstantBuffer(sizeof(Mat4));
 
-        const Result<const fs::Path*> texturePath = m_resourcesManager->GetResourcePath(TextureId("t.png"));
-        const Result<Image> imageResult = LoadImageFromFile(*texturePath.Value());
+        const RefResult<fs::Path> texturePath = m_resourcesManager->GetResourcePath(TextureId("t.png"));
+        const Result<Image> imageResult = LoadImageFromFile(texturePath.Value());
         BE_ASSERT(imageResult);
         m_texture = m_graphics->CreateTexture(imageResult.Value());
     }

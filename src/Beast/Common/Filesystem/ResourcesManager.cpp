@@ -30,7 +30,9 @@ namespace be::fs
         }
     }
 
-    Result<const Path*> ResourcesManager::GetResourcePath(graphics::TextureId textureId) const
+    // TODO: This shouldn't probably depend on graphics and TextureId. I believe we can instead just use be::Id for this.
+    // Or maybe create a new "StringId" type for that kind of stuff.
+    RefResult<Path> ResourcesManager::GetResourcePath(graphics::TextureId textureId) const
     {
         const auto foundPath = m_paths.find(textureId.Raw());
         if (foundPath == m_paths.end())
@@ -38,6 +40,6 @@ namespace be::fs
             return std::format("Texture with id {} does not exist", textureId.Raw());
         }
 
-        return &foundPath->second;
+        return foundPath->second;
     }
 } // namespace be::fs
