@@ -116,8 +116,6 @@ public:
 
         const be::uint32 spritesCount = 1u + static_cast<be::uint32>(topWalls.size()) + static_cast<be::uint32>(bottomWalls.size());
 
-        // TODO: We need to create the ResourceManager here. This should probably be done by the engine.
-        // So something like GetEngine().GetResourceManager()
         be::BeastEngine& engine = GetEngine();
         be::graphics::Renderer2D renderer(engine.CreateGraphics(*m_window), spritesCount, engine.CreateResourcesManager(m_dataPath));
 

@@ -14,10 +14,8 @@ VS_Out main(float2 position
   output.color = color;
   output.position = mul(vpMatrix, float4(position, 0.0f, 1.0f));
   output.position.w = 1.0f;
-  // output.position = float4(position, 0.0f, 1.0f);
 
   output.uv = uv;
-  // output.uv = float2(0.0f, 0.0f);
 
   return output;
 }

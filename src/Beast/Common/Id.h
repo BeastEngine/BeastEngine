@@ -61,6 +61,7 @@ namespace be
         {
             constexpr std::size_t operator()(const Id& id) const
             {
+                static_assert(sizeof(RawId) <= sizeof(std::size_t), "Id is too big to fit in size to - thus cannot be used as a hash");
                 return static_cast<std::size_t>(id.Raw());
             }
         };

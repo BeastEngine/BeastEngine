@@ -39,27 +39,23 @@ namespace be::graphics
 
     void Renderer2D::StartFrame()
     {
-        // TODO: I think I can replace it with BE_ASSERT_MSG(!m_hasFrameStarted, ...); but I have to double check!
-        BE_ASSERT_MSG(m_hasFrameEnded, "Previous frame must be ended before a new one can be started!");
+        BE_DEBUG_EXPRESSION(BE_ASSERT_MSG(m_hasFrameStarted == false, "Previous frame must be ended before a new one can be started!"));
         {
             m_framePrimitives.clear();
         }
         BE_DEBUG_EXPRESSION(m_hasFrameStarted = true);
-        BE_DEBUG_EXPRESSION(m_hasFrameEnded = false);
     }
 
     void Renderer2D::AddSprite(const Vec2& position, const Sprite& sprite)
     {
-        // TODO: Let's try render the texture!
-
-        BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started before sprites can be added!");
+        BE_DEBUG_EXPRESSION(BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started before sprites can be added!"));
         m_framePrimitives[sprite.texture].emplace_back(Primitive{.position = position * PRIMITIVE_SCALE, .sprite = sprite});
     }
 
     void Renderer2D::EndFrame(const Camera2D& camera)
     {
         static constexpr float SCALE_HALF = PRIMITIVE_SCALE / 2.0f;
-        BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started first, before it can be ended!");
+        BE_DEBUG_EXPRESSION(BE_ASSERT_MSG(m_hasFrameStarted, "Frame must be started first, before it can be ended!"));
         {
             be::Mat4 viewMatrix = camera.GetViewMatrix();
             auto& translationVec = viewMatrix[3];
@@ -128,7 +124,6 @@ namespace be::graphics
             m_graphics->Present();
         }
         BE_DEBUG_EXPRESSION(m_hasFrameStarted = false);
-        BE_DEBUG_EXPRESSION(m_hasFrameEnded = true);
     }
 
     Texture Renderer2D::GetOrCreateTexture(TextureId id)

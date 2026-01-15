@@ -21,6 +21,8 @@ namespace be
      * Definition of this function must be provided by the user of the engine!
      * 
      * @param windowHandleInstance - Handle to be used as parent window handle provided by the OS
+     * @param cwd - Current working directory of the running application
+     * 
      * @return Pointer to the implementation of the AApplication instance
      */
     extern Unique<AApplication> CreateApplication(WindowHandleInstance windowHandleInstance, const fs::Path& cwd);
@@ -35,7 +37,6 @@ BE_MAIN()
     wchar_t exeNameBuffer[NTFS_MAX_PATH_LENGTH];
 
     const DWORD fileNameLength = GetModuleFileNameW(NULL, exeNameBuffer, NTFS_MAX_PATH_LENGTH);
-
     if (fileNameLength == 0)
     {
         return -1;
@@ -43,8 +44,6 @@ BE_MAIN()
     else if (fileNameLength >= NTFS_MAX_PATH_LENGTH)
     {
         return -1;
-        // This is where you "error out" if the path is somehow longer
-        // than 32k characters (extremely rare)
     }
 
     exePath = be::fs::Path(exeNameBuffer);

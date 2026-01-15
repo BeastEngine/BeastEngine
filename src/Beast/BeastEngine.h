@@ -64,9 +64,9 @@ namespace be
         Unique<graphics::IGraphics> CreateGraphics(const Window& window, graphics::RenderingApi api = graphics::RenderingApi::D3D11) const;
 
         /**
-         * @brief Create a Resources Manager object
+         * @brief Creates a Resources Manager object.
          * 
-         * @param baseResourcesPath 
+         * @param baseResourcesPath - Path to the base directory of the resources. This path will be used by the manager to find the requested files.
          * @return Unique<fs::ResourcesManager>
          */
         Unique<fs::ResourcesManager> CreateResourcesManager(const fs::Path& baseResourcesPath) const;

@@ -89,7 +89,7 @@ namespace be
     };
 
     /**
-     * @brief Similar to Result, but allows returning const references to object of type T
+     * @brief Similar to Result, but allows returning const references to objects of type T
      */
     template<NotResultError T>
     class [[nodiscard]] RefResult

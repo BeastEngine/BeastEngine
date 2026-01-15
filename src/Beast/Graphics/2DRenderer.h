@@ -14,8 +14,6 @@ namespace be::fs
 
 namespace be::graphics
 {
-    // TODO: Add resource manager that will return filepath for given TextureId
-
     class Camera2D;
     class IGraphics;
 
@@ -47,8 +45,7 @@ namespace be::graphics
 
         std::unordered_map<TextureId, Texture, TextureId::Hasher> m_textures;
 
-        bool m_hasFrameStarted = false;
-        bool m_hasFrameEnded = true;
+        BE_DEBUG_FIELD(bool m_hasFrameStarted = false);
 
         // TEMP
         VertexBuffer m_buffer;
