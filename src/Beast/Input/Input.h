@@ -3,6 +3,7 @@
 #include "Beast/Input/Events/Events.h"
 
 #include "Beast/Common/Types.h"
+#include "Beast/Common/TypeTraits.h"
 
 #include <array>
 

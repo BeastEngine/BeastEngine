@@ -3,6 +3,7 @@
 
 #include "Beast/Loggers/LoggersFactories.h"
 #include "Beast/Loggers/StaticLogger.h"
+#include "Beast/Common/Filesystem/ResourcesManager.h"
 
 #include "Beast/Graphics/GraphicsFactory.h"
 
@@ -32,6 +33,11 @@ namespace be
     Unique<graphics::IGraphics> BeastEngine::CreateGraphics(const Window& window, graphics::RenderingApi api) const
     {
         return internals::CreateGraphics(api, window);
+    }
+
+    Unique<fs::ResourcesManager> BeastEngine::CreateResourcesManager(const fs::Path& baseResourcesPath) const
+    {
+        return MakeUnique<fs::ResourcesManager>(baseResourcesPath);
     }
 
     void BeastEngine::SetLogger(EngineConfig& config)

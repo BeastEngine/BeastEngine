@@ -8,6 +8,8 @@
 
 namespace be
 {
+    // TODO: Change it to 32bit
+
     constexpr inline XXH64_hash_t SEED = 777;
     using HashType = XXH64_hash_t;
 

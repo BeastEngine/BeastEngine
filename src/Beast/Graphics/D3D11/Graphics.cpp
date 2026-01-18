@@ -1,11 +1,17 @@
 #include "Beast/Graphics/D3D11/Graphics.h"
 #include "Beast/Graphics/D3D11/Utils.h"
 
+#include "Beast/Graphics/Images.h"
+#include "Beast/Graphics/Pipeline.h"
+
+#include "Beast/Common/Limits.h"
+#include "Beast/Common/TypeTraits.h"
+
 namespace be::graphics::d3d11
 {
-    constexpr static decltype(auto) GetResource(const auto& container, const auto& resourceRef)
+    constexpr static decltype(auto) GetResource(const auto& container, const auto& resourceIndex)
     {
-        return container.at(resourceRef.id.Raw());
+        return container.at(ToUnderlying(resourceIndex));
     }
 
     Graphics::Graphics(const Window& window)
@@ -15,44 +21,62 @@ namespace be::graphics::d3d11
 
     graphics::VertexBuffer Graphics::CreateVertexBuffer(uint32 stride, uint32 maxSize)
     {
-        m_vertexBuffers.emplace_back(d3d11::CreateVertexBuffer(m_api, stride, maxSize));
-        Id id{m_vertexBuffers.size() - 1};
+        BE_ASSERT_ALWAYS(m_vertexBuffers.size() < MAX_VB_INDEX);
 
-        return graphics::VertexBuffer{.id = id};
+        const std::size_t index = m_vertexBuffers.size();
+        m_vertexBuffers.emplace_back(d3d11::CreateVertexBuffer(m_api, stride, maxSize));
+
+        return ToEnum<graphics::VertexBuffer>(index);
     }
 
     graphics::ConstantBuffer Graphics::CreateConstantBuffer(uint32 size)
     {
+        BE_ASSERT_ALWAYS(m_constantBuffers.size() < MAX_CB_INDEX);
+
+        const std::size_t index = m_constantBuffers.size();
         m_constantBuffers.emplace_back(d3d11::CreateConstantBuffer(m_api, size));
-        Id id{m_constantBuffers.size() - 1};
 
-        return graphics::ConstantBuffer{.id = id};
+        return ToEnum<graphics::ConstantBuffer>(index);
     }
 
-    graphics::VertexShader Graphics::CreateVertexShader(const FilesystemPath& filepath, const InputLayout& inputLayout)
+    graphics::VertexShader Graphics::CreateVertexShader(const fs::Path& filepath, const InputLayout& inputLayout)
     {
+        BE_ASSERT_ALWAYS(m_vertexShaders.size() < MAX_VS_INDEX);
+
+        const std::size_t index = m_vertexShaders.size();
         m_vertexShaders.emplace_back(d3d11::CreateVertexShader(m_api, filepath, inputLayout));
-        Id id{m_vertexShaders.size() - 1};
 
-        return graphics::VertexShader{.id = id};
+        return ToEnum<graphics::VertexShader>(index);
     }
 
-    graphics::PixelShader Graphics::CreatePixelShader(const FilesystemPath& filepath)
+    graphics::PixelShader Graphics::CreatePixelShader(const fs::Path& filepath)
     {
+        BE_ASSERT_ALWAYS(m_pixelShaders.size() < MAX_PS_INDEX);
+
+        const std::size_t index = m_pixelShaders.size();
         m_pixelShaders.emplace_back(d3d11::CreatePixelShader(m_api, filepath));
-        Id id{m_pixelShaders.size() - 1};
 
-        return graphics::PixelShader{.id = id};
+        return ToEnum<graphics::PixelShader>(index);
     }
 
-    void Graphics::UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> verticies)
+    graphics::Texture Graphics::CreateTexture(const Image& textureData)
     {
-        m_vertexBuffers.at(buffer.id.Raw()).Update(m_api.Context(), verticies);
+        BE_ASSERT_ALWAYS(m_textures.size() < MAX_TEXTURE_INDEX);
+
+        const std::size_t index = m_textures.size();
+        m_textures.emplace_back(d3d11::CreateTexture(m_api, textureData));
+
+        return ToEnum<graphics::Texture>(index);
+    }
+
+    void Graphics::UpdateVertexBuffer(graphics::VertexBuffer buffer, std::span<const Vertex> vertices)
+    {
+        GetResource(m_vertexBuffers, buffer).Update(m_api.Context(), vertices);
     }
 
     void Graphics::UpdateConstantBuffer(graphics::ConstantBuffer buffer, const void* const data)
     {
-        m_constantBuffers.at(buffer.id.Raw()).Update(m_api.Context(), data);
+        GetResource(m_constantBuffers, buffer).Update(m_api.Context(), data);
     }
 
     void Graphics::Draw(const Pipeline& pipeline)
@@ -82,6 +106,10 @@ namespace be::graphics::d3d11
         {
             const auto& shader = GetResource(m_pixelShaders, pipeline.pixelShaderStage.shader);
             context.PSSetShader(shader.Shader(), nullptr, 0);
+
+            const auto& texture = GetResource(m_textures, pipeline.pixelShaderStage.texture);
+            context.PSSetSamplers(0, 1, texture.SamplerAddress());
+            context.PSSetShaderResources(0, 1, texture.ResourceViewAddress());
         }
 
         // RSStage

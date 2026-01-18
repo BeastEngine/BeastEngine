@@ -1,7 +1,7 @@
 #pragma once
 #include "Beast/Common/IdAllocator.h"
 #include "Beast/Common/AllocatorAwareId.h"
-#include "Beast/Common/Id.h"
+#include "Beast/Common/TypeTraits.h"
 
 #include <array>
 

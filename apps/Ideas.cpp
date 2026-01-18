@@ -15,7 +15,7 @@ namespace be
 
         struct Context
         {
-            Texture* CreateTexture(const be::FilesystemPath& filepath /*, TextureParameters*/);
+            Texture* CreateTexture(const be::fs::Path& filepath /*, TextureParameters*/);
             void DestroyTexture(Texture*);
         };
     } // namespace graphics
@@ -30,7 +30,7 @@ namespace be
         struct TexturePath
         {
             TextureId id;
-            be::FilesystemPath filepath;
+            be::fs::Path filepath;
         };
 
     public:
@@ -78,7 +78,7 @@ namespace be
             std::shared_mutex mutex; // This will mostl likely not be needed
             std::size_t count = 0;
             graphics::Texture* data;
-            FilesystemPath filepath;
+            fs::Path filepath;
         };
 
     private:
@@ -92,7 +92,7 @@ namespace be
         struct TexturePath
         {
             TextureId id;
-            be::FilesystemPath filepath;
+            be::fs::Path filepath;
         };
 
     public:
@@ -117,7 +117,7 @@ namespace be
         struct TextureResource
         {
             graphics::Texture* data;
-            FilesystemPath filepath;
+            fs::Path filepath;
         };
 
         void Create(TextureResource& resource)

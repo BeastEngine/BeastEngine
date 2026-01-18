@@ -14,22 +14,20 @@
 
 namespace be::tests::integration
 {
-    namespace fs = std::filesystem;
-
     class FilesystemTestCase : public testing::Test
     {
     public:
         static void SetUpTestSuite()
         {
-            m_globalBaseDirectoryPath = fs::temp_directory_path() / "BeTemp" / GenerateRandomString();
-            fs::create_directories(m_globalBaseDirectoryPath);
+            m_globalBaseDirectoryPath = std::filesystem::temp_directory_path() / "BeTemp" / GenerateRandomString();
+            std::filesystem::create_directories(m_globalBaseDirectoryPath);
         }
 
         static void TearDownTestSuite()
         {
-            if (fs::exists(m_globalBaseDirectoryPath))
+            if (std::filesystem::exists(m_globalBaseDirectoryPath))
             {
-                fs::remove_all(m_globalBaseDirectoryPath);
+                std::filesystem::remove_all(m_globalBaseDirectoryPath);
             }
         }
 
@@ -49,63 +47,52 @@ namespace be::tests::integration
             DeleteBaseDirectory();
         }
 
-        FilesystemPath CreateDirectory(const std::string& relativePath) const
+        fs::Path CreateDirectory(const std::string& relativePath) const
         {
-            auto fullPath = GetFullPath(relativePath);
-            fs::create_directory(fullPath);
-
-            return fullPath;
+            return CreateDirectoryImpl(relativePath);
         }
 
-        FilesystemPath CreateDirectory(const FilesystemPath& relativePath) const
+        fs::Path CreateDirectory(const fs::Path& relativePath) const
         {
-            return CreateDirectory(relativePath.u8string());
+            return CreateDirectoryImpl(relativePath.u8string());
         }
 
-        FilesystemPath CreateDirectory(const char* relativePath) const
+        fs::Path CreateDirectory(const char* relativePath) const
         {
-            return CreateDirectory(std::string(relativePath));
+            return CreateDirectoryImpl(std::string(relativePath));
         }
 
-        FilesystemPath CreateFile(const std::string& relativePath, const std::string& fileContent = "") const
+        fs::Path CreateFile(const std::string& relativePath, const std::string& fileContent = "") const
         {
-            auto fullFilePath = GetFullPath(relativePath);
-            std::ofstream file(fullFilePath);
-            if (!fileContent.empty())
-            {
-                file << fileContent;
-            }
-            file.close();
-
-            return fullFilePath;
+            return CreateFileImpl(relativePath, fileContent);
         }
 
-        FilesystemPath CreateFile(const FilesystemPath& relativePath, const std::string& fileContent = "") const
+        fs::Path CreateFile(const fs::Path& relativePath, const std::string& fileContent = "") const
         {
-            return CreateFile(relativePath.u8string(), fileContent);
+            return CreateFileImpl(relativePath.u8string(), fileContent);
         }
 
-        FilesystemPath CreateFile(const char* relativePath, const std::string& fileContent = "") const
+        fs::Path CreateFile(const char* relativePath, const std::string& fileContent = "") const
         {
-            return CreateFile(std::string(relativePath), fileContent);
+            return CreateFileImpl(std::string(relativePath), fileContent);
         }
 
-        FilesystemPath GetFullPath(const std::string& relativePath) const
+        fs::Path GetFullPath(const std::string& relativePath) const
         {
-            return GetBaseDirectoryPath() + "/" + relativePath;
+            return GetFullPathImpl(relativePath);
         }
 
-        FilesystemPath GetFullPath(const FilesystemPath& relativePath) const
+        fs::Path GetFullPath(const fs::Path& relativePath) const
         {
-            return GetFullPath(relativePath.u8string());
+            return GetFullPathImpl(relativePath.u8string());
         }
 
-        FilesystemPath GetFullPath(const char* relativePath) const
+        fs::Path GetFullPath(const char* relativePath) const
         {
-            return GetFullPath(std::string(relativePath));
+            return GetFullPathImpl(std::string(relativePath));
         }
 
-        std::string ReadFile(const FilesystemPath& filePath) const
+        std::string ReadFile(const fs::Path& filePath) const
         {
             std::ifstream file(filePath);
             if (!file.is_open())
@@ -120,23 +107,49 @@ namespace be::tests::integration
             return buffer.str();
         }
 
-        FilesystemPath GetBaseDirectoryPath() const
+        fs::Path GetBaseDirectoryPath() const
         {
             return m_testCaseBaseDirPath;
         }
 
     private:
+        fs::Path GetFullPathImpl(const auto& relativePath) const
+        {
+            return GetBaseDirectoryPath() / relativePath;
+        }
+
+        fs::Path CreateFileImpl(const auto& relativePath, const std::string& fileContent = "") const
+        {
+            auto fullFilePath = GetFullPath(relativePath);
+            std::ofstream file(fullFilePath);
+            if (!fileContent.empty())
+            {
+                file << fileContent;
+            }
+            file.close();
+
+            return fullFilePath;
+        }
+
+        fs::Path CreateDirectoryImpl(const auto& relativePath) const
+        {
+            auto fullPath = GetFullPath(relativePath);
+            std::filesystem::create_directories(fullPath);
+
+            return fullPath;
+        }
+
         void CreateBaseDirectory() const
         {
-            fs::create_directories(GetBaseDirectoryPath());
+            std::filesystem::create_directories(GetBaseDirectoryPath());
         }
 
         void DeleteBaseDirectory() const
         {
             const auto baseDirPath = GetBaseDirectoryPath();
-            if (fs::exists(baseDirPath))
+            if (std::filesystem::exists(baseDirPath))
             {
-                fs::remove_all(baseDirPath);
+                std::filesystem::remove_all(baseDirPath);
             }
         }
 
@@ -146,8 +159,8 @@ namespace be::tests::integration
         }
 
     private:
-        static inline FilesystemPath m_globalBaseDirectoryPath = "";
+        static inline fs::Path m_globalBaseDirectoryPath = "";
 
-        FilesystemPath m_testCaseBaseDirPath;
+        fs::Path m_testCaseBaseDirPath;
     };
 } // namespace be::tests::integration

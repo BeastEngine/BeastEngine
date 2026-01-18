@@ -1,5 +1,4 @@
 #pragma once
-#include "Beast/PlatformSetup.h"
 #include "Beast/Loggers/StaticLogger.h"
 
 #include <format>
@@ -78,14 +77,14 @@ namespace be
     #endif
 #endif
 
-#define BE_ASSERT_PRIV_ALWAYS(expression, fmt, ...)                                \
-    if (expression)                                                                \
-    { /* This is intentionally empty. Solitare 'if' could lead to potenial bugs */ \
-    }                                                                              \
-    else                                                                           \
-    {                                                                              \
-        BE_DEBUG_LOG_ERROR(fmt, __VA_ARGS__);                                      \
-        BE_DEBUG_BREAK();                                                          \
+#define BE_ASSERT_PRIV_ALWAYS(expression, fmt, ...)                                  \
+    if (expression)                                                                  \
+    { /* This is intentionally empty. Solitaire 'if' could lead to potential bugs */ \
+    }                                                                                \
+    else                                                                             \
+    {                                                                                \
+        BE_DEBUG_LOG_ERROR(fmt, __VA_ARGS__);                                        \
+        BE_DEBUG_BREAK();                                                            \
     }
 
 #ifdef BE_ASSERTIONS_ENABLED
@@ -94,8 +93,8 @@ namespace be
     #define BE_ASSERT_PRIV(expression, fmt, ...)
 #endif
 
-#define BE_ASSERT(expression)                      BE_ASSERT_PRIV(expression, "The '{}' assertion failed! It evaluated to: {}", #expression, expression)
-#define BE_ASSERT_ALWAYS(expression)               BE_ASSERT_PRIV_ALWAYS(expression, "The '{}' assertion failed! It evaluated to: {}", #expression, expression)
+#define BE_ASSERT(expression)                      BE_ASSERT_PRIV(expression, "The '{}' assertion failed! It evaluated to: {}", #expression, bool(expression))
+#define BE_ASSERT_ALWAYS(expression)               BE_ASSERT_PRIV_ALWAYS(expression, "The '{}' assertion failed! It evaluated to: {}", #expression, bool(expression))
 #define BE_ASSERT_MSG(expression, fmt, ...)        BE_ASSERT_PRIV(expression, fmt, __VA_ARGS__)
 #define BE_ASSERT_MSG_ALWAYS(expression, fmt, ...) BE_ASSERT_PRIV_ALWAYS(expression, fmt, __VA_ARGS__)
 
@@ -109,10 +108,4 @@ namespace be
 
 #define BE_THROW(message)        throw std::runtime_error(BE_EXCEPTION_MESSAGE(message))
 #define BE_THROW_FROM(exception) throw std::runtime_error(BE_EXCEPTION_MESSAGE(exception.what()));
-
-#ifdef BE_PLATFORM_WINDOWS
-    #define BE_DISPLAY_ERROR(error)                       \
-        std::filesystem::path errorMessage{error.what()}; \
-        MessageBox(NULL, errorMessage.wstring().c_str(), nullptr, MB_OK);
-#endif
 } // namespace be

@@ -1,5 +1,6 @@
 #pragma once
 #include "Beast/Common/IdAllocator.h"
+#include "Beast/Common/TypeTraits.h"
 #include "Beast/Debug.h"
 
 namespace be

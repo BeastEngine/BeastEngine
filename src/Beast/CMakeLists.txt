@@ -58,6 +58,8 @@ add_library(
   "Common/Helpers.h"
   "Common/Types.h"
   "Common/Filesystem/Types.h"
+  "Common/Filesystem/ResourcesManager.h"
+  "Common/Filesystem/ResourcesManager.cpp"
   "Common/UUIDGenerator.h"
   "Common/Utils/Hasher.h"
   "Common/Utils/Xxh64.h"
@@ -67,6 +69,10 @@ add_library(
   "Common/IdAllocator.cpp"
   "Common/IdAllocatorsFactory.h"
   "Common/IdAllocatorsFactory.cpp"
+  "Graphics/ImageLoader.h"
+  "Graphics/ImageLoader.cpp"
+  "Common/Result.h"
+  "Graphics/Pipeline.h"
 )
 target_include_directories(BeastCore PUBLIC "${BeastEngine_SOURCE_DIR}/src")
 be_set_compiler_options(BeastCore)
@@ -76,10 +82,20 @@ find_package(fmt REQUIRED)
 find_package(glm REQUIRED)
 find_package(xxHash REQUIRED)
 find_package(stduuid REQUIRED)
-target_link_libraries(BeastCore PUBLIC spdlog::spdlog fmt::fmt glm::glm box2d::box2d xxHash::xxhash stduuid::stduuid)
+target_link_libraries(
+  BeastCore
+  PUBLIC spdlog::spdlog
+         fmt::fmt
+         glm::glm
+         box2d::box2d
+         xxHash::xxhash
+         stduuid::stduuid
+         stb
+)
 add_dependencies(BeastCore BeCoreShaders)
 
 set(BEAST_DEBUGGING_DEFINES $<$<CONFIG:Debug>:BE_DEBUG>)
+
 if(${BE_ENABLE_DEBUG_INFO})
   list(APPEND BEAST_DEBUGGING_DEFINES BE_DEBUGGING_INFO_ENABLED)
 endif()

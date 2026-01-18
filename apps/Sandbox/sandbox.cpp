@@ -3,6 +3,7 @@
 #include <Beast/Loggers/LoggersFactories.h>
 #include <Beast/Common/Types.h>
 #include <Beast/Common/Utils/Hasher.h>
+#include <Beast/Common/Filesystem/ResourcesManager.h>
 #include <Beast/Graphics/2DRenderer.h>
 #include <Beast/Graphics/Camera2D.h>
 
@@ -20,7 +21,9 @@
 
 #include <box2d/box2d.h>
 
-constexpr be::Id TEXTURE_ID = be::Id("Path/To/My/Texture");
+// Just a test to see if it's actually generated at compiletime
+static constexpr be::Id TEXTURE_ID = be::Id("Path/To/My/Texture");
+static constexpr float PLAYER_SPEED = 0.08f;
 
 struct Player
 {
@@ -36,11 +39,45 @@ struct Wall
     b2BodyId rigidBody;
 };
 
+std::vector<Wall> CreateWalls(const be::Vec2& startPosition, size_t count, b2WorldId physicsWorld)
+{
+    std::vector<Wall> walls{};
+    walls.reserve(count);
+
+    for (size_t i = 0; i < count; ++i)
+    {
+        const be::Vec2 translation = static_cast<float>(i) * be::Vec2(1.0f, 0.0f);
+        const be::Vec2 position = startPosition + translation;
+
+        Wall wall{
+            .position = {position.x, position.y},
+            .sprite = {
+                .color = {1.0f, 1.0f, 1.0f, 1.0f},
+                .texture = be::graphics::TextureId("wall.png"),
+            },
+        };
+
+        b2BodyDef wallDef = b2DefaultBodyDef();
+        wallDef.type = b2_staticBody;
+        wallDef.position = wall.position;
+
+        wall.rigidBody = b2CreateBody(physicsWorld, &wallDef);
+        b2Polygon wallBox = b2MakeBox(0.5f, 0.5f);
+
+        b2ShapeDef wallShapeDef = b2DefaultShapeDef();
+        b2CreatePolygonShape(wall.rigidBody, &wallShapeDef, &wallBox);
+
+        walls.push_back(std::move(wall));
+    }
+
+    return walls;
+}
+
 class BasicApplication final : public be::AApplication
 {
 public:
-    BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor)
-        : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger"))
+    BasicApplication(be::EngineConfig engineConfig, const be::WindowDescriptor& windowDescriptor, const be::fs::Path& cwd)
+        : be::AApplication(std::move(engineConfig), windowDescriptor), m_logger(be::ConsoleLogger::Create("client_console_logger")), m_dataPath(cwd / "data")
     {
         //m_mouse->SetWheelScrolledListener(OnWheelScrolled());
     }
@@ -54,9 +91,13 @@ public:
 
         b2WorldId world = b2CreateWorld(&worldDef);
 
+        // Create player
         Player player{
             .position = {0.0f, 0.0f},
-            .sprite = {.color = {1.0f, 0.0f, 0.0f, 1.0f}},
+            .sprite = {
+                .color = {1.0f, 1.0f, 1.0f, 1.0f},
+                .texture = be::graphics::TextureId("smiley.png"),
+            },
         };
 
         b2BodyDef playerDef = b2DefaultBodyDef();
@@ -64,27 +105,19 @@ public:
         playerDef.position = player.position;
 
         player.rigidBody = b2CreateBody(world, &playerDef);
-        b2Polygon playerBox = b2MakeBox(25.0f, 25.0f);
+        b2Polygon playerBox = b2MakeBox(0.5f, 0.5f);
 
         b2ShapeDef playerShapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(player.rigidBody, &playerShapeDef, &playerBox);
 
-        Wall wall{
-            .position = {200.0f, 0.0f},
-            .sprite = {.color = {0.01f, 0.2f, 0.89f, 1.0f}},
-        };
+        // Create walls
+        const std::vector<Wall> topWalls = CreateWalls({-8.0f, 4.5f}, 20, world);
+        const std::vector<Wall> bottomWalls = CreateWalls({-8.0f, -4.5f}, 20, world);
 
-        b2BodyDef wallDef = b2DefaultBodyDef();
-        wallDef.type = b2_staticBody;
-        wallDef.position = wall.position;
+        const be::uint32 spritesCount = 1u + static_cast<be::uint32>(topWalls.size()) + static_cast<be::uint32>(bottomWalls.size());
 
-        wall.rigidBody = b2CreateBody(world, &wallDef);
-        b2Polygon wallBox = b2MakeBox(25.0f, 25.0f);
-
-        b2ShapeDef wallShapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(wall.rigidBody, &wallShapeDef, &wallBox);
-
-        be::graphics::Renderer2D renderer(GetEngine().CreateGraphics(*m_window), 2);
+        be::BeastEngine& engine = GetEngine();
+        be::graphics::Renderer2D renderer(engine.CreateGraphics(*m_window), spritesCount, engine.CreateResourcesManager(m_dataPath));
 
         static constexpr float timeStep = 1.0f / 60.0f;
         static constexpr int subStepCount = 4;
@@ -101,16 +134,42 @@ public:
             m_window->ProcessInput();
             renderer.StartFrame();
 
+            be::Vec2 playerMovement = {0, 0};
+
             if (input.IsKeyDown(be::KeyCode::D))
             {
-                b2Body_SetLinearVelocity(player.rigidBody, {10.0f, 0.0f});
+                playerMovement.x = 1;
             }
+            else if (input.IsKeyDown(be::KeyCode::A))
+            {
+                playerMovement.x = -1;
+            }
+
+            if (input.IsKeyDown(be::KeyCode::W))
+            {
+                playerMovement.y = 1;
+            }
+            else if (input.IsKeyDown(be::KeyCode::S))
+            {
+                playerMovement.y = -1;
+            }
+
+            const be::Vec2 playerVelocity = playerMovement * PLAYER_SPEED;
+            b2Body_SetLinearVelocity(player.rigidBody, {playerVelocity.x, playerVelocity.y});
 
             b2World_Step(world, timeStep, subStepCount);
             player.position = b2Body_GetPosition(player.rigidBody);
 
             renderer.AddSprite({player.position.x, player.position.y}, player.sprite);
-            renderer.AddSprite({wall.position.x, wall.position.y}, wall.sprite);
+            for (const Wall& wall : topWalls)
+            {
+                renderer.AddSprite({wall.position.x, wall.position.y}, wall.sprite);
+            }
+            for (const Wall& wall : bottomWalls)
+            {
+                renderer.AddSprite({wall.position.x, wall.position.y}, wall.sprite);
+            }
+
             if (input.IsKeyPressed(be::KeyCode::Escape) || m_window->ShouldClose())
             {
                 break;
@@ -121,16 +180,17 @@ public:
 
 private:
     const be::Shared<be::Logger> m_logger = nullptr;
+    be::fs::Path m_dataPath;
 };
 
-be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance)
+be::Unique<be::AApplication> be::CreateApplication(WindowHandleInstance windowHandleInstance, const be::fs::Path& cwd)
 {
     // Configure engine
-    auto config = be::EngineConfig();
+    be::EngineConfig config{};
 
     // Configure window
     be::WindowDescriptor windowDescriptor(std::move(windowHandleInstance));
     windowDescriptor.style = WindowStyle::WINDOW_DEFUALT;
 
-    return be::MakeUnique<BasicApplication>(std::move(config), windowDescriptor);
+    return be::MakeUnique<BasicApplication>(std::move(config), windowDescriptor, cwd);
 }
